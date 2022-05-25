@@ -1,18 +1,24 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { BoardComponent } from './board/board.component';
-
-
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {GameSudokuComponent} from './game-sudoku/game-sudoku.component';
+import {GameBoardComponent} from './game-board/game-board.component';
+import {ControlsModule} from '../controls/controls.module';
+import {MaterialModule} from '../../material.module';
 
 @NgModule({
   declarations: [
-    BoardComponent
+    GameSudokuComponent,
+    GameBoardComponent
   ],
   exports: [
-    BoardComponent
+    GameBoardComponent,
+    GameSudokuComponent
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    ControlsModule,
+    MaterialModule
   ]
 })
-export class BoardModule { }
+export class BoardModule {
+}

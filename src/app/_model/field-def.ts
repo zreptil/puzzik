@@ -59,7 +59,6 @@ export class FieldDef {
 
   public get clone(): FieldDef {
     const ret = new FieldDef();
-
     ret.solution = this.solution;
     ret.sumRight = this.sumRight;
     ret.sumDown = this.sumDown;
@@ -94,8 +93,9 @@ export class FieldDef {
     let ret = 0;
     let check = 1;
     for (const candidate of this.candidates) {
-      if (candidate.hidden)
+      if (candidate.hidden) {
         ret |= check;
+      }
       check <<= 1;
     }
     return ret;
@@ -115,8 +115,9 @@ export class FieldDef {
 
     let check = 1;
     for (const candidate of this.candidates) {
-      if (candidate.hidden)
+      if (candidate.hidden) {
         hidden |= check;
+      }
       check <<= 1;
     }
 
@@ -131,8 +132,9 @@ export class FieldDef {
 
     let check = 1;
     for (const candidate of this.candidates) {
-      if (!candidate.hidden)
+      if (!candidate.hidden) {
         hidden |= check;
+      }
       check <<= 1;
     }
 
@@ -147,17 +149,20 @@ export class FieldDef {
 
   public copyFrom(fld: FieldDef) {
     this.value = fld.value;
+    this.type = fld.type;
     this.candidates = [];
-    for (const candidate of fld.candidates)
+    for (const candidate of fld.candidates) {
       this.candidates.push(new CandidateDef(candidate));
+    }
   }
 
   public clearHidden(): void {
     for (const candidate of this.candidates) {
-      if (candidate.value == this.value || this.value <= 0)
+      if (candidate.value == this.value || this.value <= 0) {
         candidate.hidden = false;
-      else
+      } else {
         candidate.hidden = true;
+      }
     }
   }
 
@@ -178,8 +183,9 @@ export class FieldDef {
 
   public getCandidate(value: number): CandidateDef {
     const ret = this.candidates.find(i => i.value == this.value);
-    if (ret == null)
+    if (ret == null) {
       return new CandidateDef();
+    }
 
     return ret;
   }
@@ -189,10 +195,13 @@ export class FieldDef {
   }
 
   public isChanged(fld: FieldDef): boolean {
-    if (fld.value != this.value) return true;
+    if (fld.value != this.value) {
+      return true;
+    }
     for (let i = 0; i < this.candidates.length; i++) {
-      if (this.candidates[i].hidden != fld.candidates[i].hidden)
+      if (this.candidates[i].hidden != fld.candidates[i].hidden) {
         return true;
+      }
     }
     return false;
   }
@@ -200,8 +209,9 @@ export class FieldDef {
   public toString(): string {
     let s = '';
     for (const cd of this.candidates) {
-      if (!cd.hidden)
+      if (!cd.hidden) {
         s += cd.value;
+      }
     }
     return `${this.x}/${this.y} - ${this.value} - ${s}`;
   }
@@ -212,12 +222,14 @@ export class FieldDef {
 
   public getCandidates(): CandidateDef[] {
     const ret: CandidateDef[] = [];
-    if (this.value > 0)
+    if (this.value > 0) {
       return ret;
+    }
 
     for (const cd of this.candidates) {
-      if (!cd.hidden)
+      if (!cd.hidden) {
         ret.push(cd);
+      }
     }
 
     return ret;
@@ -225,8 +237,9 @@ export class FieldDef {
 
   public canSee(fld: FieldDef): boolean {
     for (const a of this.areas) {
-      if (a.fields.find(f => f.equals(fld) != null))
+      if (a.fields.find(f => f.equals(fld) != null)) {
         return true;
+      }
     }
 
     return false;

@@ -1,14 +1,14 @@
 import {Injectable} from '@angular/core';
-import {EnvironmentService} from './environment.service';
 import {FieldDef} from '../_model/field-def';
 import {CandidateDef} from '../_model/candidate-def';
+import {ConfigService} from './config.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FieldDefService {
 
-  constructor(public env: EnvironmentService) {
+  constructor(public cfg: ConfigService) {
   }
 
   create(src?: string): FieldDef {
@@ -18,7 +18,7 @@ export class FieldDefService {
     ret.sumDown = 0;
     ret.sumUp = 0;
     ret.candidates = [];
-    for (let i = 1; i <= this.env.numberCount; i++) {
+    for (let i = 1; i <= this.cfg.numberCount; i++) {
       ret.candidates.push(new CandidateDef(i));
     }
 

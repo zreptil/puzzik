@@ -1,0 +1,155 @@
+$thin: 1px;
+$thick: 3px;
+
+:host {
+}
+
+.ruler {
+  text-align: center;
+  border: 0 !important;
+  font-size: 75%;
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.5);
+  padding: 0 0.5em !important;
+}
+
+table {
+  border-collapse: collapse;
+
+  tr {
+    td {
+      border: $thin solid black;
+      padding: 0;
+    }
+
+    td.top {
+      border-top-width: $thick;
+    }
+
+    td.bottom {
+      border-bottom-width: $thick;
+    }
+
+    td.left {
+      border-left-width: $thick;
+    }
+
+    td.right {
+      border-right-width: $thick;
+    }
+  }
+}
+
+$btnsize: 22px;
+.btn {
+  width: 22px;
+  height: 22px;
+  background-image: url('~src/assets/buttons.png');
+  margin: 0.5em;
+}
+
+.appModeGame {
+}
+
+.appModeEdit {
+  background-position-x: -$btnsize;
+}
+
+.fileLoad {
+  background-position-x: calc(#{-$btnsize} * 2);
+}
+
+.fileSave {
+  background-position-x: calc(#{-$btnsize} * 2);
+  background-position-y: -$btnsize;
+}
+
+.weblink {
+  background-position-x: calc(#{-$btnsize} * 2);
+  background-position-y: calc(#{-$btnsize} * 4);
+}
+
+.rulers {
+  background-position-x: -$btnsize;
+  background-position-y: calc(#{-$btnsize} * 5);
+}
+
+.hint-on {
+  background-position-x: -$btnsize;
+  background-position-y: calc(#{-$btnsize} * 3);
+}
+
+.hint-off {
+  background-position-x: calc(#{-$btnsize} * 2);
+  background-position-y: calc(#{-$btnsize} * 3);
+}
+
+.empty-all-on {
+  background-position-y: calc(#{-$btnsize} * 2);
+}
+
+.empty-all-off {
+  background-position-x: -$btnsize;
+  background-position-y: calc(#{-$btnsize} * 2);
+}
+
+.solver-off {
+  background-position-y: -$btnsize;
+}
+
+.solver-on {
+  background-position-x: -$btnsize;
+  background-position-y: -$btnsize;
+}
+
+.solver-step {
+  background-position-x: -$btnsize;
+  background-position-y: calc(#{-$btnsize} * 6);
+}
+
+.solver-full {
+  background-position-x: calc(#{-$btnsize} * 2);
+  background-position-y: calc(#{-$btnsize} * 6);
+}
+
+.solver-web {
+  background-position-x: calc(#{-$btnsize} * 3);
+  background-position-y: calc(#{-$btnsize} * 4);
+}
+
+.display {
+  background-position-x: calc(#{-$btnsize} * 2);
+  background-position-y: calc(#{-$btnsize} * 5);
+}
+
+.about {
+  background-position-x: calc(#{-$btnsize} * 3);
+  background-position-y: calc(#{-$btnsize} * 5);
+}
+
+.print {
+  background-position-y: calc(#{-$btnsize} * 5);
+}
+
+.undo {
+  background-position-y: calc(#{-$btnsize} * 6);
+}
+
+.sum {
+  background-position-x: calc(#{-$btnsize} * 3);
+  background-position-y: calc(#{-$btnsize} * 2);
+}
+
+.mail {
+  background-position-x: calc(#{-$btnsize} * 3);
+  background-position-y: calc(#{-$btnsize} * 6);
+}
+
+.transparent {
+  background-position-y: calc(#{-$btnsize} * 3);
+}
+
+.close {
+  background-position-x: calc(#{-$btnsize} * 2);
+  background-position-y: calc(#{-$btnsize} * 2);
+}

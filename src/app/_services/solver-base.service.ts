@@ -1,38 +1,17 @@
 import {Injectable} from '@angular/core';
-import {eFieldType, FieldDef} from '../_model/field-def';
+import {eAnimBack, eAnimFore, eAnimMark, FieldDef} from '../_model/field-def';
 import {Area} from '../_model/area';
 import {RulesetBaseService} from './ruleset-base.service';
-import {eAppMode, eGameMode, EnvironmentService} from './environment.service';
+import {FieldDefService} from './field-def.service';
+import {MainFormService} from './main-form.service';
+import {ConfigService, eAppMode, eGameMode} from './config.service';
 
-export enum eAnimBack {
-  None,
-  MarkField,
-  MarkRow,
-  MarkColumn,
-  MarkArea
-}
-
-export enum eAnimFore {
-  None,
-  SetCandidate,
-  DelCandidate,
-  MarkCandidate,
-  MarkLink
-}
-
-export enum eAnimMark {
-  Mark,
-  Show
-}
-
-/// #############################################################
-/// <summary>
-/// Klasse, um eine Liste von Feldern zu verwalten, die einen
-/// bestimmten Kandidaten beinhalten und jeweil die einzigen
-/// Felder in einer Einheit sind, die diesen Kandidaten
-/// beinhalten.
-/// </summary>
-/// #############################################################
+/**
+ * Klasse, um eine Liste von Feldern zu verwalten, die einen
+ * bestimmten Kandidaten beinhalten und jeweil die einzigen
+ * Felder in einer Einheit sind, die diesen Kandidaten
+ * beinhalten.
+ */
 class LinkedCandidates {
   public fields: FieldDef[] = [];
 
@@ -57,77 +36,44 @@ class AnimDef {
 
 type SolveFn = () => void;
 
-class PaintDefinitions {
+export class PaintDefinitions {
   public fields: FieldDef[] = [];
-}
+  public areas: Area[] = [];
 
-@Injectable({
-  providedIn: 'root'
-})
-export abstract class MainFormService {
-  public paintDef: PaintDefinitions = new PaintDefinitions();
-  private _historyBoard: FieldDef[] | null = null;
-  private _history: FieldDef[][] | null = null;
-  private _hint: string = '';
-
-  public set hint(value: string) {
-    this._hint = value;
-    // this.invalidate();
+  constructor(public fds: FieldDefService) {
   }
 
-  /**
-   * Speichert das Feld zur Historisierung zwischen.
-   */
-  public memorizeBoard(): void {
-    this._historyBoard = [];
-    for (const fld of this.paintDef.fields) {
-      this._historyBoard.push(fld.clone);
-    }
+  private _boardCols = 0;
+
+  public get boardCols(): number {
+    return this._boardCols > 0 ? this._boardCols : 8;
   }
 
-  /**
-   * Stellt den Zustand beim letzten MemorizeBoard wieder her.
-   */
-  public undoLastStep(): void {
-    if (this._history != null && this._history.length > 0) {
-      for (const fld of this._history[this._history.length - 1]) {
-        const dst = this.paintDef.fields.find(f => f.x === fld.x && f.y === fld.y);
-        if (dst != null) {
-          dst.copyFrom(fld);
-        }
-      }
-      this._history.splice(this._history.length - 1, 1);
-      this._historyBoard = null;
-    }
+  public set boardCols(value: number) {
+    this._boardCols = value;
   }
 
-  /**
-   * Überprüft, ob sich das Feld seit dem letzten Aufruf von
-   * MemorizeBoard geändert hat. Wenn das der Fall ist, dann
-   * wird ein History-Eintrag erstellt.
-   */
-  public updateHistory(): void {
-    if (this._historyBoard == null) {
-      return;
+  private _boardRows = 0;
+
+  public get boardRows(): number {
+    return this._boardRows > 0 ? this._boardRows : 8;
+  }
+
+  public set boardRows(value: number) {
+    this._boardRows = value;
+  }
+
+  public setField(x: number, y: number, src: FieldDef): void {
+    this.field(x, y).copyFrom(src);
+  }
+
+  public field(x: number, y: number): FieldDef {
+    let ret = this.fields.find(f => f.x === x && f.y === y);
+    if (ret == null) {
+      ret = this.fds.create(`${x}|${y}`);
+      this.fields.push(ret);
     }
-
-    const history = [];
-
-    for (let i = 0; i < this.paintDef.fields.length; i++) {
-      const fld = this.paintDef.fields[i];
-      if (fld.type == eFieldType.User && fld.isChanged(this._historyBoard[i])) {
-        history.push(this._historyBoard[i]);
-      }
-    }
-
-    if (history.length > 0) {
-      if (this._history == null) {
-        this._history = [];
-      }
-      this._history.push(history);
-    }
-
-    this._historyBoard = null;
+    return ret;
   }
 }
 
@@ -156,7 +102,13 @@ export abstract class SolverBaseService {
   /// </summary>
   /// <param name="main">Das Hauptfenster der Anwendung.</param>
   /// #############################################################
-  public constructor(public env: EnvironmentService,
+  /**
+   * Initialisiert eine neue Instanz von SolverBase.
+   * @param cfg Service für Konfigurationseinstellungen.
+   * @param _main Service für die Anzeige der Oberfläche
+   * @param ruleset Regelsatz für das Spiel
+   */
+  public constructor(public cfg: ConfigService,
                      private _main: MainFormService,
                      public ruleset: RulesetBaseService) {
     this._paintDef = _main.paintDef;
@@ -258,7 +210,7 @@ export abstract class SolverBaseService {
    */
   public SetSolution(difficulty: number, hint: string): void {
     this.difficulty = difficulty;
-    if (this.env.devSupport) {
+    if (this.cfg.devSupport) {
       this._hint = `${hint} (Schwierigkeit: ${difficulty})`;
     } else {
       this._hint = `${hint}`;
@@ -419,31 +371,24 @@ export abstract class SolverBaseService {
     }
   }
 
-  public stopAnimation(): void
-  {
-    if (this.env.gameMode != eGameMode.Solver)  {
+  public stopAnimation(): void {
+    if (this.cfg.gameMode != eGameMode.Solver) {
       return;
     }
 
     this.executeAnimationActions();
 
-    if (this._animations.length === 0)
-    {
+    if (this._animations.length === 0) {
       this._main.hint = $localize`${this._preHint}Ich konnte aufgrund der mir bekannten Algorithmen keine weitere logische Schlussfolgerung ziehen.`;
-    }
-    else if (this.env.appMode == eAppMode.AnimateAll)
-    {
+    } else if (this.cfg.appMode == eAppMode.AnimateAll) {
       this._main.updateHistory();
       // this._main.recreateForm();
       this._animations = [];
       this._solver?.solveStep();
-      if (this._animations.length > 0)
-      {
+      if (this._animations.length > 0) {
         // this._main.setAppMode(eAppMode.AnimateAll);
         return;
-      }
-      else
-      {
+      } else {
         this.updateDifficulty();
         this.exitAnimationMode();
       }
@@ -453,21 +398,37 @@ export abstract class SolverBaseService {
     // this._main.recreateForm();
   }
 
-  public exitAnimationMode(): void
-  {
+  public exitAnimationMode(): void {
     this._animations = [];
     this._active = false;
-    this.env.appMode = eAppMode.Game;
+    this.cfg.appMode = eAppMode.Game;
     // Wird aufgerufen, um den Hint entsprechend zu setzen
     // Point pos = _main.PointToClient(Cursor.Position);
     // _main.MainForm_MouseMove(_main, new MouseEventArgs(MouseButtons.None, 0, pos.X, pos.Y, 0));
     // _main.SetAppMode(eAppMode.Game);
   }
 
-  private updateDifficulty(): void
-  {
-    if (!this.ruleset.checkSolved(false))
-    {
+  /**
+   * Führt die Lösungsschritte aus, bis nichts mehr geht.
+   */
+  public doBatch(): void {
+    let done = false;
+    this._difficulty.clear();
+    this.doAfter = undefined;
+
+    while (!done) {
+      this._animations = [];
+      this._solver?.solveStep();
+      done = this._animations.length == 0;
+      if (!done) {
+        this.executeAnimationActions();
+      }
+    }
+    this.updateDifficulty();
+  }
+
+  private updateDifficulty(): void {
+    if (!this.ruleset.checkSolved(false)) {
       this._difficulty.clear();
       this._difficulty.set(this.ruleset.maxDifficulty - 1, 1);
     }
@@ -498,6 +459,7 @@ export abstract class SolverBaseService {
     this._factor = 0;
     this._animations.push(anim);
   }
+
 }
 
 /*
@@ -508,28 +470,6 @@ export abstract class SolverBaseService {
   /// #############################################################
   internal abstract class SolverBase
   {
-/// #############################################################
-/// <summary>
-/// Führt die Lösungsschritte aus, bis nichts mehr geht.
-/// </summary>
-/// #############################################################
-public void DoBatch()
-{
-  bool done = false;
-  _difficulty.Clear();
-  DoAfter = null;
-
-  while (!done)
-  {
-    _animations.Clear();
-    _solver.SolveStep();
-    done = _animations.Count == 0;
-    if(!done)
-      ExecuteAnimationActions();
-  }
-  UpdateDifficulty();
-}
-
 #endregion -------------------------------------------------------------------------
 
   #region PrivateMethods -------------------------------------------------------------

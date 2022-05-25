@@ -1,0 +1,30 @@
+<table>
+  <tr *ngIf="true">
+    <td class="ruler">&nbsp;</td>
+    <td *ngFor="let x of cfg.counter(cfg.numberCount)" class="ruler">
+      {{ruleset.colName(x)}}
+    </td>
+    <td class="ruler">&nbsp;</td>
+  </tr>
+  <tr *ngFor="let y1 of cfg.counter(cfg.numberCount); let y = index">
+    <td *ngIf="true" class="ruler">
+      {{ruleset.rowName(y)}}
+    </td>
+    <td *ngFor="let x1 of cfg.counter(cfg.numberCount); let x = index" [class]="classFor(x,y)">
+      <app-field-sudoku [field]="ruleset._main.paintDef?.field(x, y)"></app-field-sudoku>
+    </td>
+    <td *ngIf="true" class="ruler">
+      {{ruleset.rowName(y)}}
+    </td>
+  </tr>
+  <tr *ngIf="true">
+    <td class="ruler">&nbsp;</td>
+    <td *ngFor="let x of cfg.counter(cfg.numberCount)" class="ruler">
+      {{ruleset.colName(x)}}
+    </td>
+    <td class="ruler">&nbsp;</td>
+  </tr>
+</table>
+<button (click)="btnClick('appMode')" mat-button>
+  <div [class]="btnClass('appMode')"></div>
+</button>

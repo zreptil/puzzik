@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+// @ts-ignore
 import xliff from 'xliff';
 import {MessageId, TargetMessage} from '@angular/localize/src/utils';
 
@@ -10,6 +11,7 @@ const outFile = '../src/locale/messages.json';
 // Erzeugt aus den Dateien messages.xxx.xlf die Datei messages.json
 // createJson(['de-DE', 'en-GB'], []);
 createJson(['de-DE'], []);
+
 // createJson(['de-DE'], []);
 
 function createJson(codes: any, list: any): void {
@@ -53,7 +55,7 @@ function parseTranslationsForLocalize(xml: string): Promise<Record<MessageId, Ta
           if (elem != null) {
             // console.log(elem);
             result[current] = elem.map((entry: string | { [key: string]: any }) => {
-              return typeof entry === 'string' ? entry : '{$' + entry.Standalone.id + '}';
+              return typeof entry === 'string' ? entry : '{$' + entry['Standalone'].id + '}';
 //              return typeof entry === 'string' ? entry : '{$' + entry.Standalone['equiv-text'] + '}';
             }).map((entry: string) => {
               return entry;

@@ -1,13 +1,19 @@
 import {Injectable} from '@angular/core';
-import {MainFormService} from './solver-base.service';
-import {eFieldType} from '../_model/field-def';
+import {eFieldType, FieldDef} from '../_model/field-def';
+import {FieldDefService} from './field-def.service';
+import {MainFormService} from './main-form.service';
+import {ConfigService} from './config.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export abstract class RulesetBaseService {
 
-  constructor(private _main: MainFormService) {
+  _currentStyle?: number;
+
+  constructor(public cfg: ConfigService,
+              public _main: MainFormService,
+              public fds: FieldDefService) {
   }
 
   /**
@@ -25,21 +31,64 @@ export abstract class RulesetBaseService {
   }
 
   /**
+   * Ermittelt das aktuelle Spielfeld.
+   */
+  public get currentBoard(): string {
+    const brd = this.cfg.currentBoard(true);
+    let ret = '';
+    if (brd == null || brd.content == null || brd.content.length != this._main.paintDef.boardCols * this._main.paintDef.boardRows * 6) {
+      for (let i = 0; i < this._main.paintDef.boardCols * this._main.paintDef.boardRows; i++) {
+        ret += this.getFieldString(this.fds.create(), true);
+      }
+    } else {
+      this._currentStyle = brd.style;
+    }
+    // ret = '0A01bf0E01ef3I00000H017f0C01fb0B01fd0A01fe3F00000D01f73D00000F01df0C01fb0I00ff0G01bf3A00000E01ef0H017f0B01fd0H017f3A00003B00003E00000D01f70F01df0I00ff0C01fb0G01bf0A01fe0C01fb0E01ef3G00003I00000H017f0B01fd0D01f70F01df0B01fd0G01bf0D01f70F01df0A01fe3C00003H00000I00ff3E00000I00ff0H017f0F01df0B01fd0E01ef3D00000G01bf0A01fe3C00000F01df0I00ff3H00000D01f70B01fd0G01bf0C01fb3E00003A00003C00000D01f73G00000A01fe3H00000E01ef0F01df3B00000I00ff3E00000B01fd0A01fe3C00000F01df0I00ff0D01f70G01bf3H0000';
+    ret = '0G01bf0E01ef3I00000H017f0C01fb0B01fd0A01fe3F00000D01f73D00000F01df0C01fb0I00ff0G01bf3A00000E01ef0H017f0B01fd0H017f3A00003B00003E00000D01f70F01df0I00ff0C01fb0G01bf0A01fe0C01fb0E01ef3G00003I00000H017f0B01fd0D01f70F01df0B01fd0G01bf0D01f70F01df0A01fe3C00003H00000I00ff3E00000I00ff0H017f0F01df0B01fd0E01ef3D00000G01bf0A01fe3C00000F01df0I00ff3H00000D01f70B01fd0G01bf0C01fb3E00003A00003C00000D01f73G00000A01fe3H00000E01ef0F01df3B00000I00ff3E00000B01fd0A01fe3C00000F01df0I00ff0D01f70G01bf3H0000';
+    ret = '0@01bf0E01ef3I00000H017f0C01fb0B01fd0A01fe3F00000D01f73D00000F01df0C01fb0I00ff0G01bf3A00000E01ef0H017f0B01fd0H017f3A00003B00003E00000D01f70F01df0I00ff0C01fb0G01bf0A01fe0C01fb0E01ef3G00003I00000H017f0B01fd0D01f70F01df0B01fd0G01bf0D01f70F01df0A01fe3C00003H00000I00ff3E00000I00ff0H017f0F01df0B01fd0E01ef3D00000G01bf0A01fe3C00000F01df0I00ff3H00000D01f70B01fd0G01bf0C01fb3E00003A00003C00000D01f73G00000A01fe3H00000E01ef0F01df3B00000I00ff3E00000B01fd0A01fe3C00000F01df0I00ff0D01f70G01bf3H0000';
+    brd.content = ret;
+    this.createAreas();
+    return ret;
+  }
+
+  /**
+   * Setzt das aktuelle Spielfeld.
+   * @param value Spielfeld als String;
+   */
+  public set currentBoard(value: string) {
+    this.cfg.currentBoard(true).content = value;
+  }
+
+  colName(x: number): string {
+    return String.fromCharCode(x + 65);
+  }
+
+  rowName(y: number): string {
+    return `${y + 1}`;
+  }
+
+  /**
+   * Ermittelt die möglichen Variationen.
+   */
+  public abstract getVariations(): number[];
+
+  /**
    * Überprüft die Felder auf Korrektheit.
    * @param setValue Wenn true, dann wird ein Kandidat als Feldwert gesetzt,
    *                 wenn es der einzige ist.
    */
   public abstract validateFields(setValue: boolean): void
 
-  /// #############################################################
-  /// <summary>
-  /// Ermittelt, ob das Spiel gelöst ist
-  /// </summary>
-  /// <param name="updateSaved">
-  /// true, wenn bei gelöstem Spiel die Information über den
-  /// Schwierigkeitsgrad gespeichert werden soll.
-  /// </param>
-  /// #############################################################
+  /**
+   * Erstellt die benötigten Bereiche
+   */
+  public abstract createAreas(): void;
+
+  /**
+   * Ermittelt, ob das Spiel gelöst ist
+   * @param updateSaved true, wenn bei gelöstem Spiel die Information über den
+   *                    Schwierigkeitsgrad gespeichert werden soll.
+   */
   public checkSolved(updateSaved: boolean): boolean {
     this.validateFields(false);
     for (const fld of this._main.paintDef.fields) {
@@ -93,4 +142,108 @@ export abstract class RulesetBaseService {
     return true;
   }
 
+  /**
+   * Befüllt das Feld mit den Informationen aus einem String.
+   * @param def String mit den Daten für die Felder.
+   * @param clearUser true, wenn die Userfelder geleert werden sollen.
+   */
+  public fillBoard(def: string, clearUser: boolean): void {
+    // const wid = (this._main.paintDef.ctrlHig + 1) * (this._main.paintDef.boardCols + 2) + 50;
+    // const hig = (this._main.paintDef.ctrlHig + 1) * (this._main.paintDef.boardRows + 2) + 50;
+    if (def.length != this._main.paintDef.boardRows * this._main.paintDef.boardCols * 6
+      && def.length != this._main.paintDef.boardCols * this._main.paintDef.boardRows * 2) {
+      def = '';
+      for (let i = 0; i < this._main.paintDef.boardRows * this._main.paintDef.boardCols * 6; i++) {
+        def += '0';
+      }
+    }
+    let idx = 0;
+    let len = def.length / (this._main.paintDef.boardRows * this._main.paintDef.boardCols);
+    for (let y = 0; y < this._main.paintDef.boardRows; y++) {
+      for (let x = 0; x < this._main.paintDef.boardCols; x++) {
+        this._main.paintDef.setField(x, y, this.createField(def.substring(idx, idx + len), x, y, clearUser));
+        idx += len;
+      }
+    }
+  }
+
+  /**
+   * Setzt die Anzahl an Nummern, die das Puzzle verwendet.
+   * @param cnt Anzahl an Nummern.
+   */
+  public setNumberCount(cnt: number): void {
+    this.cfg.numberCount = cnt;
+    // this._main.paintDef.fields = new FieldDef[cnt, cnt];
+    this._main.paintDef.boardRows = cnt;
+    this._main.paintDef.boardCols = cnt;
+  }
+
+  /**
+   * Ermittelt den String, der ein Feld definiert.
+   * @param fld Das Feld.
+   * @param withHidden wenn true, dann wird die Eigenschaft Hidden mit ausgegeben.
+   * @returns Der String, der das Feld definiert.
+   */
+  protected getFieldString(fld: FieldDef, withHidden: boolean): string {
+    let ret = `${fld.type}@${fld.value < 0 ? '' : fld.value}`;
+
+    if (withHidden) {
+      ret += fld.hiddenString;
+    }
+
+    return ret;
+  }
+
+  /**
+   * Erzeugt eine Instanz der Klasse FieldDef.
+   * @param def String mit Definition.
+   * @param x X-Koordinate im Feld.
+   * @param y Y-Koordinate im Feld.
+   * @param clearUser true, wenn die Userfelder geleert werden sollen.
+   * @protected
+   */
+  protected createField(def: string, x: number, y: number, clearUser: boolean): FieldDef {
+    const ret: FieldDef = this.fds.create();
+    if (+def[0] >= 0 && +def[0] < eFieldType.MAX) {
+      ret.type = +def[0];
+      ret.solution = def.charCodeAt(1) - '@'.charCodeAt(0);
+      if (def[1] == '@') {
+        ret.value = -1;
+      } else {
+        ret.value = ret.solution;
+      }
+      def = def.substring(2);
+      if (def === '') {
+        def = '0000';
+      }
+
+      switch (ret.type) {
+        case eFieldType.User:
+          if (clearUser) {
+            ret.value = -1;
+            def = '0000';
+          }
+          break;
+
+        case eFieldType.Block:
+        case eFieldType.BlockNumber:
+        case eFieldType.Preset:
+          def = '0000';
+          break;
+      }
+
+      ret.x = x;
+      ret.y = y;
+
+      let hidden;
+      let check = 1;
+
+      hidden = parseInt(def, 16);
+      for (const candidate of ret.candidates) {
+        candidate.hidden = ((hidden & check) == check);
+        check <<= 1;
+      }
+    }
+    return ret;
+  }
 }

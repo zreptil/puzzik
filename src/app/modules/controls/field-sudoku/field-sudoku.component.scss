@@ -1,0 +1,67 @@
+$size: 2em;
+.container {
+  width: $size;
+  height: $size;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  padding: 0;
+  margin: 0;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.typeBlock {
+  color: white;
+  background-color: black;
+}
+
+.typeBlockNumber {
+  color: white;
+  background-color: black;
+}
+
+.typePreset {
+  color: black;
+  background-color: white;
+}
+
+.typeUser {
+  color: blue;
+  background-color: white;
+}
+
+.typeControl {
+  color: blue;
+  background-color: white;
+}
+
+.typeCurrentControl {
+  color: blue;
+  background-color: yellow;
+}
+
+.typeNew {
+  color: white;
+  background-color: #ff8642c8;
+}
+
+.errorBlock, .errorBlockNumber, .errorPreset, .errorControl, .errorCurrentControl, .errorNew {
+  color: red;
+}
+
+.errorUser {
+  color: #ff0000b8;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  height: 100%;
+
+  td {
+    text-align: center;
+    font-size: 0.5em;
+  }
+}
