@@ -8,7 +8,7 @@ export class SavedBoard {
   public style?: number;
   public webLink?: string;
 
-  constructor(cfg: ConfigService, src?: string) {
+  constructor(cfg: ConfigService, src?: any) {
     switch (cfg.puzzleId) {
       case 'Str8ts6':
         this.webLink = 'http://www.str8ts.com/daily_mini_str8ts.asp';
@@ -28,12 +28,14 @@ export class SavedBoard {
     }
 
     if (src != null) {
-      const json = JSON.parse(src);
-      this.type = json.type;
-      this.difficulty = json.difficulty;
-      this.name = json.name;
-      this.content = json.content;
-      this.style = json.style;
+      if (typeof (src) === 'string') {
+        src = JSON.parse(src);
+      }
+      this.type = src.type;
+      this.difficulty = src.difficulty;
+      this.name = src.name;
+      this.content = src.content;
+      this.style = src.style;
     }
   }
 }

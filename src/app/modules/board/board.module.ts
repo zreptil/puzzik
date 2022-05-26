@@ -4,6 +4,7 @@ import {GameSudokuComponent} from './game-sudoku/game-sudoku.component';
 import {GameBoardComponent} from './game-board/game-board.component';
 import {ControlsModule} from '../controls/controls.module';
 import {MaterialModule} from '../../material.module';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import {MaterialModule} from '../../material.module';
   imports: [
     CommonModule,
     ControlsModule,
-    MaterialModule
+    MaterialModule,
+    BrowserAnimationsModule
   ]
 })
 export class BoardModule {

@@ -1,0 +1,139 @@
+$btnsize: 22px;
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(#{$btnsize} + 20px);
+  height: calc(#{$btnsize} + 20px);
+  padding: 0;
+  margin-right: 0.2em;
+  cursor: pointer;
+  border-radius: 0.2em;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.marked {
+  box-shadow: 0 0 0.2em 0.2em rgba(0, 0, 0, 0.5);
+}
+
+.btn {
+  width: $btnsize;
+  height: $btnsize;
+  background-image: url('~src/assets/buttons.png');
+}
+
+.text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75em;
+  width: 100%;
+  height: 100%;
+  background: white;
+}
+
+.appModeGame {
+}
+
+.appModeEdit {
+  background-position-x: -$btnsize;
+}
+
+.fileLoad {
+  background-position-x: calc(#{-$btnsize} * 2);
+}
+
+.fileSave {
+  background-position-x: calc(#{-$btnsize} * 2);
+  background-position-y: -$btnsize;
+}
+
+.weblink {
+  background-position-x: calc(#{-$btnsize} * 2);
+  background-position-y: calc(#{-$btnsize} * 4);
+}
+
+.rulers {
+  background-position-x: -$btnsize;
+  background-position-y: calc(#{-$btnsize} * 5);
+}
+
+.hint-on {
+  background-position-x: -$btnsize;
+  background-position-y: calc(#{-$btnsize} * 3);
+}
+
+.hint-off {
+  background-position-x: calc(#{-$btnsize} * 2);
+  background-position-y: calc(#{-$btnsize} * 3);
+}
+
+.empty-all-on {
+  background-position-y: calc(#{-$btnsize} * 2);
+}
+
+.empty-all-off {
+  background-position-x: -$btnsize;
+  background-position-y: calc(#{-$btnsize} * 2);
+}
+
+.gameModeNormal {
+  background-position-y: -$btnsize;
+}
+
+.gameModeSolver {
+  background-position-x: -$btnsize;
+  background-position-y: -$btnsize;
+}
+
+.solver-step {
+  background-position-x: -$btnsize;
+  background-position-y: calc(#{-$btnsize} * 6);
+}
+
+.solver-full {
+  background-position-x: calc(#{-$btnsize} * 2);
+  background-position-y: calc(#{-$btnsize} * 6);
+}
+
+.solver-web {
+  background-position-x: calc(#{-$btnsize} * 3);
+  background-position-y: calc(#{-$btnsize} * 4);
+}
+
+.display {
+  background-position-x: calc(#{-$btnsize} * 2);
+  background-position-y: calc(#{-$btnsize} * 5);
+}
+
+.about {
+  background-position-x: calc(#{-$btnsize} * 3);
+  background-position-y: calc(#{-$btnsize} * 5);
+}
+
+.print {
+  background-position-y: calc(#{-$btnsize} * 5);
+}
+
+.undo {
+  background-position-y: calc(#{-$btnsize} * 6);
+}
+
+.sum {
+  background-position-x: calc(#{-$btnsize} * 3);
+  background-position-y: calc(#{-$btnsize} * 2);
+}
+
+.mail {
+  background-position-x: calc(#{-$btnsize} * 3);
+  background-position-y: calc(#{-$btnsize} * 6);
+}
+
+.transparent {
+  background-position-y: calc(#{-$btnsize} * 3);
+}
+
+.close {
+  background-position-x: calc(#{-$btnsize} * 2);
+  background-position-y: calc(#{-$btnsize} * 2);
+}

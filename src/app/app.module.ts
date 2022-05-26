@@ -6,6 +6,7 @@ import {BoardModule} from './modules/board/board.module';
 import {ControlsModule} from './modules/controls/controls.module';
 import {HttpClientModule} from '@angular/common/http';
 import {MaterialModule} from './material.module';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -13,6 +14,7 @@ import {MaterialModule} from './material.module';
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     HttpClientModule,
     BoardModule,
     ControlsModule,

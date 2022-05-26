@@ -25,10 +25,13 @@ export class ConfigService {
   public devSupport = true;
   public gameMode = eGameMode.Normal;
   public appMode = eAppMode.Game;
+  public showRulers = true;
+  public isDebug = false;
 
   public currentBoards: SavedBoard[] = [];
 
   constructor() {
+    this.readSettings();
   }
 
   public get puzzleId(): string {
@@ -81,14 +84,21 @@ export class ConfigService {
   }
 
   public readSettings(): void {
-    const json = JSON.parse(localStorage.getItem('data') || '{}');
+    const json = JSON.parse(localStorage.getItem('data')
+      || `{"numberCount":${this.numberCount},
+"puzzleType":"${this.puzzleType}",
+"devSupport":${this.devSupport},
+"gameMode":${this.gameMode},
+"showRulers":${this.showRulers},
+"appMode":${this.appMode}}`);
     this.numberCount = +json.numberCount;
     this.puzzleType = json.puzzleType;
     this.devSupport = json.devSupport;
     this.gameMode = json.gameMode;
     this.appMode = json.appMode;
+    this.showRulers = json.showRulers;
     this.currentBoards = [];
-    for (const src of json.currentBoards) {
+    for (const src of json.currentBoards || []) {
       this.currentBoards.push(new SavedBoard(this, src));
     }
   }

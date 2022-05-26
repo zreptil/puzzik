@@ -36,7 +36,7 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/web.config"
             ],
             "styles": [
               "src/styles.scss"
@@ -83,7 +83,8 @@
               "browserTarget": "puzzik:build:production"
             },
             "development": {
-              "browserTarget": "puzzik:build:development"
+              "browserTarget": "puzzik:build:development",
+              "port": 4209
             }
           },
           "defaultConfiguration": "development"

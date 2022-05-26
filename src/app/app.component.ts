@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {MainFormService} from './_services/main-form.service';
-import {RulesetSudokuService} from './_services/ruleset-sudoku.service';
+import {SolverSudokuService} from './_services/solver-sudoku.service';
 
 @Component({
   selector: 'app-root',
@@ -11,7 +11,7 @@ export class AppComponent {
   title = 'puzzik';
 
   constructor(main: MainFormService,
-              sudoku: RulesetSudokuService) {
+              sudoku: SolverSudokuService) {
     main.reload(sudoku);
   }
 }

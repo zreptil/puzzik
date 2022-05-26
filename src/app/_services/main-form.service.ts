@@ -1,21 +1,30 @@
 import {Injectable} from '@angular/core';
 import {eFieldType, FieldDef} from '../_model/field-def';
 import {FieldDefService} from './field-def.service';
-import {PaintDefinitions} from './solver-base.service';
-import {RulesetBaseService} from './ruleset-base.service';
+import {PaintDefinitions, SolverBaseService} from './solver-base.service';
 import {ConfigService} from './config.service';
+import {MatDialog} from '@angular/material/dialog';
+import {
+  DialogButton,
+  DialogComponent,
+  DialogData,
+  eDialogButtonType
+} from '../modules/controls/dialog/dialog.component';
+import {Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export abstract class MainFormService {
   public paintDef: PaintDefinitions;
-  private _historyBoard!: FieldDef[] | null;
-  private _history!: FieldDef[][];
-  private _ruleset!: RulesetBaseService;
+  public debugField?: FieldDef;
+  public solver?: SolverBaseService;
+  private _historyBoard?: FieldDef[] | null;
+  private _history?: FieldDef[][];
 
   constructor(public cfg: ConfigService,
-              fds: FieldDefService) {
+              fds: FieldDefService,
+              public dialog: MatDialog) {
     this.paintDef = new PaintDefinitions(fds);
   }
 
@@ -24,6 +33,17 @@ export abstract class MainFormService {
   public set hint(value: string) {
     this._hint = value;
     // this.invalidate();
+  }
+
+  public confirm(text: string): Observable<DialogButton> {
+    const data = new DialogData($localize`Bestätigung`, text, [{label: $localize`Ja`, type: eDialogButtonType.Yes}, {
+      label: $localize`Nein`,
+      type: eDialogButtonType.No
+    }]);
+    const dialogRef = this.dialog.open(DialogComponent, {
+      data
+    });
+    return dialogRef.afterClosed();
   }
 
   /**
@@ -85,20 +105,20 @@ export abstract class MainFormService {
    * Lädt die Anwendung.
    * @param ruleset Ruleset, der verwendet werden soll
    */
-  public reload(ruleset: RulesetBaseService): void {
+  public reload(solver: SolverBaseService): void {
     this._history = [];
     // Prüfen, ob die Variation im RuleSet vorhanden ist
-    const variations = ruleset.getVariations();
+    const variations = solver.ruleset.getVariations();
     let found = 0;
     for (let i = 0; i < variations.length; i++) {
       if (variations[i] == this.cfg.numberCount) {
         found = i;
       }
     }
-    ruleset.setNumberCount(variations[found]);
-    ruleset.fillBoard(ruleset.currentBoard, false);
-    ruleset.validateFields(false);
-    this._ruleset = ruleset;
+    solver.ruleset.setNumberCount(variations[found]);
+    solver.ruleset.fillBoard(solver.ruleset.currentBoard, false);
+    solver.ruleset.validateFields(false);
+    this.solver = solver;
 
     /*
     PaintDef.SmallLine = (int)Math.Sqrt(SettingsSX.NumberCount);

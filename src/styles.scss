@@ -1,18 +1,66 @@
+@import '@angular/material/prebuilt-themes/deeppurple-amber.css';
+
 html {
   body {
     display: flex;
     width: 100vw;
     height: 100vh;
     background: #ff8642;
-    align-items: center;
+    // align-items: center;
     justify-content: center;
     margin: 0;
     padding: 0;
-    font-family: roboto, tahoma, verdana, arial;
+    font-family: roboto, tahoma, verdana, arial, sans-serif;
   }
 
-  .mat-button {
-    padding: 0;
-    min-width: 0;
+  .typeBlock {
+    color: white;
+    background-color: black;
+  }
+
+  .typeBlockNumber {
+    color: white;
+    background-color: black;
+  }
+
+  .typePreset {
+    color: black;
+    background-color: white;
+  }
+
+  .typeUser {
+    color: blue;
+    background-color: white;
+    font-weight: normal !important;
+  }
+
+  .typeControl {
+    color: blue;
+    background-color: white;
+  }
+
+  .typeCurrentControl {
+    color: blue;
+    background-color: yellow;
+  }
+
+  .typeNew {
+    color: white;
+    background-color: #ff8642c8;
+  }
+
+  .errorBlock, .errorBlockNumber, .errorPreset, .errorControl, .errorCurrentControl, .errorNew {
+    color: red;
+    background-color: orchid !important;
+  }
+
+  .errorUser {
+    color: #ff0000b8;
+    background-color: orchid !important;
+  }
+
+  .tooltip {
+    font-size: 0.75em;
+    background: rgba(0, 0, 0, 0.7);
   }
 }

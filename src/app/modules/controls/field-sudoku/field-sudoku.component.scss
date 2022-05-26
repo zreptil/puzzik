@@ -12,47 +12,28 @@ $size: 2em;
   cursor: pointer;
 }
 
-.typeBlock {
-  color: white;
-  background-color: black;
+.fldArea0 {
+  background-color: lime !important;
 }
 
-.typeBlockNumber {
-  color: white;
-  background-color: black;
+.fldArea1 {
+  background-color: red !important;
 }
 
-.typePreset {
-  color: black;
-  background-color: white;
+.fldArea2 {
+  background-color: yellow !important;
 }
 
-.typeUser {
-  color: blue;
-  background-color: white;
+.fldArea3 {
+  background-color: blue !important;
 }
 
-.typeControl {
-  color: blue;
-  background-color: white;
-}
-
-.typeCurrentControl {
-  color: blue;
-  background-color: yellow;
-}
-
-.typeNew {
-  color: white;
-  background-color: #ff8642c8;
-}
-
-.errorBlock, .errorBlockNumber, .errorPreset, .errorControl, .errorCurrentControl, .errorNew {
-  color: red;
-}
-
-.errorUser {
-  color: #ff0000b8;
+.content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
 }
 
 table {
@@ -63,5 +44,9 @@ table {
   td {
     text-align: center;
     font-size: 0.5em;
+  }
+
+  td.off {
+    opacity: 0.2;
   }
 }

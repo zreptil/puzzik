@@ -1,5 +1,13 @@
+<div class="controls">
+  <app-button [data]="btnData('appMode')"></app-button>
+  <app-button [data]="btnData('gameMode')"></app-button>
+  <app-button [data]="btnData('rulers')"></app-button>
+  <app-button [data]="btnData('solver-step')"></app-button>
+  <app-button [data]="btnData('clearUser')"></app-button>
+  <app-button *ngIf="cfg.devSupport" [data]="btnData('debug')"></app-button>
+</div>
 <table>
-  <tr *ngIf="true">
+  <tr *ngIf="cfg.showRulers">
     <td class="ruler">&nbsp;</td>
     <td *ngFor="let x of cfg.counter(cfg.numberCount)" class="ruler">
       {{ruleset.colName(x)}}
@@ -7,17 +15,17 @@
     <td class="ruler">&nbsp;</td>
   </tr>
   <tr *ngFor="let y1 of cfg.counter(cfg.numberCount); let y = index">
-    <td *ngIf="true" class="ruler">
+    <td *ngIf="cfg.showRulers" class="ruler">
       {{ruleset.rowName(y)}}
     </td>
     <td *ngFor="let x1 of cfg.counter(cfg.numberCount); let x = index" [class]="classFor(x,y)">
-      <app-field-sudoku [field]="ruleset._main.paintDef?.field(x, y)"></app-field-sudoku>
+      <app-field-sudoku [field]="main.paintDef?.field(x, y)"></app-field-sudoku>
     </td>
-    <td *ngIf="true" class="ruler">
+    <td *ngIf="cfg.showRulers" class="ruler">
       {{ruleset.rowName(y)}}
     </td>
   </tr>
-  <tr *ngIf="true">
+  <tr *ngIf="cfg.showRulers">
     <td class="ruler">&nbsp;</td>
     <td *ngFor="let x of cfg.counter(cfg.numberCount)" class="ruler">
       {{ruleset.colName(x)}}
@@ -25,6 +33,6 @@
     <td class="ruler">&nbsp;</td>
   </tr>
 </table>
-<button (click)="btnClick('appMode')" mat-button>
-  <div [class]="btnClass('appMode')"></div>
-</button>
+<div *ngIf="isNumbersVisible" class="controls">
+  <app-button *ngFor="let num of cfg.counter(cfg.numberCount + 1)" [data]="btnData('number', num)"></app-button>
+</div>

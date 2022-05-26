@@ -1,44 +1,20 @@
 import {Injectable} from '@angular/core';
-import {eAnimBack, eAnimFore, eAnimMark, FieldDef} from '../_model/field-def';
+import {eAnimBack, eAnimFore, eAnimMark, eFieldType, FieldDef} from '../_model/field-def';
 import {Area} from '../_model/area';
 import {RulesetBaseService} from './ruleset-base.service';
 import {FieldDefService} from './field-def.service';
 import {MainFormService} from './main-form.service';
 import {ConfigService, eAppMode, eGameMode} from './config.service';
+import {ButtonData} from '../modules/controls/button/button.component';
+import {AnimDef} from '../_model/anim-def';
+import {LinkedCandidates} from '../_model/linked-candidates';
 
-/**
- * Klasse, um eine Liste von Feldern zu verwalten, die einen
- * bestimmten Kandidaten beinhalten und jeweil die einzigen
- * Felder in einer Einheit sind, die diesen Kandidaten
- * beinhalten.
- */
-class LinkedCandidates {
-  public fields: FieldDef[] = [];
-
-  public constructor(public area: Area, public candidate: number) {
-  }
-}
-
-class AnimDef {
-  public field: FieldDef | null = null;
-  public candidates: number[] = [];
-  public candidateMarks: eAnimMark[];
-  public link: LinkedCandidates | null = null;
-
-  public constructor(public backType: eAnimBack, public foreType: eAnimFore, field: FieldDef | null) {
-    if (field != null) {
-      this.field = field.clone;
-    }
-    this.candidates = [];
-    this.candidateMarks = [20];
-  }
-}
-
-type SolveFn = () => void;
+export type SolveFn = () => void;
 
 export class PaintDefinitions {
   public fields: FieldDef[] = [];
   public areas: Area[] = [];
+  public currentCtrl?: ButtonData;
 
   constructor(public fds: FieldDefService) {
   }
@@ -109,7 +85,7 @@ export abstract class SolverBaseService {
    * @param ruleset Regelsatz für das Spiel
    */
   public constructor(public cfg: ConfigService,
-                     private _main: MainFormService,
+                     public _main: MainFormService,
                      public ruleset: RulesetBaseService) {
     this._paintDef = _main.paintDef;
     this._animations = [];
@@ -202,13 +178,13 @@ export abstract class SolverBaseService {
    * Entfernt die kleinen Zahlen für die Lösungssuche soweit es
    * die Information des angegebenen Feldes zulassen.
    */
-  public abstract solveExisting(fld: FieldDef): void;
+  public abstract solveExistingCandidates(fld: FieldDef): void;
 
   /**
    * Setzt den Schwierigkeitsgrad der ermittelten Lösung und den
    * Hinweis, der dem Benutzer angezeigt wird.
    */
-  public SetSolution(difficulty: number, hint: string): void {
+  public setSolution(difficulty: number, hint: string): void {
     this.difficulty = difficulty;
     if (this.cfg.devSupport) {
       this._hint = `${hint} (Schwierigkeit: ${difficulty})`;
@@ -257,10 +233,10 @@ export abstract class SolverBaseService {
 
   /**
    * Markiert ein Feld.
-   * @param fld Das zu markierende Feld.
    * @param backType Art der Hintergrundanimation für das Feld.
+   * @param fld Das zu markierende Feld.
    */
-  public markField(fld: FieldDef, backType = eAnimBack.MarkField): void {
+  public markField(backType = eAnimBack.MarkField, fld: FieldDef): void {
     this.addAnimation(this.getAnimation(backType, fld));
   }
 
@@ -427,6 +403,84 @@ export abstract class SolverBaseService {
     this.updateDifficulty();
   }
 
+  /**
+   * Wird aufgerufen, wenn der linke Mousebutton im Editmode
+   * gedrückt wird.
+   * @param fld Feld auf dem der Button gedrückt wurde.
+   */
+  public onFieldClicked(fld?: FieldDef): void {
+    if (fld == null) {
+      return;
+    }
+    if (this.cfg.isDebug) {
+      if (this._main.debugField == null || !fld.equals(this._main.debugField)) {
+        this._main.debugField = fld;
+      } else {
+        this._main.debugField = undefined;
+      }
+      return;
+    }
+    switch (this.cfg.appMode) {
+      case eAppMode.Edit:
+        if (this._main.paintDef.currentCtrl == null) {
+          return;
+        }
+        if (this._main.paintDef.currentCtrl.value === 0) {
+          fld.solution = -1;
+          fld.type = eFieldType.User;
+        } else if (this._main.paintDef.currentCtrl.value === this.cfg.numberCount + 1) {
+          fld.solution = -1;
+          fld.type = (fld.type === eFieldType.Block ? eFieldType.User : eFieldType.Block);
+        } else {
+          if (fld.solution === this._main.paintDef.currentCtrl.value) {
+            fld.solution = -1;
+          } else {
+            fld.solution = this._main.paintDef.currentCtrl.value;
+          }
+
+          if (fld.type === eFieldType.Block || fld.type === eFieldType.BlockNumber) {
+            fld.type = eFieldType.BlockNumber;
+          } else {
+            fld.type = fld.solution > 0 ? eFieldType.Preset : eFieldType.User;
+          }
+        }
+        fld.value = fld.solution;
+        fld.clearHidden();
+        this.ruleset.validateFields(false);
+        return;
+      case eAppMode.Game:
+        console.log('AUF GEHTS', fld);
+        if (fld.type === eFieldType.User) {
+          if (this._main.paintDef.currentCtrl != null) {
+            fld.value = this._main.paintDef.currentCtrl.value > 0 && this._main.paintDef.currentCtrl.value <= this.cfg.numberCount
+              ? (this._main.paintDef.currentCtrl.value == fld.value ? -1
+                : this._main.paintDef.currentCtrl.value) : -1;
+          } else if (this.cfg.gameMode === eGameMode.Solver) {
+            if (fld.value > 0) {
+              fld.value = -1;
+            }
+          }
+
+          fld.clearHidden();
+          this.solveExisting();
+          this.ruleset.checkSolved(true);
+        }
+        return;
+    }
+  }
+
+  /**
+   * Durchläuft alle Felder und entfernt alle Kandidaten, die
+   * schon als Wert im Bereich stehen.
+   */
+  public solveExisting(): void {
+    for (const fld of this._paintDef.fields) {
+      if (fld.value > 0) {
+        this.solveExistingCandidates(fld);
+      }
+    }
+  }
+
   private updateDifficulty(): void {
     if (!this.ruleset.checkSolved(false)) {
       this._difficulty.clear();
@@ -459,316 +513,4 @@ export abstract class SolverBaseService {
     this._factor = 0;
     this._animations.push(anim);
   }
-
 }
-
-/*
-  /// #############################################################
-  /// <summary>
-  /// Basisklasse für Lösungsklassen
-  /// </summary>
-  /// #############################################################
-  internal abstract class SolverBase
-  {
-#endregion -------------------------------------------------------------------------
-
-  #region PrivateMethods -------------------------------------------------------------
-
-/// <summary>
-/// Ermittelt den Farbwert von zwei Farben anhand eines prozentualen
-/// Faktors.
-/// </summary>
-/// <param name="col1">Erste Farbe, entspricht <paramref name="factor"/> 0,0.</param>
-/// <param name="col2">Zweite Farbe, entspricht <paramref name="factor"/> 1,0.</param>
-/// <param name="factor">
-/// Faktor für die Überblendung.
-/// 0,0 entspricht <paramref name="col1" />
-/// 1,0 entspricht <paramref name="col2" />
-/// </param>
-/// <returns>Die gemischte Farbe.</returns>
-private Color Blend(Color col1, Color col2, double amount)
-{
-  amount = Math.Max(0, amount);
-  amount = Math.Min(1, amount);
-
-  byte r = (byte)((col2.R * amount) + col1.R * (1 - amount));
-  byte g = (byte)((col2.G * amount) + col1.G * (1 - amount));
-  byte b = (byte)((col2.B * amount) + col1.B * (1 - amount));
-
-  return Color.FromArgb(r, g, b);
-}
-
-private void PaintCandidate(AnimDef anim, int i, Font font, Brush col, int x, int y, SizeF size)
-{
-  switch (anim.ForeType)
-  {
-    case eAnimFore.SetCandidate:
-      if (anim.Candidates.Contains(i))
-      {
-        float fntSize = _main.PaintDef.SmallFont.Size + (_main.PaintDef.UserFont.Size - _main.PaintDef.SmallFont.Size) * _factor;
-        font = new Font(_main.PaintDef.UserFont.FontFamily, fntSize, _main.PaintDef.UserFont.Style);
-        size = _main.PaintDef.Gfx.MeasureString(i.ToString(), font);
-        x = (int)(x + (_xPos - x + _main.PaintDef.FldWid / 2) * _factor);
-        y = (int)(y + (_yPos - y + _main.PaintDef.FldHig / 2) * _factor);
-      }
-      else
-      {
-        col = new SolidBrush(Color.FromArgb(255, (int)(_factor * 255), 0, (int)(255 - _factor * 255)));
-      }
-      break;
-
-    case eAnimFore.MarkCandidate:
-      if (anim.Candidates.Contains(i))
-      {
-        int wid = _main.PaintDef.FldWid / (_main.PaintDef.SmallLine + 1);
-        int hig = _main.PaintDef.FldHig / (_main.PaintDef.SmallLine + 1);
-        int alpha = (int)(128 + Math.Cos(_factor * 4 * Math.PI) * 127);
-        switch (anim.CandidateMarks[i])
-        {
-          case eAnimMark.Mark:
-            col = new SolidBrush(Color.FromArgb(alpha, _colFontCandidate));
-            alpha = (int)(_factor * 255);
-            _main.PaintDef.Gfx.FillRectangle(new SolidBrush(Color.FromArgb(alpha, _colMarkCandidate)), new Rectangle(x - wid / 2, y - hig / 2, wid, hig));
-            break;
-          case eAnimMark.Show:
-            alpha = (int)(_factor * 255);
-            _main.PaintDef.Gfx.DrawEllipse(new Pen(Color.FromArgb(alpha, _colMarkCandidate)), new Rectangle(x - wid / 2, y - hig / 2, wid, hig));
-            break;
-        }
-      }
-      break;
-
-    case eAnimFore.DelCandidate:
-      if (anim.Candidates.Contains(i))
-      {
-        int wid = _main.PaintDef.FldWid / (_main.PaintDef.SmallLine + 1);
-        int hig = _main.PaintDef.FldHig / (_main.PaintDef.SmallLine + 1);
-        int alpha = (int)(128 + Math.Cos(_factor * 4 * Math.PI) * 127);
-        col = new SolidBrush(Color.FromArgb(alpha, _colFontCandidate));
-        alpha = (int)(_factor * 255);
-        _main.PaintDef.Gfx.FillRectangle(new SolidBrush(Color.FromArgb(alpha, Color.FromArgb(255, 255, 100, 100))), new Rectangle(x - wid / 2, y - hig / 2, wid, hig));
-        //            _main.PaintDef.Gfx.FillRectangle(new SolidBrush(Color.FromArgb(255, 255, 100, 100)), new Rectangle(x - wid / 2, y - hig / 2, wid, hig));
-        //             float fntSize = _main.PaintDef.SmallFont.Size + (_main.PaintDef.UserFont.Size - _main.PaintDef.SmallFont.Size) * _factor;
-        //             font = new Font(_main.PaintDef.UserFont.FontFamily, fntSize, _main.PaintDef.UserFont.Style);
-        //             size = _main.PaintDef.Gfx.MeasureString(i.ToString(), font);
-        //             col = new SolidBrush(Color.FromArgb((int)(255 - _factor * 255), Color.Blue));
-        col = new SolidBrush(_colFontCandidateDel);// new SolidBrush(Color.FromArgb(255, (int)(_factor * 255), 0, (int)(255 - _factor * 255)));
-        col = new SolidBrush(Blend(Color.Black, _colFontCandidateDel, _factor));// new SolidBrush(Color.FromArgb(255, (int)(_factor * 255), 0, (int)(255 - _factor * 255)));
-      }
-      break;
-  }
-  _main.PaintDef.Gfx.DrawString(i.ToString(), font, col, x - size.Width / 2, y - size.Height / 2);
-}
-
-private void PaintBackground(AnimDef anim, Brush col, int x, int y)
-{
-  col = new SolidBrush(Color.FromArgb(255, 255, 255, 255));
-  _main.PaintDef.Gfx.FillRectangle(col, new Rectangle(x, y, _main.PaintDef.FldWid, _main.PaintDef.FldHig));
-  switch (anim.BackType)
-  {
-    case eAnimBack.MarkRow:
-      _main.PaintDef.Gfx.DrawLine(new Pen(_colMarkArea, 4), x, y + _main.PaintDef.FldHig / 2, x + _main.PaintDef.FldWid, y + _main.PaintDef.FldHig / 2);
-      break;
-    case eAnimBack.MarkColumn:
-      _main.PaintDef.Gfx.DrawLine(new Pen(_colMarkArea, 4), x + _main.PaintDef.FldWid / 2, y, x + _main.PaintDef.FldWid / 2, y + _main.PaintDef.FldHig);
-      break;
-    case eAnimBack.MarkArea:
-      col = new SolidBrush(_colMarkArea);
-      _main.PaintDef.Gfx.FillRectangle(col, new Rectangle(x, y, _main.PaintDef.FldWid, _main.PaintDef.FldHig));
-      break;
-    case eAnimBack.MarkField:
-      col = new SolidBrush(Color.FromArgb(255, 255, 255, 150));
-      if(SettingsSX.GameMode != eGameMode.Solver)
-        col = new SolidBrush(Color.FromArgb(255, 200, 200, 255));
-      _main.PaintDef.Gfx.FillRectangle(col, new Rectangle(x, y, _main.PaintDef.FldWid, _main.PaintDef.FldHig));
-      break;
-  }
-}
-
-internal void PaintAnimations()
-{
-  if (SettingsSX.GameMode != eGameMode.Solver)
-  {
-    bool hasMark = false;
-    foreach (AnimDef anim in _animations)
-    {
-      FieldDef fld = anim.Field;
-      if (fld != null && anim.ForeType == eAnimFore.SetCandidate)
-      {
-        fld.OnPaintSmall = PaintCandidate;
-        fld.OnPaintBack = PaintBackground;
-        _xPos = _main.PaintDef.RecBoard.X + 1 + fld.X * (_main.PaintDef.FldWid + 1);
-        _yPos = _main.PaintDef.RecBoard.Y + 1 + fld.Y * (_main.PaintDef.FldHig + 1);
-        _main.PaintField(_xPos, _yPos, fld, anim);
-        hasMark = true;
-      }
-    }
-    if(!hasMark)
-      _hint = "Ich kann aufgrund der vorliegenden Informationen keine weitere Zahl ermitteln.";
-
-    _main.Hint = _preHint + Hint;
-    _main.PaintHint();
-    return;
-  }
-
-  foreach (AnimDef anim in _animations)
-  {
-    FieldDef fld = anim.Field;
-    if (fld != null)
-    {
-      fld.OnPaintSmall = PaintCandidate;
-      fld.OnPaintBack = PaintBackground;
-      _xPos = _main.PaintDef.RecBoard.X + 1 + fld.X * (_main.PaintDef.FldWid + 1);
-      _yPos = _main.PaintDef.RecBoard.Y + 1 + fld.Y * (_main.PaintDef.FldHig + 1);
-      _main.PaintField(_xPos, _yPos, fld, anim);
-    }
-  }
-
-  foreach (AnimDef anim in _animations)
-  {
-    if(anim.ForeType == eAnimFore.MarkLink)
-    {
-      Point p1 = new Point();
-      Point p2 = new Point();
-      int wid = _main.PaintDef.FldWid / _main.PaintDef.SmallLine;
-      int hig = _main.PaintDef.FldHig / _main.PaintDef.SmallLine;
-      int xd = (int)((((anim.Link.Candidate-1) % _main.PaintDef.SmallLine)+0.5) * wid);
-      int yd = (int)((((int)((anim.Link.Candidate-1) / _main.PaintDef.SmallLine))+0.5) * hig);
-      p1.X = _main.PaintDef.RecBoard.X + 1 + anim.Link.Fields[0].X * (_main.PaintDef.FldWid + 1) + xd;
-      p1.Y = _main.PaintDef.RecBoard.Y + 1 + anim.Link.Fields[0].Y * (_main.PaintDef.FldHig + 1) + yd;
-      p2.X = _main.PaintDef.RecBoard.X + 1 + anim.Link.Fields[1].X * (_main.PaintDef.FldWid + 1) + xd;
-      p2.Y = _main.PaintDef.RecBoard.Y + 1 + anim.Link.Fields[1].Y * (_main.PaintDef.FldHig + 1) + yd;
-
-      if (p1.X == p2.X)
-      {
-        Point p3 = new Point(p1.X - _main.PaintDef.FldWid / 2, p1.Y);
-        Point p4 = new Point(p2.X - _main.PaintDef.FldWid / 2, p2.Y);
-        _main.PaintDef.Gfx.DrawBezier(new Pen(Color.Blue, 2), p1, p3, p4, p2);
-      }
-      else if (p1.Y == p2.Y)
-      {
-        Point p3 = new Point(p1.X, p1.Y - _main.PaintDef.FldHig / 2);
-        Point p4 = new Point(p2.X, p2.Y - _main.PaintDef.FldHig / 2);
-        _main.PaintDef.Gfx.DrawBezier(new Pen(Color.Blue, 2), p1, p3, p4, p2);
-      }
-      else if (p1.Y < p2.Y)
-      {
-        Point p3 = new Point(p1.X, p1.Y - _main.PaintDef.FldHig / 2);
-        Point p4 = new Point(p2.X - _main.PaintDef.FldWid / 2, p2.Y);
-        _main.PaintDef.Gfx.DrawBezier(new Pen(Color.Blue, 2), p1, p3, p4, p2);
-      }
-      else
-      {
-        Point p3 = new Point(p1.X - _main.PaintDef.FldWid / 2, p1.Y);
-        Point p4 = new Point(p2.X, p2.Y - _main.PaintDef.FldHig / 2);
-        _main.PaintDef.Gfx.DrawBezier(new Pen(Color.Blue, 2), p1, p3, p4, p2);
-      }
-
-      wid -= 2;
-      hig -= 2;
-      Rectangle rec = new Rectangle(p1.X - wid / 2, p1.Y - hig / 2, wid, hig);
-      PaintLinkedField(anim.Link.Fields[0].GetCandidate(anim.Link.Candidate), anim.Link.Candidate, rec);
-      wid -= 2;
-      hig -= 2;
-      rec = new Rectangle(p2.X - wid / 2, p2.Y - hig / 2, wid, hig);
-      PaintLinkedField(anim.Link.Fields[1].GetCandidate(anim.Link.Candidate), anim.Link.Candidate, rec);
-    }
-  }
-  if (Hint != "")
-  {
-    _main.Hint = _preHint + Hint;
-    _main.PaintHint();
-  }
-}
-
-private void PaintLinkedField(CandidateDef candidate, int value, Rectangle rec)
-{
-  Brush col = new SolidBrush(Color.Red);
-  switch(candidate.Tag)
-  {
-    case 1:
-      _main.PaintDef.Gfx.FillRectangle(new SolidBrush(Color.FromArgb(255, 40, 200, 40)), rec);
-      col = new SolidBrush(Color.FromArgb(255, 0, 0, 0));
-      break;
-
-    case 2:
-      _main.PaintDef.Gfx.FillRectangle(new SolidBrush(Color.FromArgb(255, 40, 40, 200)), rec);
-      col = new SolidBrush(Color.FromArgb(255, 255, 255, 255));
-      break;
-
-    default:
-      _main.PaintDef.Gfx.DrawEllipse(new Pen(Color.Red, 2), rec);
-      break;
-  }
-
-  _main.PaintDef.Gfx.DrawString(value.ToString(), _main.PaintDef.SmallFont, col, rec.X, rec.Y);
-}
-
-internal void DoAnimate(object sender, EventArgs e)
-{
-  _main.Timer.Stop();
-  _active = true;
-  if (_factor < 1.0f - _speed)
-  _factor += _speed;
-else
-  _factor = 1.0f;
-
-  if (SettingsSX.GameMode != eGameMode.Solver)
-  {
-    _factor = 1.0f;
-    if (_animations.Find(i => (i.ForeType == eAnimFore.SetCandidate)) != null)
-    {
-      _hint = "Im markierten Feld kann eine Zahl eingetragen werden.";
-    }
-    else
-    {
-    }
-  }
-  else
-  {
-    PaintAnimations();
-  }
-
-  _main.PaintDef.InvalidBoard = true;
-  _main.Invalidate();
-  if (_factor < 1)
-    _main.Timer.Start();
-  else
-    StopAnimation();
-}
-
-/// #############################################################
-/// <summary>
-/// Setzt den letzten verbleibenden Kandidaten in das Feld.
-/// </summary>
-/// #############################################################
-protected void SolveNakedSingle()
-{
-  foreach (FieldDef fld in _paintDef.Fields)
-  {
-    if (fld.Type != eFieldType.User || fld.Value > 0)
-      continue;
-
-    int count = 0;
-    int found = 0;
-    foreach(CandidateDef candidate in fld.Candidates)
-    {
-      if (!candidate.Hidden)
-      {
-        found = candidate.Value;
-        count++;
-      }
-    }
-    if (count == 1)
-    {
-      SetCandidate(fld, eAnimBack.MarkField, found);
-      SetSolution(1, String.Format("Die Zahl {0} ist der letzte verbliebene Kandidat im markierten Feld.", found));
-      return;
-    }
-  }
-}
-
-#endregion -------------------------------------------------------------------------
-}
-}
-*/

@@ -114,8 +114,8 @@ export class RulesetSudokuService extends RulesetBaseService {
       for (let x = 0; x < this.cfg.numberCount; x++) {
         row.fields.push(this._main.paintDef.field(x, y));
         this._main.paintDef.field(x, y).areas.push(row);
-        col.fields.push(this._main.paintDef.field(x, y));
-        this._main.paintDef.field(x, y).areas.push(col);
+        col.fields.push(this._main.paintDef.field(y, x));
+        this._main.paintDef.field(y, x).areas.push(col);
       }
       this._main.paintDef.areas.push(row);
       this._main.paintDef.areas.push(col);
@@ -126,8 +126,8 @@ export class RulesetSudokuService extends RulesetBaseService {
         const area = new Area(eAnimBack.MarkArea);
         for (let y = 0; y < areaHig; y++) {
           for (let x = 0; x < areaWid; x++) {
-            area.fields.push(this._main.paintDef.field(ya * areaHig + y, xa * areaWid + x));
-            this._main.paintDef.field(ya * areaHig + y, xa * areaWid + x).areas.push(area);
+            area.fields.push(this._main.paintDef.field(xa * areaWid + x, ya * areaHig + y));
+            this._main.paintDef.field(xa * areaWid + x, ya * areaHig + y).areas.push(area);
           }
         }
         this._main.paintDef.areas.push(area);

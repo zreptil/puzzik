@@ -4,6 +4,14 @@ $thick: 3px;
 :host {
 }
 
+.controls {
+  display: flex;
+  flex-flow: row;
+  justify-content: center;
+  margin-top: 0.2em;
+  margin-bottom: 0.2em;
+}
+
 .ruler {
   text-align: center;
   border: 0 !important;
@@ -38,118 +46,4 @@ table {
       border-right-width: $thick;
     }
   }
-}
-
-$btnsize: 22px;
-.btn {
-  width: 22px;
-  height: 22px;
-  background-image: url('~src/assets/buttons.png');
-  margin: 0.5em;
-}
-
-.appModeGame {
-}
-
-.appModeEdit {
-  background-position-x: -$btnsize;
-}
-
-.fileLoad {
-  background-position-x: calc(#{-$btnsize} * 2);
-}
-
-.fileSave {
-  background-position-x: calc(#{-$btnsize} * 2);
-  background-position-y: -$btnsize;
-}
-
-.weblink {
-  background-position-x: calc(#{-$btnsize} * 2);
-  background-position-y: calc(#{-$btnsize} * 4);
-}
-
-.rulers {
-  background-position-x: -$btnsize;
-  background-position-y: calc(#{-$btnsize} * 5);
-}
-
-.hint-on {
-  background-position-x: -$btnsize;
-  background-position-y: calc(#{-$btnsize} * 3);
-}
-
-.hint-off {
-  background-position-x: calc(#{-$btnsize} * 2);
-  background-position-y: calc(#{-$btnsize} * 3);
-}
-
-.empty-all-on {
-  background-position-y: calc(#{-$btnsize} * 2);
-}
-
-.empty-all-off {
-  background-position-x: -$btnsize;
-  background-position-y: calc(#{-$btnsize} * 2);
-}
-
-.solver-off {
-  background-position-y: -$btnsize;
-}
-
-.solver-on {
-  background-position-x: -$btnsize;
-  background-position-y: -$btnsize;
-}
-
-.solver-step {
-  background-position-x: -$btnsize;
-  background-position-y: calc(#{-$btnsize} * 6);
-}
-
-.solver-full {
-  background-position-x: calc(#{-$btnsize} * 2);
-  background-position-y: calc(#{-$btnsize} * 6);
-}
-
-.solver-web {
-  background-position-x: calc(#{-$btnsize} * 3);
-  background-position-y: calc(#{-$btnsize} * 4);
-}
-
-.display {
-  background-position-x: calc(#{-$btnsize} * 2);
-  background-position-y: calc(#{-$btnsize} * 5);
-}
-
-.about {
-  background-position-x: calc(#{-$btnsize} * 3);
-  background-position-y: calc(#{-$btnsize} * 5);
-}
-
-.print {
-  background-position-y: calc(#{-$btnsize} * 5);
-}
-
-.undo {
-  background-position-y: calc(#{-$btnsize} * 6);
-}
-
-.sum {
-  background-position-x: calc(#{-$btnsize} * 3);
-  background-position-y: calc(#{-$btnsize} * 2);
-}
-
-.mail {
-  background-position-x: calc(#{-$btnsize} * 3);
-  background-position-y: calc(#{-$btnsize} * 6);
-}
-
-.transparent {
-  background-position-y: calc(#{-$btnsize} * 3);
-}
-
-.close {
-  background-position-x: calc(#{-$btnsize} * 2);
-  background-position-y: calc(#{-$btnsize} * 2);
 }

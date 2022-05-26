@@ -1,0 +1,10 @@
+<div (click)="btnClick()"
+     *ngIf="!data?.hidden()"
+     [class]="btnClass"
+     [matTooltip]="data?.tip || ''"
+     matRipple
+     matTooltipClass="tooltip"
+     matTooltipPosition="below">
+  <div *ngIf="data?.icon != null" [class]="['btn', data?.icon]"></div>
+  <div *ngIf="data?.text != null" class="btn text typeUser">{{data?.text}}</div>
+</div>

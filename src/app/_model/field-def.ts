@@ -54,7 +54,7 @@ export class FieldDef {
   public candidates: CandidateDef[] = [];
   public areas: Area[] = [];
 
-  private constructor() {
+  protected constructor() {
   }
 
   public get clone(): FieldDef {
@@ -122,7 +122,6 @@ export class FieldDef {
     }
 
     ret += hidden.toString(16).padStart(4, '0');
-    console.error('FieldDef.hiddenString', hidden, 'sollte eine vierstellige Hexadezimalzahl sein', ret);
     return ret;
   }
 
@@ -139,7 +138,6 @@ export class FieldDef {
     }
 
     ret += hidden.toString(16).padStart(4, '0');
-    console.error('FieldDef.candidateString', hidden, 'sollte eine vierstellige Hexadezimalzahl sein', ret);
     return ret;
   }
 
@@ -182,7 +180,7 @@ export class FieldDef {
   }
 
   public getCandidate(value: number): CandidateDef {
-    const ret = this.candidates.find(i => i.value == this.value);
+    const ret = this.candidates.find(i => i.value == value);
     if (ret == null) {
       return new CandidateDef();
     }
@@ -191,7 +189,7 @@ export class FieldDef {
   }
 
   public equals(fld: FieldDef): boolean {
-    return fld.x != this.x || fld.y != this.y;
+    return fld.x === this.x && fld.y === this.y;
   }
 
   public isChanged(fld: FieldDef): boolean {
