@@ -27,7 +27,7 @@ export class GameBoardComponent implements OnInit {
         return false;
       }, icon: '', marked(btn: ButtonData): boolean {
         return false;
-      }, text: '', tip: '', value: key
+      }, text: '', tip: '', value: key === '0' ? '-1' : key
     };
   }
 

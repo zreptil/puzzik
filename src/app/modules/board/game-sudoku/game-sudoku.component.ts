@@ -91,7 +91,7 @@ export class GameSudokuComponent implements OnInit {
         ret.value = param === 0 ? -1 : param;
         ret.text = param === 0 ? '' : param;
         ret.marked = (data: ButtonData) => {
-          return data?.value === this.main.paintDef.currentCtrl?.value;
+          return +data?.value === +this.main.paintDef.currentCtrl?.value;
         };
         break;
       case 'solver-step':

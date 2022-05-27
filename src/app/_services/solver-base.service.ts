@@ -185,7 +185,6 @@ export abstract class SolverBaseService {
     } else {
       this._hint = `${hint}`;
     }
-    console.log(this._hint, this.animations);
   }
 
   /**

@@ -2,6 +2,7 @@
 exports.__esModule = true;
 var fs = require("fs");
 var path = require("path");
+// @ts-ignore
 var xliff_1 = require("xliff");
 var fileList = [];
 // const lng = localStorage.getItem('language') || 'de-DE';
@@ -50,7 +51,7 @@ function parseTranslationsForLocalize(xml) {
                 if (elem != null) {
                     // console.log(elem);
                     result[current] = elem.map(function (entry) {
-                        return typeof entry === 'string' ? entry : '{$' + entry.Standalone.id + '}';
+                        return typeof entry === 'string' ? entry : '{$' + entry['Standalone'].id + '}';
                         //              return typeof entry === 'string' ? entry : '{$' + entry.Standalone['equiv-text'] + '}';
                     }).map(function (entry) {
                         return entry;
