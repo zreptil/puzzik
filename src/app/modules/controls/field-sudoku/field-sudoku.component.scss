@@ -12,6 +12,59 @@ $size: 2em;
   cursor: pointer;
 }
 
+.None {
+
+}
+
+$markColor: #aaf;
+$markThick: 4px;
+$markCandidate: #afa;
+.MarkField {
+  background: $markColor !important;
+}
+
+.markCandidate,
+.showCandidate {
+  background: $markCandidate;
+  color: rgba(0, 0, 0, 0.5);
+  font-weight: bold;
+  box-shadow: inset 0 0 0 2px $markCandidate;
+}
+
+.showCandidate {
+  background: $markCandidate;
+}
+
+.delCandidate {
+  // color: #a00;
+  font-weight: bold;
+  position: relative;
+  // box-shadow: inset 0 0 0 2px lime;
+}
+
+.delCandidate::after {
+  content: '\\';
+  color: rgba(128, 0, 0, 0.9);
+  position: absolute;
+  top: 0;
+  left: 0.4em;
+}
+
+.setCandidate {
+  background: $markCandidate;
+  color: rgba(0, 0, 0, 0.5);
+  font-weight: bold;
+  box-shadow: inset 0 0 0 2px $markCandidate;
+}
+
+.setCandidate::after {
+  content: '\\';
+  color: rgba(128, 0, 0, 0.9);
+  position: absolute;
+  top: 0;
+  left: 0.4em;
+}
+
 .fldArea0 {
   background-color: lime !important;
 }

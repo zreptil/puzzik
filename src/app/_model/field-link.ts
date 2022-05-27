@@ -4,7 +4,7 @@ export class FieldLink extends FieldDef {
   public linked: FieldLink[] = [];
   public painted: boolean;
 
-  public constructor(private src: FieldDef, public candidate: number, public parent: FieldLink) {
+  public constructor(private src: FieldDef, public candidate: number, public parent: FieldLink | null) {
     super();
     this.copyFrom(src);
     this.x = src.x;
@@ -54,7 +54,7 @@ export class FieldLink extends FieldDef {
    * @returns Das gefundene Feld oder null, wenn nicht gefunden.
    */
   public findField(fld: FieldDef): FieldLink | null {
-    if (this.x === fld.x && this.y === fld.y) {
+    if (+this.x === +fld.x && +this.y === +fld.y) {
       return this;
     }
 

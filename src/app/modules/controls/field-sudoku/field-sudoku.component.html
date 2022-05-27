@@ -1,4 +1,4 @@
-<div [class]="containerClass" [ngSwitch]="mode">
+<div [class]="containerClass" [ngStyle]="containerStyle" [ngSwitch]="mode">
   <div *ngSwitchCase="0" class="content">
     <table>
       <tr *ngFor="let y of cfg.counter(3)">

@@ -19,8 +19,8 @@ export abstract class MainFormService {
   public paintDef: PaintDefinitions;
   public debugField?: FieldDef;
   public solver?: SolverBaseService;
-  private _historyBoard?: FieldDef[] | null;
-  private _history?: FieldDef[][];
+  private historyBoard?: FieldDef[] | null;
+  private history?: FieldDef[][];
 
   constructor(public cfg: ConfigService,
               fds: FieldDefService,
@@ -33,6 +33,23 @@ export abstract class MainFormService {
   public set hint(value: string) {
     this._hint = value;
     // this.invalidate();
+  }
+
+  public get boardString(): string {
+    let ret = '';
+    let val;
+    for (let y = 0; y < this.paintDef.boardRows; y++) {
+      for (let x = 0; x < this.paintDef.boardCols; x++) {
+        const fld = this.paintDef.field(x, y);
+        if (fld.value > 0) {
+          val = fld.value.toString();
+        } else {
+          val = '0';
+        }
+        ret += val;
+      }
+    }
+    return ret;
   }
 
   public confirm(text: string): Observable<DialogButton> {
@@ -50,9 +67,9 @@ export abstract class MainFormService {
    * Speichert das Feld zur Historisierung zwischen.
    */
   public memorizeBoard(): void {
-    this._historyBoard = [];
+    this.historyBoard = [];
     for (const fld of this.paintDef.fields) {
-      this._historyBoard.push(fld.clone);
+      this.historyBoard.push(fld.clone);
     }
   }
 
@@ -60,15 +77,15 @@ export abstract class MainFormService {
    * Stellt den Zustand beim letzten MemorizeBoard wieder her.
    */
   public undoLastStep(): void {
-    if (this._history != null && this._history.length > 0) {
-      for (const fld of this._history[this._history.length - 1]) {
-        const dst = this.paintDef.fields.find(f => f.x === fld.x && f.y === fld.y);
+    if (this.history != null && this.history?.length > 0) {
+      for (const fld of this.history[this.history.length - 1]) {
+        const dst = this.paintDef.field(fld.x, fld.y);
         if (dst != null) {
           dst.copyFrom(fld);
         }
       }
-      this._history.splice(this._history.length - 1, 1);
-      this._historyBoard = null;
+      this.history.splice(this.history.length - 1, 1);
+      this.historyBoard = null;
     }
   }
 
@@ -78,7 +95,7 @@ export abstract class MainFormService {
    * wird ein History-Eintrag erstellt.
    */
   public updateHistory(): void {
-    if (this._historyBoard == null) {
+    if (this.historyBoard == null) {
       return;
     }
 
@@ -86,27 +103,27 @@ export abstract class MainFormService {
 
     for (let i = 0; i < this.paintDef.fields.length; i++) {
       const fld = this.paintDef.fields[i];
-      if (fld.type == eFieldType.User && fld.isChanged(this._historyBoard[i])) {
-        history.push(this._historyBoard[i]);
+      if (fld.type === eFieldType.User && fld.isChanged(this.historyBoard[i])) {
+        history.push(this.historyBoard[i]);
       }
     }
 
     if (history.length > 0) {
-      if (this._history == null) {
-        this._history = [];
+      if (this.history == null) {
+        this.history = [];
       }
-      this._history.push(history);
+      this.history.push(history);
     }
 
-    this._historyBoard = null;
+    this.historyBoard = null;
   }
 
   /**
    * Lädt die Anwendung.
-   * @param ruleset Ruleset, der verwendet werden soll
+   * @param solver Solver, der verwendet werden soll
    */
   public reload(solver: SolverBaseService): void {
-    this._history = [];
+    this.history = [];
     // Prüfen, ob die Variation im RuleSet vorhanden ist
     const variations = solver.ruleset.getVariations();
     let found = 0;
@@ -140,4 +157,13 @@ export abstract class MainFormService {
     Invalidate();
     */
   }
+
+  /**
+   * Ruft eine Webseite auf.
+   * @param url Webadresse
+   */
+  public callWebPage(url: string): void {
+    window.open(`${url}?bd=${this.boardString}`, 'Oleole');
+  }
+
 }

@@ -43,7 +43,7 @@ export class CandidateBox {
     }
 
     for (const val of src.candidates) {
-      if (this.candidates.find(c => c === val)) {
+      if (this.candidates.find(c => +c === +val)) {
         this.candidates.push(val);
       }
     }

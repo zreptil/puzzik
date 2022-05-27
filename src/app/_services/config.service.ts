@@ -64,11 +64,11 @@ export class ConfigService {
   }
 
   public get isGameMode(): boolean {
-    return this.appMode == eAppMode.Game || this.isAnimating;
+    return this.appMode === eAppMode.Game || this.isAnimating;
   }
 
   public get isAnimating(): boolean {
-    return this.appMode == eAppMode.Animate || this.appMode == eAppMode.AnimateAll;
+    return this.appMode === eAppMode.Animate || this.appMode === eAppMode.AnimateAll;
   }
 
   public currentBoard(createIfMissing = false): SavedBoard {

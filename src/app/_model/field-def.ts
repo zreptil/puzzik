@@ -74,11 +74,11 @@ export class FieldDef {
   }
 
   public get isBlock(): boolean {
-    return this.type == eFieldType.Block || this.type == eFieldType.BlockNumber;
+    return this.type === eFieldType.Block || this.type === eFieldType.BlockNumber;
   }
 
   public get col(): String {
-    return ('A'.charCodeAt(0) + this.x).toString();
+    return String.fromCharCode('A'.charCodeAt(0) + this.x);
   }
 
   public get row(): string {
@@ -104,7 +104,7 @@ export class FieldDef {
   public set hiddenValue(value: number) {
     let check = 1;
     for (const candidate of this.candidates) {
-      candidate.hidden = (value & check) == check;
+      candidate.hidden = (value & check) === check;
       check <<= 1;
     }
   }
@@ -156,7 +156,7 @@ export class FieldDef {
 
   public clearHidden(): void {
     for (const candidate of this.candidates) {
-      if (candidate.value == this.value || this.value <= 0) {
+      if (candidate.value === this.value || this.value <= 0) {
         candidate.hidden = false;
       } else {
         candidate.hidden = true;
@@ -180,7 +180,7 @@ export class FieldDef {
   }
 
   public getCandidate(value: number): CandidateDef {
-    const ret = this.candidates.find(i => i.value == value);
+    const ret = this.candidates.find(i => +i.value === +value);
     if (ret == null) {
       return new CandidateDef();
     }

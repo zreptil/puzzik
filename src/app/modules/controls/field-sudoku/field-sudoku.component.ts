@@ -1,7 +1,6 @@
 import {Component, Input} from '@angular/core';
-import {eFieldType, FieldDef} from '../../../_model/field-def';
+import {eAnimBack, eAnimFore, eAnimMark, eFieldType, FieldDef} from '../../../_model/field-def';
 import {ConfigService, eAppMode, eGameMode} from '../../../_services/config.service';
-import {RulesetSudokuService} from '../../../_services/ruleset-sudoku.service';
 import {MainFormService} from '../../../_services/main-form.service';
 
 @Component({
@@ -14,9 +13,11 @@ export class FieldSudokuComponent {
   @Input()
   field: FieldDef | undefined;
 
+  markThick = '5px';
+  markColor = '#88f';
+
   constructor(public cfg: ConfigService,
-              public main: MainFormService,
-              public ruleset: RulesetSudokuService) {
+              public main: MainFormService) {
   }
 
   get mode(): number {
@@ -40,6 +41,49 @@ export class FieldSudokuComponent {
           ret.push(`fldArea${index}`);
         }
       }
+    }
+    if (this.cfg.appMode === eAppMode.Game && this.field != null && this.main.solver?.hasAnimation) {
+      const fld = this.field;
+      const anim = this.main.solver.animations.find(anim => anim.field?.equals(fld));
+      if (anim != null && anim.backType === eAnimBack.MarkField) {
+        ret.push(`${eAnimBack[anim.backType]}`);
+      }
+    }
+    return ret;
+  }
+
+  get containerStyle(): any {
+    let ret: any = {};
+    if (this.cfg.appMode !== eAppMode.Game) {
+      return ret;
+    }
+    const shadow = [];
+    if (this.field != null && this.main.solver?.hasAnimation) {
+      const fld = this.field;
+      const anim = this.main.solver.animations.find(anim => anim.field?.equals(fld));
+      if (anim != null) {
+        const check = this.field.clone;
+        check.x = this.field.x - 1;
+        if (this.main.solver.animations.find(anim => anim.field?.equals(check)) == null) {
+          shadow.push(`inset ${this.markThick} 0 0 0 ${this.markColor}`);
+        }
+        check.x = this.field.x + 1;
+        if (this.main.solver.animations.find(anim => anim.field?.equals(check)) == null) {
+          shadow.push(`inset -${this.markThick} 0 0 0 ${this.markColor}`);
+        }
+        check.x = this.field.x;
+        check.y = this.field.y - 1;
+        if (this.main.solver.animations.find(anim => anim.field?.equals(check)) == null) {
+          shadow.push(`inset 0 ${this.markThick} 0 0 ${this.markColor}`);
+        }
+        check.y = this.field.y + 1;
+        if (this.main.solver.animations.find(anim => anim.field?.equals(check)) == null) {
+          shadow.push(`inset 0 -${this.markThick} 0 0 ${this.markColor}`);
+        }
+      }
+    }
+    if (shadow.length > 0) {
+      ret = {'box-shadow': `${shadow.join(',')}`};
     }
     return ret;
   }
@@ -65,6 +109,29 @@ export class FieldSudokuComponent {
     const ret: string[] = [];
     if (this.field?.getCandidate(idx)?.hidden) {
       ret.push('off');
+    } else if (this.field != null && this.main.solver?.hasAnimation) {
+      const fld = this.field;
+      let anim = this.main.solver.animations.find(anim => anim.field?.equals(fld) && anim.foreType === eAnimFore.DelCandidate && anim.candidates.find(c => +c === +idx));
+      if (anim != null) {
+        ret.push('delCandidate');
+        return ret;
+      }
+      anim = this.main.solver.animations.find(anim => anim.field?.equals(fld) && anim.foreType === eAnimFore.SetCandidate && anim.candidates.find(c => +c === +idx));
+      if (anim != null) {
+        ret.push('setCandidate');
+        return ret;
+      }
+      anim = this.main.solver.animations.find(anim => anim.field?.equals(fld) && anim.foreType === eAnimFore.MarkCandidate && anim.candidates.find(c => +c === +idx));
+      if (anim != null) {
+        switch (anim.candidateMarks[idx]) {
+          case eAnimMark.Mark:
+            ret.push('markCandidate');
+            break;
+          case eAnimMark.Show:
+            ret.push('showCandidate');
+            break;
+        }
+      }
     }
     return ret;
   }
@@ -80,8 +147,8 @@ export class FieldSudokuComponent {
         this.field.value = this.field.candidates.find(c => !c.hidden)?.value || 1;
       }
       this.main.solver?.solveExisting();
-      this.ruleset.validateFields(false);
-      this.cfg.currentBoard(true).content = this.ruleset.getBoardString(true);
+      this.main.solver?.ruleset.validateFields(false);
+      this.cfg.currentBoard(true).content = this.main.solver?.ruleset.getBoardString(true);
       this.cfg.writeSettings();
     }
   }

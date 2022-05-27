@@ -12,6 +12,22 @@ $thick: 3px;
   margin-bottom: 0.2em;
 }
 
+.info-tr {
+  border: 0 !important;
+}
+
+.info-td {
+  width: 0;
+  border: 0 !important;
+}
+
+.info {
+  margin-top: 1em;
+  word-wrap: break-word;
+  font-size: 50%;
+  text-align: center;
+}
+
 .ruler {
   text-align: center;
   border: 0 !important;

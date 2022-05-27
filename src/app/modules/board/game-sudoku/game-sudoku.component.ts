@@ -85,7 +85,7 @@ export class GameSudokuComponent implements OnInit {
         break;
       case 'clearUser':
         ret.icon = 'empty-all-on';
-        ret.tip = $localize`Entfernt alle Benutzereinträge`;
+        ret.tip = this.cfg.appMode === eAppMode.Game ? $localize`Entfernt alle Benutzereinträge` : $localize`Entfernt alle Eingaben`;
         break;
       case 'number':
         ret.value = param === 0 ? -1 : param;
@@ -96,11 +96,23 @@ export class GameSudokuComponent implements OnInit {
         break;
       case 'solver-step':
         ret.icon = id;
-        ret.tip = $localize`Ermittelt eine Lösungszahl`;
+        ret.tip = $localize`Ermittelt ein Lösungsfeld`;
+        break;
+      case 'solver-full':
+        ret.icon = id;
+        ret.tip = $localize`Führt die Lösung so weit durch, wie es die Programmlogik zulässt`;
+        break;
+      case 'undo':
+        ret.icon = id;
+        ret.tip = $localize`Macht den letzten Schritt rückgängig`;
         break;
       case 'debug':
         ret.icon = 'display';
         ret.tip = $localize`Debugmodus`;
+        break;
+      case 'weblink':
+        ret.icon = id;
+        ret.tip = $localize`Ruft die Webseite zum Lösen des aktuellen Sudokus auf`;
         break;
     }
     return ret;
@@ -135,23 +147,51 @@ export class GameSudokuComponent implements OnInit {
         this.cfg.showRulers = !this.cfg.showRulers;
         break;
       case 'clearUser':
-        this.main.confirm($localize`Hiermit werden alle Eingaben des Benutzers gelöscht. Soll das wirklich ausgeführt werden?`).subscribe((btn: DialogButton) => {
-          switch (btn?.type) {
-            case eDialogButtonType.Yes:
-              this.ruleset.clearFields(eFieldType.User);
-              this.solver.solveExisting();
-              break;
-          }
-        });
+        this.main.confirm(this.cfg.appMode === eAppMode.Game
+          ? $localize`Hiermit werden alle Eingaben des Benutzers gelöscht. Soll das wirklich ausgeführt werden?`
+          : $localize`Hiermit werden alle Felder gelöscht. Soll das wirklich ausgeführt werden?`).subscribe(
+          (btn: DialogButton) => {
+            switch (btn?.type) {
+              case eDialogButtonType.Yes:
+                this.ruleset.clearFields(this.cfg.appMode === eAppMode.Game ? eFieldType.User : undefined);
+                this.solver.solveExisting();
+                this.cfg.currentBoard(true).content = this.ruleset.getBoardString(false);
+                this.cfg.writeSettings();
+                break;
+            }
+          });
         break;
       case 'number':
         this.main.paintDef.currentCtrl = btn;
         break;
       case 'solver-step':
-        this.solver.solveStep();
+        if (this.solver.animations?.length || 0 > 0) {
+          this.solver.executeAnimationActions();
+          this.solver.initAnimation();
+          this.cfg.currentBoard(true).content = this.ruleset.getBoardString(false);
+          this.cfg.writeSettings();
+        } else {
+          this.solver.solveStep();
+        }
+        break;
+      case 'solver-full':
+        let done = false;
+        while (!done) {
+          this.solver.solveStep();
+          done = (this.solver.animations?.length || 0) === 0;
+          if (!done) {
+            this.solver.executeAnimationActions();
+          }
+        }
+        break;
+      case 'undo':
+        this.main.undoLastStep();
         break;
       case 'debug':
         this.cfg.isDebug = !this.cfg.isDebug;
+        break;
+      case 'weblink':
+        this.main.callWebPage('https://www.sudokuwiki.org/sudoku.htm');
         break;
     }
     this.cfg.writeSettings();

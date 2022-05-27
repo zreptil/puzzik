@@ -3,6 +3,7 @@ import {eFieldType, FieldDef} from '../_model/field-def';
 import {FieldDefService} from './field-def.service';
 import {MainFormService} from './main-form.service';
 import {ConfigService, eGameMode} from './config.service';
+import {eDialogButtonType} from '../modules/controls/dialog/dialog.component';
 
 @Injectable({
   providedIn: 'root'
@@ -36,16 +37,19 @@ export abstract class RulesetBaseService {
   public get currentBoard(): string {
     const brd = this.cfg.currentBoard(true);
     let ret = '';
-    if (brd == null || brd.content == null || brd.content.length != this._main.paintDef.boardCols * this._main.paintDef.boardRows * 6) {
+    this._currentStyle = 0;
+    const len = this._main.paintDef.boardCols * this._main.paintDef.boardRows;
+    if (brd == null || brd.content == null || (brd.content.length != len * 6 && brd.content.length != len * 2)) {
       for (let i = 0; i < this._main.paintDef.boardCols * this._main.paintDef.boardRows; i++) {
         ret += this.getFieldString(this.fds.create(), true);
       }
     } else {
       this._currentStyle = brd.style;
+      ret = brd.content;
     }
     // ret = '0A01bf0E01ef3I00000H017f0C01fb0B01fd0A01fe3F00000D01f73D00000F01df0C01fb0I00ff0G01bf3A00000E01ef0H017f0B01fd0H017f3A00003B00003E00000D01f70F01df0I00ff0C01fb0G01bf0A01fe0C01fb0E01ef3G00003I00000H017f0B01fd0D01f70F01df0B01fd0G01bf0D01f70F01df0A01fe3C00003H00000I00ff3E00000I00ff0H017f0F01df0B01fd0E01ef3D00000G01bf0A01fe3C00000F01df0I00ff3H00000D01f70B01fd0G01bf0C01fb3E00003A00003C00000D01f73G00000A01fe3H00000E01ef0F01df3B00000I00ff3E00000B01fd0A01fe3C00000F01df0I00ff0D01f70G01bf3H0000';
-    ret = '0G01bf0E01ef3I00000H017f0C01fb0B01fd0A01fe3F00000D01f73D00000F01df0C01fb0I00ff0G01bf3A00000E01ef0H017f0B01fd0H017f3A00003B00003E00000D01f70F01df0I00ff0C01fb0G01bf0A01fe0C01fb0E01ef3G00003I00000H017f0B01fd0D01f70F01df0B01fd0G01bf0D01f70F01df0A01fe3C00003H00000I00ff3E00000I00ff0H017f0F01df0B01fd0E01ef3D00000G01bf0A01fe3C00000F01df0I00ff3H00000D01f70B01fd0G01bf0C01fb3E00003A00003C00000D01f73G00000A01fe3H00000E01ef0F01df3B00000I00ff3E00000B01fd0A01fe3C00000F01df0I00ff0D01f70G01bf3H0000';
-    brd.content = ret;
+    // ret = '0G01bf0E01ef3I00000H017f0C01fb0B01fd0A01fe3F00000D01f73D00000F01df0C01fb0I00ff0G01bf3A00000E01ef0H017f0B01fd0H017f3A00003B00003E00000D01f70F01df0I00ff0C01fb0G01bf0A01fe0C01fb0E01ef3G00003I00000H017f0B01fd0D01f70F01df0B01fd0G01bf0D01f70F01df0A01fe3C00003H00000I00ff3E00000I00ff0H017f0F01df0B01fd0E01ef3D00000G01bf0A01fe3C00000F01df0I00ff3H00000D01f70B01fd0G01bf0C01fb3E00003A00003C00000D01f73G00000A01fe3H00000E01ef0F01df3B00000I00ff3E00000B01fd0A01fe3C00000F01df0I00ff0D01f70G01bf3H0000';
+    // brd.content = ret;
     this.createAreas();
     return ret;
   }
@@ -83,10 +87,13 @@ export abstract class RulesetBaseService {
    */
   public abstract createAreas(): void;
 
-  public clearFields(type: eFieldType): void {
+  public clearFields(type?: eFieldType): void {
     for (const fld of this._main.paintDef.fields) {
-      if (fld.type === type) {
+      if (type == null || fld.type === type) {
         fld.value = -1;
+        if (type == null) {
+          fld.type = eFieldType.User;
+        }
         fld.clearHidden();
         // 0@701bf0@501ef3@900000@01750@301fb0@017d0@101fe3@600000@01f53@400000@015f0@301fb0@007d0@019d3@100000@501ef0@003f0@00bd0@015f3@100003@200003@500000@01970@001f0@00b70@301fb0@00b70@017c0@301fb0@501ef3@700003@900000@017d0@01d50@01f60@01d50@00fd0@00bd0@401f70@601df0@101fe3@300003@800000@00bf3@500000@007c0@003d0@601df0@017d0@501ef3@400000@00bd0@00be3@300000@00dd0@00d53@800000@00f50@01950@009d0@301fb3@500003@100003@300000@00d73@700000@101fe3@800000@501ef0@00d73@200000@00d73@500000@00d50@101fe3@300000@01950@009d0@00970@00b73@80000
       }
@@ -112,25 +119,27 @@ export abstract class RulesetBaseService {
       }
     }
 
-    if (hasHidden && this.cfg.gameMode == eGameMode.Solver) {
-      // if (MsgBox.Show("Sollen die Möglichkeitsausschlüsse zurückgesetzt werden?", "Bestätigung", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-      if (true) {
-        for (const fld of this._main.paintDef.fields) {
-          if (fld.type === eFieldType.User) {
-            fld.clearHidden();
+    if (hasHidden && this.cfg.gameMode === eGameMode.Solver) {
+      this._main.confirm($localize`Sollen die Möglichkeitsausschlüsse zurückgesetzt werden?`).subscribe(result => {
+        if (result.type === eDialogButtonType.Yes) {
+          for (const fld of this._main.paintDef.fields) {
+            if (fld.type === eFieldType.User) {
+              fld.clearHidden();
+            }
           }
         }
-      }
+      });
     } else {
-      // if (MsgBox.Show("Sollen alle Benutzereingaben gelöscht werden?", "Bestätigung", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-      if (true) {
-        for (const fld of this._main.paintDef.fields) {
-          if (fld.type == eFieldType.User) {
-            fld.value = -1;
-            fld.clearHidden();
+      this._main.confirm($localize`Sollen alle Benutzereingaben gelöscht werden?`).subscribe(result => {
+        if (result.type === eDialogButtonType.Yes) {
+          for (const fld of this._main.paintDef.fields) {
+            if (fld.type == eFieldType.User) {
+              fld.value = -1;
+              fld.clearHidden();
+            }
           }
         }
-      }
+      });
     }
   }
 
@@ -204,7 +213,6 @@ export abstract class RulesetBaseService {
         ret += this.getFieldString(this._main.paintDef.field(x, y), withCandidates);
       }
     }
-
     return ret;
   }
 
@@ -214,10 +222,9 @@ export abstract class RulesetBaseService {
    * @param clearUser true, wenn die Userfelder geleert werden sollen.
    */
   public fillBoard(def: string, clearUser: boolean): void {
-    // const wid = (this._main.paintDef.ctrlHig + 1) * (this._main.paintDef.boardCols + 2) + 50;
-    // const hig = (this._main.paintDef.ctrlHig + 1) * (this._main.paintDef.boardRows + 2) + 50;
     if (def.length != this._main.paintDef.boardRows * this._main.paintDef.boardCols * 6
       && def.length != this._main.paintDef.boardCols * this._main.paintDef.boardRows * 2) {
+
       def = '';
       for (let i = 0; i < this._main.paintDef.boardRows * this._main.paintDef.boardCols * 6; i++) {
         def += '0';
@@ -251,12 +258,11 @@ export abstract class RulesetBaseService {
    * @returns Der String, der das Feld definiert.
    */
   protected getFieldString(fld: FieldDef, withHidden: boolean): string {
-    let ret = `${fld.type}@${fld.value < 0 ? '' : fld.value}`;
-
+    const v = '@'.charCodeAt(0) + (+fld.value <= 0 ? 0 : +fld.value);
+    let ret = `${fld.type}${String.fromCharCode(v)}`;
     if (withHidden) {
       ret += fld.hiddenString;
     }
-
     return ret;
   }
 
@@ -273,7 +279,7 @@ export abstract class RulesetBaseService {
     if (+def[0] >= 0 && +def[0] < eFieldType.MAX) {
       ret.type = +def[0];
       ret.solution = def.charCodeAt(1) - '@'.charCodeAt(0);
-      if (def[1] == '@') {
+      if (def[1] === '@') {
         ret.value = -1;
       } else {
         ret.value = ret.solution;

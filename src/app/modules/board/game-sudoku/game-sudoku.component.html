@@ -3,7 +3,10 @@
   <app-button [data]="btnData('gameMode')"></app-button>
   <app-button [data]="btnData('rulers')"></app-button>
   <app-button [data]="btnData('solver-step')"></app-button>
+  <app-button [data]="btnData('solver-full')"></app-button>
+  <app-button [data]="btnData('undo')"></app-button>
   <app-button [data]="btnData('clearUser')"></app-button>
+  <app-button [data]="btnData('weblink')"></app-button>
   <app-button *ngIf="cfg.devSupport" [data]="btnData('debug')"></app-button>
 </div>
 <table>
@@ -31,6 +34,13 @@
       {{ruleset.colName(x)}}
     </td>
     <td class="ruler">&nbsp;</td>
+  </tr>
+  <tr class="info-tr">
+    <td *ngIf="cfg.showRulers" class="info-td">&nbsp;</td>
+    <td [colSpan]="cfg.numberCount" class="info-td">
+      <div class="info">{{main.solver?.hint}}</div>
+    </td>
+    <td *ngIf="cfg.showRulers" class="info-td">&nbsp;</td>
   </tr>
 </table>
 <div *ngIf="isNumbersVisible" class="controls">

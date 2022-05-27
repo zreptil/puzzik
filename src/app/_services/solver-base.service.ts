@@ -44,7 +44,7 @@ export class PaintDefinitions {
   }
 
   public field(x: number, y: number): FieldDef {
-    let ret = this.fields.find(f => f.x === x && f.y === y);
+    let ret = this.fields.find(f => +f.x === +x && +f.y === +y);
     if (ret == null) {
       ret = this.fds.create(`${x}|${y}`);
       this.fields.push(ret);
@@ -59,9 +59,9 @@ export class PaintDefinitions {
 export abstract class SolverBaseService {
 
   public doAfter?: SolveFn;
+  public animations: AnimDef[];
   protected _paintDef: PaintDefinitions;
   protected _solver: SolverBaseService | null = null;
-  private _animations: AnimDef[];
   private _factor = 1.0;
   private _xPos = 0;
   private _yPos = 0;
@@ -72,23 +72,17 @@ export abstract class SolverBaseService {
   private _colFontCandidate = 0xffffffff; // Color.FromArgb(255, 255, 255, 255);
   private _colFontCandidateDel = 0xffffffff; //Color.FromArgb(255, 255, 255, 255);
 
-  /// #############################################################
-  /// <summary>
-  /// Initialisiert eine neue Instanz von SolverBase.
-  /// </summary>
-  /// <param name="main">Das Hauptfenster der Anwendung.</param>
-  /// #############################################################
   /**
    * Initialisiert eine neue Instanz von SolverBase.
    * @param cfg Service für Konfigurationseinstellungen.
-   * @param _main Service für die Anzeige der Oberfläche
+   * @param main Service für die Anzeige der Oberfläche
    * @param ruleset Regelsatz für das Spiel
    */
-  public constructor(public cfg: ConfigService,
-                     public _main: MainFormService,
-                     public ruleset: RulesetBaseService) {
-    this._paintDef = _main.paintDef;
-    this._animations = [];
+  protected constructor(public cfg: ConfigService,
+                        public main: MainFormService,
+                        public ruleset: RulesetBaseService) {
+    this._paintDef = main.paintDef;
+    this.animations = [];
   }
 
   private _speed = 0.1;
@@ -127,7 +121,7 @@ export abstract class SolverBaseService {
   }
 
   public get hasAnimation(): boolean {
-    return this._animations?.length > 0;
+    return this.animations?.length > 0;
   }
 
   /**
@@ -138,8 +132,8 @@ export abstract class SolverBaseService {
   }
 
   public get hasCandidateTip(): boolean {
-    for (const anim of this._animations || []) {
-      if (anim.foreType == eAnimFore.SetCandidate) {
+    for (const anim of this.animations || []) {
+      if (anim.foreType === eAnimFore.SetCandidate) {
         return true;
       }
     }
@@ -151,7 +145,7 @@ export abstract class SolverBaseService {
   }
 
   public get count(): number {
-    return this._animations?.length || 0;
+    return this.animations?.length || 0;
   }
 
   public get diffString(): string {
@@ -191,13 +185,14 @@ export abstract class SolverBaseService {
     } else {
       this._hint = `${hint}`;
     }
+    console.log(this._hint, this.animations);
   }
 
   /**
    * Löscht die Animationsliste.
    */
   public clear(): void {
-    this._animations = [];
+    this.animations = [];
   }
 
   /**
@@ -212,9 +207,9 @@ export abstract class SolverBaseService {
    */
   public initAnimation(): void {
     this._factor = 1.0;
-    this._animations = [];
+    this.animations = [];
     this._hint = '';
-    this._main.memorizeBoard();
+    this.main.memorizeBoard();
   }
 
   /**
@@ -223,7 +218,7 @@ export abstract class SolverBaseService {
    */
   public markArea(area: Area): void {
     for (const fld of area.fields) {
-      const anim = this._animations.find(i => i.field != null && i.field.x === fld.x && i.field.y === fld.y && i.backType === area.backType);
+      const anim = this.animations.find(i => i.field != null && +i.field.x === +fld.x && +i.field.y === +fld.y && +i.backType === +area.backType);
       if (anim != null) {
         continue;
       }
@@ -257,11 +252,11 @@ export abstract class SolverBaseService {
    * @param candidate Zu löschender Kandidat.
    */
   public delCandidate(fld: FieldDef, backType: eAnimBack, candidate: number): void {
-    let anim = this._animations.find(a => a.field != null && a.field.x === fld.x && a.field.y === fld.y && a.foreType === eAnimFore.DelCandidate);
+    let anim = this.animations.find(a => a.field != null && +a.field.x === +fld.x && +a.field.y === +fld.y && +a.foreType === +eAnimFore.DelCandidate);
     if (anim == null) {
       anim = new AnimDef(backType, eAnimFore.DelCandidate, fld);
     }
-    if (anim.candidates.find(f => f === candidate) != null) {
+    if (anim.candidates.find(f => +f === +candidate) != null) {
       return;
     }
     anim.candidates.push(candidate);
@@ -288,17 +283,17 @@ export abstract class SolverBaseService {
    * @param markType Art der Markierung.
    */
   public markCandidate(fld: FieldDef, backType: eAnimBack, candidate: number, markType = eAnimMark.Mark): void {
-    let anim = this._animations.find(a => a.field != null && a.field.x === fld.x && a.field.y === fld.y && a.foreType === eAnimFore.MarkCandidate);
+    let anim = this.animations.find(a => a.field != null && +a.field.x === +fld.x && +a.field.y === +fld.y && +a.foreType === +eAnimFore.MarkCandidate);
     if (anim == null) {
       anim = new AnimDef(backType, eAnimFore.MarkCandidate, fld);
     }
 
-    if (anim.candidates.find(c => c === candidate) != null) {
+    if (anim.candidates.find(c => +c === +candidate) != null) {
       return;
     }
 
-    anim.candidates.push(candidate);
-    anim.candidateMarks[candidate] = markType;
+    anim.candidates.push(+candidate);
+    anim.candidateMarks[+candidate] = markType;
     this.addAnimation(anim);
   }
 
@@ -314,39 +309,6 @@ export abstract class SolverBaseService {
     this.addAnimation(anim);
   }
 
-  /**
-   * Führt die Aktionen der Animationen aus und ändert so das Feld.
-   */
-  public executeAnimationActions(): void {
-    for (const anim of this._animations) {
-      if (anim?.field !== null) {
-        const fld = this._main.paintDef.fields.find(f => f.x === anim.field?.x && f.y === anim.field?.y);
-        if (fld != null) {
-          switch (anim.foreType) {
-            case eAnimFore.SetCandidate:
-              for (const value of anim.candidates) {
-                fld.value = value;
-              }
-              fld.clearHidden();
-              fld.isValid = true;
-              break;
-
-            case eAnimFore.DelCandidate:
-              for (const value of anim.candidates) {
-                fld.getCandidate(value).hidden = true;
-              }
-              // this._main.validate();
-              break;
-          }
-        }
-      }
-    }
-
-    if (this.doAfter != null) {
-      this.doAfter();
-    }
-  }
-
   public stopAnimation(): void {
     if (this.cfg.gameMode != eGameMode.Solver) {
       return;
@@ -354,14 +316,14 @@ export abstract class SolverBaseService {
 
     this.executeAnimationActions();
 
-    if (this._animations.length === 0) {
-      this._main.hint = $localize`${this._preHint}Ich konnte aufgrund der mir bekannten Algorithmen keine weitere logische Schlussfolgerung ziehen.`;
+    if (this.animations.length === 0) {
+      this.main.hint = $localize`${this._preHint}Ich konnte aufgrund der mir bekannten Algorithmen keine weitere logische Schlussfolgerung ziehen.`;
     } else if (this.cfg.appMode == eAppMode.AnimateAll) {
-      this._main.updateHistory();
+      this.main.updateHistory();
       // this._main.recreateForm();
-      this._animations = [];
+      this.animations = [];
       this._solver?.solveStep();
-      if (this._animations.length > 0) {
+      if (this.animations.length > 0) {
         // this._main.setAppMode(eAppMode.AnimateAll);
         return;
       } else {
@@ -370,12 +332,12 @@ export abstract class SolverBaseService {
       }
     }
 
-    this._main.updateHistory();
+    this.main.updateHistory();
     // this._main.recreateForm();
   }
 
   public exitAnimationMode(): void {
-    this._animations = [];
+    this.animations = [];
     this._active = false;
     this.cfg.appMode = eAppMode.Game;
     // Wird aufgerufen, um den Hint entsprechend zu setzen
@@ -393,9 +355,9 @@ export abstract class SolverBaseService {
     this.doAfter = undefined;
 
     while (!done) {
-      this._animations = [];
+      this.animations = [];
       this._solver?.solveStep();
-      done = this._animations.length == 0;
+      done = this.animations.length == 0;
       if (!done) {
         this.executeAnimationActions();
       }
@@ -413,29 +375,29 @@ export abstract class SolverBaseService {
       return;
     }
     if (this.cfg.isDebug) {
-      if (this._main.debugField == null || !fld.equals(this._main.debugField)) {
-        this._main.debugField = fld;
+      if (this.main.debugField == null || !fld.equals(this.main.debugField)) {
+        this.main.debugField = fld;
       } else {
-        this._main.debugField = undefined;
+        this.main.debugField = undefined;
       }
       return;
     }
     switch (this.cfg.appMode) {
       case eAppMode.Edit:
-        if (this._main.paintDef.currentCtrl == null) {
+        if (this.main.paintDef.currentCtrl == null) {
           return;
         }
-        if (this._main.paintDef.currentCtrl.value === 0) {
+        if (this.main.paintDef.currentCtrl.value === 0) {
           fld.solution = -1;
           fld.type = eFieldType.User;
-        } else if (this._main.paintDef.currentCtrl.value === this.cfg.numberCount + 1) {
+        } else if (this.main.paintDef.currentCtrl.value === this.cfg.numberCount + 1) {
           fld.solution = -1;
           fld.type = (fld.type === eFieldType.Block ? eFieldType.User : eFieldType.Block);
         } else {
-          if (fld.solution === this._main.paintDef.currentCtrl.value) {
+          if (fld.solution === this.main.paintDef.currentCtrl.value) {
             fld.solution = -1;
           } else {
-            fld.solution = this._main.paintDef.currentCtrl.value;
+            fld.solution = this.main.paintDef.currentCtrl.value;
           }
 
           if (fld.type === eFieldType.Block || fld.type === eFieldType.BlockNumber) {
@@ -447,14 +409,15 @@ export abstract class SolverBaseService {
         fld.value = fld.solution;
         fld.clearHidden();
         this.ruleset.validateFields(false);
+        this.cfg.currentBoard(true).content = this.ruleset.getBoardString(false);
+        this.cfg.writeSettings();
         return;
       case eAppMode.Game:
-        console.log('AUF GEHTS', fld);
         if (fld.type === eFieldType.User) {
-          if (this._main.paintDef.currentCtrl != null) {
-            fld.value = this._main.paintDef.currentCtrl.value > 0 && this._main.paintDef.currentCtrl.value <= this.cfg.numberCount
-              ? (this._main.paintDef.currentCtrl.value == fld.value ? -1
-                : this._main.paintDef.currentCtrl.value) : -1;
+          if (this.main.paintDef.currentCtrl != null) {
+            fld.value = this.main.paintDef.currentCtrl.value > 0 && this.main.paintDef.currentCtrl.value <= this.cfg.numberCount
+              ? (this.main.paintDef.currentCtrl.value === fld.value ? -1
+                : this.main.paintDef.currentCtrl.value) : -1;
           } else if (this.cfg.gameMode === eGameMode.Solver) {
             if (fld.value > 0) {
               fld.value = -1;
@@ -481,6 +444,64 @@ export abstract class SolverBaseService {
     }
   }
 
+  /**
+   * Führt die Aktionen der Animationen aus und ändert so das Feld.
+   */
+  public executeAnimationActions(): void {
+    for (const anim of this.animations) {
+      if (anim.field != null) {
+        const fld = this.main.paintDef.field(anim.field.x, anim.field.y);
+        if (fld != null) {
+          switch (anim.foreType) {
+            case eAnimFore.SetCandidate:
+              for (const value of anim.candidates) {
+                fld.value = value;
+              }
+              fld.clearHidden();
+              fld.isValid = true;
+              break;
+
+            case eAnimFore.DelCandidate:
+              for (const value of anim.candidates) {
+                fld.getCandidate(value).hidden = true;
+              }
+              break;
+          }
+        }
+      }
+    }
+
+    if (this.doAfter != null) {
+      this.doAfter();
+    }
+  }
+
+  /**
+   * Setzt den letzten verbleibenden Kandidaten in das Feld.
+   * @protected
+   */
+  protected solveNakedSingle(): void {
+    for (const fld of this._paintDef.fields) {
+      if (fld.type != eFieldType.User || fld.value > 0) {
+        continue;
+      }
+
+      let count = 0;
+      let found = 0;
+      for (const candidate of fld.candidates) {
+        if (!candidate.hidden) {
+          found = candidate.value;
+          count++;
+        }
+      }
+      if (count === 1) {
+        this.setCandidate(fld, eAnimBack.MarkField, found);
+        this.setSolution(1, $localize`Die Zahl ${found} ist der letzte verbliebene Kandidat im markierten Feld.`);
+        return;
+      }
+    }
+  }
+
   private updateDifficulty(): void {
     if (!this.ruleset.checkSolved(false)) {
       this._difficulty.clear();
@@ -499,7 +520,7 @@ export abstract class SolverBaseService {
    * @private
    */
   private getAnimation(backType: eAnimBack, fld: FieldDef): AnimDef {
-    let ret = this._animations.find(i => i.field != null && i.field.x == fld.x && i.field.y == fld.y);
+    let ret = this.animations.find(i => i.field != null && +i.field.x === +fld.x && +i.field.y === +fld.y);
     if (ret == null) {
       ret = new AnimDef(backType, eAnimFore.None, fld);
     } else {
@@ -511,6 +532,6 @@ export abstract class SolverBaseService {
 
   private addAnimation(anim: AnimDef): void {
     this._factor = 0;
-    this._animations.push(anim);
+    this.animations.push(anim);
   }
 }
