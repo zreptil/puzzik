@@ -226,7 +226,7 @@ export abstract class SolverBaseService {
    */
   public markArea(area: Area): void {
     for (const fld of area.fields) {
-      const anim = this.animations.find(i => i.field != null && +i.field.x === +fld.x && +i.field.y === +fld.y && +i.backType === +area.backType);
+      const anim = this.animations.find(i => i.field != null && i.field.equals(fld) && +i.backType === +area.backType);
       if (anim != null) {
         continue;
       }
@@ -238,9 +238,14 @@ export abstract class SolverBaseService {
    * Markiert ein Feld.
    * @param backType Art der Hintergrundanimation für das Feld.
    * @param fld Das zu markierende Feld.
+   * @param forceNew wenn true, wird auf alle Fälle eine neue Animation hinzugefügt
    */
-  public markField(backType = eAnimBack.MarkField, fld: FieldDef): void {
-    this.addAnimation(this.getAnimation(backType, fld));
+  public markField(backType: eAnimBack, fld: FieldDef, forceNew = false): void {
+    if (forceNew) {
+      this.addAnimation(new AnimDef(backType, eAnimFore.None, fld));
+    } else {
+      this.addAnimation(this.getAnimation(backType, fld));
+    }
   }
 
   /**
@@ -504,7 +509,7 @@ export abstract class SolverBaseService {
       }
       if (count === 1) {
         this.setCandidate(fld, eAnimBack.MarkField, found);
-        this.setSolution(1, $localize`Die Zahl ${found} ist der letzte verbliebene Kandidat im markierten Feld.`);
+        this.setSolution(1, $localize`Die Zahl ${found} ist der letzte verbliebene Kandidat im <span class="MarkField">markierten Feld</span>.`);
         return;
       }
     }

@@ -47,7 +47,9 @@ export class FieldSudokuComponent {
       const fld = this.field;
       const animList = this.main.solver.animations.filter(anim => anim.field?.equals(fld)) || [];
       for (const anim of animList) {
-        if (+anim.backType === eAnimBack.MarkField || +anim.backType === eAnimBack.MarkTargetField) {
+        if (+anim.backType === eAnimBack.MarkField
+          || +anim.backType === eAnimBack.MarkTargetField
+          || +anim.backType === eAnimBack.MarkAnchorField) {
           ret.push(`${eAnimBack[anim.backType]}`);
         }
       }

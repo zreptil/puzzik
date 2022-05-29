@@ -64,3 +64,54 @@ html {
     background: rgba(0, 0, 0, 0.7);
   }
 }
+
+$markColor: #aaf;
+$markTargetColor: #ffa;
+$markAnchorColor: #faa;
+$markThick: 4px;
+$markCandidate: #afa;
+.MarkField {
+  background: $markColor !important;
+}
+
+.MarkTargetField {
+  background: $markTargetColor !important;
+}
+
+.MarkAnchorField {
+  background: $markAnchorColor !important;
+}
+
+.markCandidate,
+.showCandidate {
+  background: $markCandidate;
+  color: rgba(0, 0, 0, 0.5);
+  font-weight: bold;
+  box-shadow: inset 0 0 0 2px $markCandidate;
+}
+
+.showCandidate {
+  background: $markCandidate;
+}
+
+.delCandidate {
+  // color: #a00;
+  font-weight: bold;
+  position: relative;
+  // box-shadow: inset 0 0 0 2px lime;
+}
+
+.delCandidate::after {
+  content: '\\';
+  color: rgba(128, 0, 0, 0.9);
+  position: absolute;
+  top: 0;
+  left: 0.4em;
+}
+
+.setCandidate {
+  background: $markCandidate;
+  color: rgba(0, 0, 0, 0.5);
+  font-weight: bold;
+  box-shadow: inset 0 0 0 2px $markCandidate;
+}

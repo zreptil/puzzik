@@ -4,6 +4,7 @@ import {Area} from './area';
 export enum eAnimBack {
   None,
   MarkField,
+  MarkAnchorField,
   MarkTargetField,
   MarkRow,
   MarkColumn,

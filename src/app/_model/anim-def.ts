@@ -18,7 +18,8 @@ export class AnimDef {
 
   public jsonize(): any {
     return {
-      fld: `${this.field?.x} - ${this.field?.y}`, animdef: JSON.parse(JSON.stringify(this))
+      fld: `${this.field?.x} - ${this.field?.y} - ${eAnimBack[this.backType]}`,
+      animdef: JSON.parse(JSON.stringify(this))
     };
   }
 }

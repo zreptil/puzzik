@@ -146,7 +146,7 @@ export class SolverSudokuService extends SolverSudokuBaseService {
           }
         }
         if (keep) {
-          this.setSolution(max + 4, $localize`Die ${max} Kandidaten ${this.getCandidateString(ret.collected)} finden sich nur in den ${max} markierten Feldern. Deshalb können alle anderen Kandidaten aus diesen Feldern entfernt werden.`);
+          this.setSolution(max + 4, $localize`Die ${max} Kandidaten ${this.getCandidateString(ret.collected)} finden sich nur in den ${max} <span class="MarkField">markierten</span> Feldern. Deshalb können alle anderen Kandidaten aus diesen Feldern entfernt werden.`);
           return;
         } else {
           this.clearAnimations(animIdx);
@@ -278,7 +278,7 @@ export class SolverSudokuService extends SolverSudokuBaseService {
       }
 
       if (keep) {
-        this.setSolution(6, $localize`Der Kandidat ${key} ist in einer Folge von miteinander verbundenen Bereichen innerhalb dieser Bereiche jeweils zweimal vorhanden. Er kann aus den markierten Feldern entfernt werden, da diese auch in einem Bereich liegen, aber die gleiche Farbe haben.`);
+        this.setSolution(6, $localize`Der Kandidat ${key} ist in einer Folge von miteinander verbundenen Bereichen innerhalb dieser Bereiche jeweils zweimal vorhanden. Er kann aus den <span class="MarkAnchorField">markierten</span> Feldern entfernt werden, da diese auch in einem Bereich liegen, aber die gleiche Farbe haben.`);
         return;
       } else {
         this.clearAnimations(animIdx);
@@ -335,8 +335,10 @@ export class SolverSudokuService extends SolverSudokuBaseService {
                     if (fld.areas.find(a => a.equals(area)) == null) {
                       keep = true;
                       this.delCandidate(fld, used.backType, list.candidate);
+                      this.markField(eAnimBack.MarkTargetField, fld, true);
                     } else {
                       this.markCandidate(fld, used.backType, list.candidate);
+                      this.markField(eAnimBack.MarkField, fld, true);
                     }
                   } else {
                     this.markField(used.backType, fld);
@@ -347,7 +349,7 @@ export class SolverSudokuService extends SolverSudokuBaseService {
               }
               if (keep && this.hasAnimation) {
                 this.markArea(area);
-                this.setSolution(2, $localize`Der Kandidat ${list.candidate} kommt in zwei sich überschneidenden Bereichen vor und in einem der Bereiche nur innerhalb der Überschneidung. Damit kann er aus dem anderen Bereich entfernt werden.`);
+                this.setSolution(2, $localize`Der Kandidat ${list.candidate} kommt in zwei sich überschneidenden Bereichen vor und in einem der Bereiche nur <span class="MarkField">innerhalb der Überschneidung</span>. Damit kann er aus dem <span class="MarkTargetField">anderen Bereich</span> entfernt werden.`);
                 return;
               } else {
                 this.clearAnimations(animIdx);
@@ -510,7 +512,6 @@ export class SolverSudokuService extends SolverSudokuBaseService {
    * @param cf1 Kandidat nur in f1, muss auch in f2 sein.
    */
   private findYWingSecond(anker: FieldDef, f1Area: Area, f1: FieldDef, ca1: number, ca2: number, cf1: number): boolean {
-    let ret = false;
     for (const area of anker.areas) {
       for (const f2 of area.fields) {
         if (f2.getCandidates().length != 2) {
@@ -519,6 +520,8 @@ export class SolverSudokuService extends SolverSudokuBaseService {
         if (!f2.getCandidate(ca2).hidden && !f2.getCandidate(cf1).hidden && !f2.canSee(f1)) {
           let keep = false;
           const animIdx = this.animations.length;
+          this.markArea(area);
+          this.markArea(f1Area);
           this.markCandidate(anker, eAnimBack.MarkField, ca1);
           this.markCandidate(anker, eAnimBack.MarkField, ca2);
           this.markCandidate(f1, eAnimBack.MarkField, ca1);
@@ -528,7 +531,7 @@ export class SolverSudokuService extends SolverSudokuBaseService {
           for (const a of f1.areas) {
             for (const fld of a.fields) {
               if (fld != f2 && fld != f1 && f2.canSee(fld) && !fld.getCandidate(cf1).hidden) {
-                this.markField(eAnimBack.MarkTargetField, fld);
+                this.markField(eAnimBack.MarkTargetField, fld, true);
                 if (fld.value <= 0) {
                   keep = true;
                   this.delCandidate(fld, eAnimBack.None, cf1);
@@ -536,11 +539,10 @@ export class SolverSudokuService extends SolverSudokuBaseService {
               }
             }
           }
-          this.markArea(area);
-          this.markArea(f1Area);
+          this.markField(eAnimBack.MarkAnchorField, anker, true);
 
           if (keep) {
-            this.setSolution(7, $localize`Die Kandidaten ${ca1} und ${ca2} kommen in einem Feld zusammen und in zwei anderen Feldern jeweils einzeln vor. Der Kandidat ${cf1}, der in den beiden anderen Feldern gemeinsam vorkommt, kann aus den sich überschneidenden Bereichen der beiden Felder entfernt werden.`);
+            this.setSolution(7, $localize`Die Kandidaten ${ca1} und ${ca2} kommen in einem Feld <span class="MarkAnchorField">zusammen</span> und in zwei anderen Feldern jeweils <span class="MarkField">einzeln</span> vor. Der Kandidat ${cf1}, der in den beiden anderen Feldern gemeinsam vorkommt, kann aus den sich überschneidenden <span class="MarkTargetField">Bereichen</span> der beiden Felder entfernt werden.`);
             return true;
           } else {
             this.clearAnimations(animIdx);
@@ -549,7 +551,7 @@ export class SolverSudokuService extends SolverSudokuBaseService {
       }
     }
 
-    return ret;
+    return false;
   }
 
   /**
@@ -580,7 +582,7 @@ export class SolverSudokuService extends SolverSudokuBaseService {
           }
         }
         this.setCandidate(fld, eAnimBack.MarkField, value);
-        this.setSolution(0, $localize`Die Zahl ${value} kommt im markierten Bereich nur in einem Feld vor`);
+        this.setSolution(0, $localize`Die Zahl ${value} kommt im markierten Bereich nur in <span class="MarkField">einem Feld</span> vor`);
         return;
       }
     }
