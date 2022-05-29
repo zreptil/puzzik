@@ -32,7 +32,6 @@ export abstract class MainFormService {
 
   public set hint(value: string) {
     this._hint = value;
-    // this.invalidate();
   }
 
   public get boardString(): string {

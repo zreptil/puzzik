@@ -2,6 +2,7 @@ import {Component, Input} from '@angular/core';
 import {eAnimBack, eAnimFore, eAnimMark, eFieldType, FieldDef} from '../../../_model/field-def';
 import {ConfigService, eAppMode, eGameMode} from '../../../_services/config.service';
 import {MainFormService} from '../../../_services/main-form.service';
+import {AnimDef} from '../../../_model/anim-def';
 
 @Component({
   selector: 'app-field-sudoku',
@@ -44,9 +45,11 @@ export class FieldSudokuComponent {
     }
     if (this.cfg.appMode === eAppMode.Game && this.field != null && this.main.solver?.hasAnimation) {
       const fld = this.field;
-      const anim = this.main.solver.animations.find(anim => anim.field?.equals(fld));
-      if (anim != null && anim.backType === eAnimBack.MarkField) {
-        ret.push(`${eAnimBack[anim.backType]}`);
+      const animList = this.main.solver.animations.filter(anim => anim.field?.equals(fld)) || [];
+      for (const anim of animList) {
+        if (+anim.backType === eAnimBack.MarkField || +anim.backType === eAnimBack.MarkTargetField) {
+          ret.push(`${eAnimBack[anim.backType]}`);
+        }
       }
     }
     return ret;
@@ -59,25 +62,25 @@ export class FieldSudokuComponent {
     }
     const shadow = [];
     if (this.field != null && this.main.solver?.hasAnimation) {
-      const fld = this.field;
-      const anim = this.main.solver.animations.find(anim => anim.field?.equals(fld));
+      const fld = this.field.clone;
+      const anim = this.checkAnim(fld);
       if (anim != null) {
-        const check = this.field.clone;
-        check.x = this.field.x - 1;
-        if (this.main.solver.animations.find(anim => anim.field?.equals(check)) == null) {
+        const check = fld.clone;
+        check.x = fld.x - 1;
+        if (this.checkAnim(check) == null) {
           shadow.push(`inset ${this.markThick} 0 0 0 ${this.markColor}`);
         }
-        check.x = this.field.x + 1;
-        if (this.main.solver.animations.find(anim => anim.field?.equals(check)) == null) {
+        check.x = fld.x + 1;
+        if (this.checkAnim(check) == null) {
           shadow.push(`inset -${this.markThick} 0 0 0 ${this.markColor}`);
         }
-        check.x = this.field.x;
-        check.y = this.field.y - 1;
-        if (this.main.solver.animations.find(anim => anim.field?.equals(check)) == null) {
+        check.x = fld.x;
+        check.y = fld.y - 1;
+        if (this.checkAnim(check) == null) {
           shadow.push(`inset 0 ${this.markThick} 0 0 ${this.markColor}`);
         }
-        check.y = this.field.y + 1;
-        if (this.main.solver.animations.find(anim => anim.field?.equals(check)) == null) {
+        check.y = fld.y + 1;
+        if (this.checkAnim(check) == null) {
           shadow.push(`inset 0 -${this.markThick} 0 0 ${this.markColor}`);
         }
       }
@@ -103,6 +106,21 @@ export class FieldSudokuComponent {
         break;
     }
     return ret;
+  }
+
+  checkAnim(fld: FieldDef): AnimDef | null {
+    return this.main.solver?.animations.find(anim => (anim.field?.equals(fld) &&
+        (+anim.backType === eAnimBack.MarkRow
+          || +anim.backType === eAnimBack.MarkColumn
+          || +anim.backType === eAnimBack.MarkArea))
+      || false) || null;
+  }
+
+  isField(anim: AnimDef): boolean {
+    if (this.field != null && anim.field != null) {
+      return anim.field.equals(this.field);
+    }
+    return false;
   }
 
   candidateClass(idx: number): string[] {

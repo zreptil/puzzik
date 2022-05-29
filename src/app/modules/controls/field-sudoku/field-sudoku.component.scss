@@ -17,10 +17,15 @@ $size: 2em;
 }
 
 $markColor: #aaf;
+$markTargetColor: #ffa;
 $markThick: 4px;
 $markCandidate: #afa;
 .MarkField {
   background: $markColor !important;
+}
+
+.MarkTargetField {
+  background: $markTargetColor !important;
 }
 
 .markCandidate,

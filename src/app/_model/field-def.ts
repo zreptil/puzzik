@@ -4,6 +4,7 @@ import {Area} from './area';
 export enum eAnimBack {
   None,
   MarkField,
+  MarkTargetField,
   MarkRow,
   MarkColumn,
   MarkArea
@@ -189,7 +190,7 @@ export class FieldDef {
   }
 
   public equals(fld: FieldDef): boolean {
-    return fld.x === this.x && fld.y === this.y;
+    return +fld.x === +this.x && +fld.y === +this.y;
   }
 
   public isChanged(fld: FieldDef): boolean {
@@ -214,6 +215,16 @@ export class FieldDef {
     return `${this.x}/${this.y} - ${this.value} - ${s}`;
   }
 
+  public forLog(): string {
+    let s = '';
+    for (const cd of this.candidates) {
+      if (!cd.hidden) {
+        s += `${cd}`;
+      }
+    }
+    return `${this.x}/${this.y} - ${+this.value === -1 ? '0' : this.value} - ${s}`;
+  }
+
   public export(): string {
     return `${this.x}|${this.y}|${this.value}`;
   }
@@ -235,7 +246,7 @@ export class FieldDef {
 
   public canSee(fld: FieldDef): boolean {
     for (const a of this.areas) {
-      if (a.fields.find(f => f.equals(fld) != null)) {
+      if (a.fields.find(f => f.equals(fld)) != null) {
         return true;
       }
     }

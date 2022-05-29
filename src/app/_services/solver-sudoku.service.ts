@@ -59,18 +59,15 @@ export class SolverSudokuService extends SolverSudokuBaseService {
         this.solveNaked,
         this.solveHidden,
         this.solveLinked,
-        this.solveCrossingAreas,
-        this.solveXWing,
-        /*
-                solveYWing,
-        //*/
+        this.solveCrossingAreas, // 3I0@0@3B3D0@0@0@0@0@3E0@3F3I0@3B3C3A0@3B0@0@3E0@0@3I0@0@3I0@3G0@0@3C3B0@0@0@3B3I3C3E3F0@3G0@3G0@0@0@3B3I0@0@0@3F3I0@3B0@0@3G3C3E3A0@0@3G3I0@3F3B3B0@3G0@3H3F0@0@3I
+        this.solveXWing, // 3A0@0@0@0@0@3E3F3I3D3I3B0@3E3F3A0@3H0@3E3F3A0@3I3B3D0@0@0@3I3F3D0@3H0@3A0@3F3D0@3A0@0@0@0@3B3A3H0@3C3E3F0@3D0@3D0@3E0@0@0@3A3F3I0@3E0@3F3A3D0@3B3F3B3A0@0@0@0@0@3E
+        this.solveYWing
       ];
 
     this.initAnimation();
     for (const fn of functionList) {
       fn.bind(this)();
       if (this.hasAnimation) {
-        // console.log(this.animations);
         this.doAfter = this.solveExisting;
         return;
       }
@@ -134,6 +131,7 @@ export class SolverSudokuService extends SolverSudokuBaseService {
     if (count < 2) {
       if (ret.collected.length === max && ret.fields.length === max) {
         let keep = false;
+        const animIdx = this.animations.length;
         for (const fld of area.fields) {
           if (ret.fields.find(f => f.equals(fld)) != null) {
             this.markCandidates(fld, eAnimBack.MarkField, ret.collected);
@@ -149,8 +147,9 @@ export class SolverSudokuService extends SolverSudokuBaseService {
         }
         if (keep) {
           this.setSolution(max + 4, $localize`Die ${max} Kandidaten ${this.getCandidateString(ret.collected)} finden sich nur in den ${max} markierten Feldern. Deshalb können alle anderen Kandidaten aus diesen Feldern entfernt werden.`);
+          return;
         } else {
-          this.clear();
+          this.clearAnimations(animIdx);
         }
       } else {
         ret.fields = [];
@@ -250,9 +249,10 @@ export class SolverSudokuService extends SolverSudokuBaseService {
       }
     }
 
-    Object.keys(ret).forEach(key => {
+    for (const key of Object.keys(ret)) {
       const links = linkList.filter(l => l.candidate === +key);
       let keep = false;
+      const animIdx = this.animations.length;
       for (const link of links) {
         link.setTag(1);
         const tree: FieldLink[] = [];
@@ -281,9 +281,9 @@ export class SolverSudokuService extends SolverSudokuBaseService {
         this.setSolution(6, $localize`Der Kandidat ${key} ist in einer Folge von miteinander verbundenen Bereichen innerhalb dieser Bereiche jeweils zweimal vorhanden. Er kann aus den markierten Feldern entfernt werden, da diese auch in einem Bereich liegen, aber die gleiche Farbe haben.`);
         return;
       } else {
-        this.clear();
+        this.clearAnimations(animIdx);
       }
-    });
+    }
   }
 
   // Stimmt noch nicht, es werden zu viele Tags als gleich erkannt.
@@ -309,7 +309,7 @@ export class SolverSudokuService extends SolverSudokuBaseService {
     for (const area of this._paintDef.areas) {
       const counts = this.getCandidateCount(area);
 
-      Object.keys(counts).forEach(key => {
+      for (const key of Object.keys(counts)) {
         const count = +key;
         for (const list of counts[count]) {
           const areaUsage: { [key: string]: { count: number, area: Area } } = {};
@@ -324,10 +324,11 @@ export class SolverSudokuService extends SolverSudokuBaseService {
             }
           }
 
-          Object.keys(areaUsage).forEach(key => {
+          for (const key of Object.keys(areaUsage)) {
             const used = areaUsage[key].area;
             if (areaUsage[key].count === count) {
               let keep = false;
+              const animIdx = this.animations.length;
               for (const fld of used.fields) {
                 if (fld.type === eFieldType.User && fld.value <= 0) {
                   if (!fld.getCandidate(list.candidate).hidden) {
@@ -340,19 +341,21 @@ export class SolverSudokuService extends SolverSudokuBaseService {
                   } else {
                     this.markField(used.backType, fld);
                   }
+                } else {
+                  this.markField(used.backType, fld);
                 }
               }
               if (keep && this.hasAnimation) {
                 this.markArea(area);
-                this.setSolution(2, $localize`Der Kandidat ${list.candidate} kommt of zwei sich überschneidenden Bereichen vor und of einem der Bereiche nur innerhalb der Überschneidung. Damit kann er aus dem anderen Bereich entfernt werden.`);
+                this.setSolution(2, $localize`Der Kandidat ${list.candidate} kommt in zwei sich überschneidenden Bereichen vor und in einem der Bereiche nur innerhalb der Überschneidung. Damit kann er aus dem anderen Bereich entfernt werden.`);
                 return;
               } else {
-                this.clear();
+                this.clearAnimations(animIdx);
               }
             }
-          });
+          }
         }
-      });
+      }
     }
   }
 
@@ -381,6 +384,7 @@ export class SolverSudokuService extends SolverSudokuBaseService {
                     }
 
                     let keep = false;
+                    const animIdx = this.animations.length;
                     this.markArea(area);
                     this.markArea(a);
                     switch (area.backType) {
@@ -427,7 +431,7 @@ export class SolverSudokuService extends SolverSudokuBaseService {
                       this.setSolution(7, $localize`Der Kandidat ${list.candidate} kommt in den markierten Bereichen genau zweimal an der gleichen Stelle vor. Damit kann er aus den gefärbten Feldern entfernt werden.`);
                       return;
                     }
-                    this.clear();
+                    this.clearAnimations(animIdx);
                   }
                 }
               }
@@ -492,52 +496,54 @@ export class SolverSudokuService extends SolverSudokuBaseService {
   }
 
   /**
-   * Sucht in den Bereichen von Anker nach einem Feld, das
+   * Sucht in den Bereichen vom Anker nach einem Feld, in dem zwei Kandidaten sind, von denen genau einer einem
+   * Kandidaten des Ankers entspricht und der andere einem Feld in einem anderen Bereich entspricht, das ebenfalls
+   * den ersten Kandidaten des Ankers beinhaltet und den zweiten Kandidaten des ersten Feldes und das vom ersten
+   * Feld aus nicht gesehen werden kann. In den überschneidenden Feldern der beiden Bereiche kann der nicht im
+   * Anker vorkommende Kandidat entfernt werden, da er auf alle Fälle in einem Feld zu finden ist, das diese
+   * Überschneidung sehen kann.
    * @param anker Ankerfeld.
    * @param f1Area Erstes Feld.
    * @param f1 Gemeinsamer Kandidat in anker und f1.
-   * @param ca1 Kandidat nur in anker.
-   * @param ca2 Kandidat nur in anker.
+   * @param ca1 Kandidat 1 im anker.
+   * @param ca2 Kandidat 2 im anker.
    * @param cf1 Kandidat nur in f1, muss auch in f2 sein.
    */
   private findYWingSecond(anker: FieldDef, f1Area: Area, f1: FieldDef, ca1: number, ca2: number, cf1: number): boolean {
     let ret = false;
-
     for (const area of anker.areas) {
-      for (const
-        f2 of area.fields
-        ) {
+      for (const f2 of area.fields) {
         if (f2.getCandidates().length != 2) {
           continue;
         }
         if (!f2.getCandidate(ca2).hidden && !f2.getCandidate(cf1).hidden && !f2.canSee(f1)) {
-          this.markArea(area);
-          this.markArea(f1Area);
+          let keep = false;
+          const animIdx = this.animations.length;
           this.markCandidate(anker, eAnimBack.MarkField, ca1);
           this.markCandidate(anker, eAnimBack.MarkField, ca2);
           this.markCandidate(f1, eAnimBack.MarkField, ca1);
           this.markCandidate(f2, eAnimBack.MarkField, ca2);
           this.markCandidate(f1, eAnimBack.MarkField, cf1, eAnimMark.Show);
           this.markCandidate(f2, eAnimBack.MarkField, cf1, eAnimMark.Show);
-          let keep = false;
-          for (const
-            a of f1.areas
-            ) {
-            for (const
-              fld of a.fields
-              ) {
-              if (fld.value <= 0 && fld != f2 && fld != f1 && f2.canSee(fld) && !fld.getCandidate(cf1).hidden) {
-                keep = true;
-                this.delCandidate(fld, eAnimBack.None, cf1);
+          for (const a of f1.areas) {
+            for (const fld of a.fields) {
+              if (fld != f2 && fld != f1 && f2.canSee(fld) && !fld.getCandidate(cf1).hidden) {
+                this.markField(eAnimBack.MarkTargetField, fld);
+                if (fld.value <= 0) {
+                  keep = true;
+                  this.delCandidate(fld, eAnimBack.None, cf1);
+                }
               }
             }
           }
+          this.markArea(area);
+          this.markArea(f1Area);
 
           if (keep) {
             this.setSolution(7, $localize`Die Kandidaten ${ca1} und ${ca2} kommen in einem Feld zusammen und in zwei anderen Feldern jeweils einzeln vor. Der Kandidat ${cf1}, der in den beiden anderen Feldern gemeinsam vorkommt, kann aus den sich überschneidenden Bereichen der beiden Felder entfernt werden.`);
             return true;
           } else {
-            this.clear();
+            this.clearAnimations(animIdx);
           }
         }
       }

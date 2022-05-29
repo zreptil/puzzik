@@ -94,6 +94,7 @@ export abstract class SolverSudokuBaseService extends SolverBaseService {
   }
 
   private checkNakedMulti(area: Area, boxes: CandidateBoxes, ret: CandidateBox): void {
+    const animIdx = this.animations.length;
     let keep = false;
     for (const fld of ret.fields) {
       this.markCandidates(fld, eAnimBack.MarkField, ret.candidates);
@@ -104,7 +105,7 @@ export abstract class SolverSudokuBaseService extends SolverBaseService {
       }
     }
 
-    Object.keys(boxes).forEach(key => {
+    for (const key of Object.keys(boxes)) {
       const box = boxes[key];
       for (const fld of box.fields) {
         if (ret.fields.find(f => f.equals(fld)) == null) {
@@ -116,10 +117,10 @@ export abstract class SolverSudokuBaseService extends SolverBaseService {
           }
         }
       }
-    });
+    }
 
     if (!keep) {
-      this.clear();
+      this.clearAnimations(animIdx);
     } else {
       this.setSolution(ret.fields.length, $localize`Die ${ret.fields.length} Kandidaten ${this.getCandidateString(ret.candidates)} finden sich gemeinsam als einzige Zahlen in den {0} markierten Feldern des angegebenen Bereichs. Damit können sie als mögliche Kandidaten aus den restlichen Feldern des Bereichs entfernt werden.`);
     }
@@ -132,7 +133,7 @@ export abstract class SolverSudokuBaseService extends SolverBaseService {
     }
 
     let i = 0;
-    Object.keys(boxes).forEach(key => {
+    for (const key of Object.keys(boxes)) {
       if (i >= id) {
         const box = boxes[key];
         const temp = ret.clone;
@@ -143,7 +144,7 @@ export abstract class SolverSudokuBaseService extends SolverBaseService {
         }
       }
       i++;
-    });
+    }
   }
 
   /**

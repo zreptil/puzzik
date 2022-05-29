@@ -15,5 +15,11 @@ export class AnimDef {
       this.candidateMarks.push(eAnimMark.Show);
     }
   }
+
+  public jsonize(): any {
+    return {
+      fld: `${this.field?.x} - ${this.field?.y}`, animdef: JSON.parse(JSON.stringify(this))
+    };
+  }
 }
 

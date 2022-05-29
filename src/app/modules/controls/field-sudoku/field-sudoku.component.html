@@ -1,4 +1,4 @@
-<div [class]="containerClass" [ngStyle]="containerStyle" [ngSwitch]="mode">
+<div *ngIf="!cfg.isDebug" [class]="containerClass" [ngStyle]="containerStyle" [ngSwitch]="mode">
   <div *ngSwitchCase="0" class="content">
     <table>
       <tr *ngFor="let y of cfg.counter(3)">
@@ -12,4 +12,9 @@
   <div (click)="clickField()" *ngSwitchCase="1" class="content">
     {{value}}
   </div>
+</div>
+<div *ngIf="cfg.isDebug">
+  <ng-container *ngFor="let anim of main.solver?.animations">
+    <div *ngIf="isField(anim)">{{anim.backType}}</div>
+  </ng-container>
 </div>

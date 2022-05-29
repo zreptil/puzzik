@@ -59,7 +59,7 @@ export class PaintDefinitions {
 export abstract class SolverBaseService {
 
   public doAfter?: SolveFn;
-  public animations: AnimDef[];
+  public animations: AnimDef[] = [];
   protected _paintDef: PaintDefinitions;
   protected _solver: SolverBaseService | null = null;
   private _factor = 1.0;
@@ -82,7 +82,7 @@ export abstract class SolverBaseService {
                         public main: MainFormService,
                         public ruleset: RulesetBaseService) {
     this._paintDef = main.paintDef;
-    this.animations = [];
+    this.clearAnimations();
   }
 
   private _speed = 0.1;
@@ -163,6 +163,17 @@ export abstract class SolverBaseService {
   }
 
   /**
+   * Löscht die Animationsliste.
+   */
+  clearAnimations(idx?: number): void {
+    if (idx != null) {
+      this.animations.splice(idx, this.animations.length - idx);
+    } else {
+      this.animations = [];
+    }
+  }
+
+  /**
    * Versucht auf dem aktuellen Spielfeld eine Lösung für eine
    * Zahl oder den Ausschluss von Zahlen zu finden.
    */
@@ -185,13 +196,11 @@ export abstract class SolverBaseService {
     } else {
       this._hint = `${hint}`;
     }
-  }
-
-  /**
-   * Löscht die Animationsliste.
-   */
-  public clear(): void {
-    this.animations = [];
+    console.log('----------------------------', hint);
+    for (const a of this.animations) {
+      console.log(a.jsonize());
+    }
+    console.error('----------------------------', this.animations.length);
   }
 
   /**
@@ -206,7 +215,7 @@ export abstract class SolverBaseService {
    */
   public initAnimation(): void {
     this._factor = 1.0;
-    this.animations = [];
+    this.clearAnimations();
     this._hint = '';
     this.main.memorizeBoard();
   }
@@ -320,7 +329,7 @@ export abstract class SolverBaseService {
     } else if (this.cfg.appMode == eAppMode.AnimateAll) {
       this.main.updateHistory();
       // this._main.recreateForm();
-      this.animations = [];
+      this.clearAnimations();
       this._solver?.solveStep();
       if (this.animations.length > 0) {
         // this._main.setAppMode(eAppMode.AnimateAll);
@@ -336,7 +345,7 @@ export abstract class SolverBaseService {
   }
 
   public exitAnimationMode(): void {
-    this.animations = [];
+    this.clearAnimations();
     this._active = false;
     this.cfg.appMode = eAppMode.Game;
     // Wird aufgerufen, um den Hint entsprechend zu setzen
@@ -354,7 +363,7 @@ export abstract class SolverBaseService {
     this.doAfter = undefined;
 
     while (!done) {
-      this.animations = [];
+      this.clearAnimations();
       this._solver?.solveStep();
       done = this.animations.length == 0;
       if (!done) {

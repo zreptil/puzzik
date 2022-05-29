@@ -97,14 +97,17 @@ export class GameSudokuComponent implements OnInit {
       case 'solver-step':
         ret.icon = id;
         ret.tip = $localize`Ermittelt ein Lösungsfeld`;
+        ret.hidden = () => this.cfg.appMode === eAppMode.Edit;
         break;
       case 'solver-full':
         ret.icon = id;
         ret.tip = $localize`Führt die Lösung so weit durch, wie es die Programmlogik zulässt`;
+        ret.hidden = () => this.cfg.appMode === eAppMode.Edit;
         break;
       case 'undo':
         ret.icon = id;
         ret.tip = $localize`Macht den letzten Schritt rückgängig`;
+        ret.hidden = () => this.cfg.appMode === eAppMode.Edit;
         break;
       case 'debug':
         ret.icon = 'display';
@@ -124,11 +127,11 @@ export class GameSudokuComponent implements OnInit {
         switch (this.cfg.appMode) {
           case eAppMode.Game:
             this.cfg.appMode = eAppMode.Edit;
-            this.ruleset.clearGame();
             this.solver.solveExisting();
             break;
           case eAppMode.Edit:
             this.cfg.appMode = eAppMode.Game;
+            this.ruleset.clearGame();
             break;
         }
         break;
