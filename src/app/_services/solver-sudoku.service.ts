@@ -58,7 +58,7 @@ export class SolverSudokuService extends SolverSudokuBaseService {
         this.solveSingles,
         this.solveNaked,
         this.solveHidden,
-        this.solveLinked,
+        this.solveLinked, // 3I3C0@0@3E0@0@0@0@3B0@0@3F3C0@0@3I3E3H3E3F0@0@3B0@0@0@0@0@3C3A3H0@3E3G0@0@0@3E0@3B0@3I3H0@0@3H0@0@0@3E0@0@0@0@0@0@3H0@0@3A3E3I3E0@3H3B3A0@0@0@3D0@0@0@3E3F0@0@0@3H
         this.solveCrossingAreas, // 3I0@0@3B3D0@0@0@0@0@3E0@3F3I0@3B3C3A0@3B0@0@3E0@0@3I0@0@3I0@3G0@0@3C3B0@0@0@3B3I3C3E3F0@3G0@3G0@0@0@3B3I0@0@0@3F3I0@3B0@0@3G3C3E3A0@0@3G3I0@3F3B3B0@3G0@3H3F0@0@3I
         this.solveXWing, // 3A0@0@0@0@0@3E3F3I3D3I3B0@3E3F3A0@3H0@3E3F3A0@3I3B3D0@0@0@3I3F3D0@3H0@3A0@3F3D0@3A0@0@0@0@3B3A3H0@3C3E3F0@3D0@3D0@3E0@0@0@3A3F3I0@3E0@3F3A3D0@3B3F3B3A0@0@0@0@0@3E
         this.solveYWing
@@ -400,7 +400,7 @@ export class SolverSudokuService extends SolverSudokuBaseService {
                                   keep = true;
                                   this.delCandidate(fld, eAnimBack.MarkField, list.candidate);
                                 } else {
-                                  this.markCandidate(fld, eAnimBack.MarkField, list.candidate);
+                                  this.markCandidate(fld, eAnimBack.MarkTargetField, list.candidate);
                                 }
                               } else {
                                 this.markCandidate(fld, eAnimBack.MarkField, list.candidate);
@@ -419,7 +419,7 @@ export class SolverSudokuService extends SolverSudokuBaseService {
                                   keep = true;
                                   this.delCandidate(fld, eAnimBack.MarkField, list.candidate);
                                 } else {
-                                  this.markCandidate(fld, eAnimBack.MarkField, list.candidate);
+                                  this.markCandidate(fld, eAnimBack.MarkTargetField, list.candidate);
                                 }
                               } else {
                                 this.markCandidate(fld, eAnimBack.MarkField, list.candidate);
@@ -430,7 +430,7 @@ export class SolverSudokuService extends SolverSudokuBaseService {
                         break;
                     }
                     if (keep && this.hasAnimation) {
-                      this.setSolution(7, $localize`Der Kandidat ${list.candidate} kommt in den markierten Bereichen genau zweimal an der gleichen Stelle vor. Damit kann er aus den gefärbten Feldern entfernt werden.`);
+                      this.setSolution(7, $localize`Der Kandidat ${list.candidate} kommt in den markierten Bereichen genau zweimal an der <span class="MarkField">gleichen Stelle</span> vor. Damit kann er aus den <span class="MarkTargetField">gefärbten Feldern</span> entfernt werden.`);
                       return;
                     }
                     this.clearAnimations(animIdx);

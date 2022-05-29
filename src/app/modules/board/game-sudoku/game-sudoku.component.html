@@ -37,7 +37,7 @@
   </tr>
   <tr class="info-tr">
     <td *ngIf="cfg.showRulers" class="info-td">&nbsp;</td>
-    <td [colSpan]="cfg.numberCount" class="info-td">
+    <td *ngIf="cfg.appMode === 0" [colSpan]="cfg.numberCount" class="info-td">
       <div [innerHTML]="main.solver?.hint" class="info"></div>
     </td>
     <td *ngIf="cfg.showRulers" class="info-td">&nbsp;</td>

@@ -196,11 +196,11 @@ export abstract class SolverBaseService {
     } else {
       this._hint = `${hint}`;
     }
-    console.log('----------------------------', hint);
-    for (const a of this.animations) {
-      console.log(a.jsonize());
-    }
-    console.error('----------------------------', this.animations.length);
+    // console.log('----------------------------', hint);
+    // for (const a of this.animations) {
+    //   console.log(a.jsonize());
+    // }
+    // console.error('----------------------------', this.animations.length);
   }
 
   /**
