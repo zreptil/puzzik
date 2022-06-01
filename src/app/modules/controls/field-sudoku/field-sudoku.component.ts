@@ -22,7 +22,7 @@ export class FieldSudokuComponent {
   }
 
   get mode(): number {
-    let ret = this.cfg.gameMode === eGameMode.Solver && this.cfg.appMode === eAppMode.Game ? 0 : 1;
+    let ret = this.cfg.gameMode === eGameMode.Solver /* && this.cfg.appMode === eAppMode.Game */ ? 0 : 1;
     if ((this.field?.value || 0) > 0) {
       return 1;
     }
@@ -102,7 +102,7 @@ export class FieldSudokuComponent {
         }
         break;
       case eAppMode.Edit:
-        if (this.field?.type === eFieldType.User) {
+        if ((this.field?.value || 0) <= 0) {
           ret = '';
         }
         break;
@@ -127,31 +127,40 @@ export class FieldSudokuComponent {
 
   candidateClass(idx: number): string[] {
     const ret: string[] = [];
-    if (this.field?.getCandidate(idx)?.hidden) {
-      ret.push('off');
-    } else if (this.field != null && this.main.solver?.hasAnimation) {
-      const fld = this.field;
-      let anim = this.main.solver.animations.find(anim => anim.field?.equals(fld) && anim.foreType === eAnimFore.DelCandidate && anim.candidates.find(c => +c === +idx));
-      if (anim != null) {
-        ret.push('delCandidate');
-        return ret;
-      }
-      anim = this.main.solver.animations.find(anim => anim.field?.equals(fld) && anim.foreType === eAnimFore.SetCandidate && anim.candidates.find(c => +c === +idx));
-      if (anim != null) {
-        ret.push('setCandidate');
-        return ret;
-      }
-      anim = this.main.solver.animations.find(anim => anim.field?.equals(fld) && anim.foreType === eAnimFore.MarkCandidate && anim.candidates.find(c => +c === +idx));
-      if (anim != null) {
-        switch (anim.candidateMarks[idx]) {
-          case eAnimMark.Mark:
-            ret.push('markCandidate');
-            break;
-          case eAnimMark.Show:
-            ret.push('showCandidate');
-            break;
+    switch (this.cfg.appMode) {
+      case eAppMode.Edit:
+        if (this.field?.getCandidate(idx)?.hidden) {
+          ret.push('off');
         }
-      }
+        break;
+      case eAppMode.Game:
+        if (this.field?.getCandidate(idx)?.hidden) {
+          ret.push('off');
+        } else if (this.field != null && this.main.solver?.hasAnimation) {
+          const fld = this.field;
+          let anim = this.main.solver.animations.find(anim => anim.field?.equals(fld) && anim.foreType === eAnimFore.DelCandidate && anim.candidates.find(c => +c === +idx));
+          if (anim != null) {
+            ret.push('delCandidate');
+            return ret;
+          }
+          anim = this.main.solver.animations.find(anim => anim.field?.equals(fld) && anim.foreType === eAnimFore.SetCandidate && anim.candidates.find(c => +c === +idx));
+          if (anim != null) {
+            ret.push('setCandidate');
+            return ret;
+          }
+          anim = this.main.solver.animations.find(anim => anim.field?.equals(fld) && anim.foreType === eAnimFore.MarkCandidate && anim.candidates.find(c => +c === +idx));
+          if (anim != null) {
+            switch (anim.candidateMarks[idx]) {
+              case eAnimMark.Mark:
+                ret.push('markCandidate');
+                break;
+              case eAnimMark.Show:
+                ret.push('showCandidate');
+                break;
+            }
+          }
+        }
+        break;
     }
     return ret;
   }
@@ -160,20 +169,58 @@ export class FieldSudokuComponent {
     if (this.field == null) {
       return;
     }
-    const candidate = this.field.getCandidate(idx);
-    if (candidate != null) {
-      candidate.hidden = !candidate.hidden;
-      if (this.field.candidates.filter(c => !c.hidden).length === 1) {
-        this.field.value = this.field.candidates.find(c => !c.hidden)?.value || 1;
-      }
-      this.main.solver?.solveExisting();
-      this.main.solver?.ruleset.validateFields(false);
-      this.cfg.currentBoard(true).content = this.main.solver?.ruleset.getBoardString(true);
-      this.cfg.writeSettings();
+    let clearCandidates = false;
+    switch (this.cfg.appMode) {
+      case eAppMode.Edit:
+        this.field.value = idx;
+        this.field.type = eFieldType.Preset;
+        clearCandidates = true;
+        break;
+      case eAppMode.Game:
+        const candidate = this.field.getCandidate(idx);
+        if (candidate != null) {
+          candidate.hidden = !candidate.hidden;
+          if (this.field.candidates.filter(c => !c.hidden).length === 1) {
+            this.field.value = this.field.candidates.find(c => !c.hidden)?.value || 1;
+          }
+        }
+        break;
     }
+    this.adjustCandidates(clearCandidates);
+  }
+
+  adjustCandidates(clearCandidates: boolean): void {
+    if (clearCandidates) {
+      for (const fld of this.main.paintDef.fields) {
+        fld.clearHidden();
+      }
+    }
+    this.main.solver?.solveExisting();
+    this.main.solver?.ruleset.validateFields(false);
+    this.cfg.currentBoard(true).content = this.main.solver?.ruleset.getBoardString(true);
+    this.cfg.writeSettings();
   }
 
   clickField(): void {
-    this.main.solver?.onFieldClicked(this.field);
+    if (this.field == null) {
+      return;
+    }
+    switch (this.cfg.appMode) {
+      case eAppMode.Edit:
+        switch (this.cfg.gameMode) {
+          case eGameMode.Normal:
+            this.main.solver?.onFieldClicked(this.field);
+            break;
+          case eGameMode.Solver:
+            this.field.type = eFieldType.User;
+            this.field.value = -1;
+            this.adjustCandidates(true);
+            break;
+        }
+        break;
+      case eAppMode.Game:
+        this.main.solver?.onFieldClicked(this.field);
+        break;
+    }
   }
 }

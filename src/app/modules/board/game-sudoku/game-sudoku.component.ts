@@ -31,7 +31,13 @@ export class GameSudokuComponent implements OnInit {
   }
 
   get isNumbersVisible(): boolean {
-    return this.cfg.appMode === eAppMode.Edit || this.cfg.gameMode === eGameMode.Normal;
+    switch (this.cfg.appMode) {
+      case eAppMode.Edit:
+        return this.cfg.gameMode === eGameMode.Normal;
+      case eAppMode.Game:
+        return this.cfg.gameMode === eGameMode.Normal;
+    }
+    return false;
   }
 
   classFor(x: number, y: number): string[] {
@@ -71,13 +77,12 @@ export class GameSudokuComponent implements OnInit {
         ret.icon = `gameMode${eGameMode[this.cfg.gameMode]}`;
         switch (this.cfg.gameMode) {
           case eGameMode.Normal:
-            ret.tip = $localize`Lösungsmodus aktivieren`;
+            ret.tip = this.cfg.appMode === eAppMode.Edit ? $localize`Lösungsmodus aktivieren` : $localize`Lösungsmodus aktivieren`;
             break;
           case eGameMode.Solver:
-            ret.tip = $localize`Lösungsmodus deaktivieren`;
+            ret.tip = this.cfg.appMode === eAppMode.Edit ? $localize`Lösungsmodus deaktivieren` : $localize`Lösungsmodus deaktivieren`;
             break;
         }
-        ret.hidden = () => this.cfg.appMode === eAppMode.Edit;
         break;
       case 'rulers':
         ret.icon = id;
@@ -131,7 +136,6 @@ export class GameSudokuComponent implements OnInit {
             break;
           case eAppMode.Edit:
             this.cfg.appMode = eAppMode.Game;
-            this.ruleset.clearGame();
             break;
         }
         break;

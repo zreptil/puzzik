@@ -57,6 +57,7 @@ export class SolverSudokuService extends SolverSudokuBaseService {
         this.solveNakedSingle,
         this.solveSingles,
         this.solveNaked,
+        this.solveNakedPairs,
         this.solveHidden,
         this.solveLinked, // 3I3C0@0@3E0@0@0@0@3B0@0@3F3C0@0@3I3E3H3E3F0@0@3B0@0@0@0@0@3C3A3H0@3E3G0@0@0@3E0@3B0@3I3H0@0@3H0@0@0@3E0@0@0@0@0@0@3H0@0@3A3E3I3E0@3H3B3A0@0@0@3D0@0@0@3E3F0@0@0@3H
         this.solveCrossingAreas, // 3I0@0@3B3D0@0@0@0@0@3E0@3F3I0@3B3C3A0@3B0@0@3E0@0@3I0@0@3I0@3G0@0@3C3B0@0@0@3B3I3C3E3F0@3G0@3G0@0@0@3B3I0@0@0@3F3I0@3B0@0@3G3C3E3A0@0@3G3I0@3F3B3B0@3G0@3H3F0@0@3I
@@ -72,6 +73,14 @@ export class SolverSudokuService extends SolverSudokuBaseService {
         return;
       }
     }
+
+  }
+
+  /**
+   * Naked Pairs
+   * @protected
+   */
+  protected solveNakedPairs(): void {
 
   }
 
