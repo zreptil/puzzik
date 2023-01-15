@@ -81,7 +81,15 @@ export class SolverSudokuService extends SolverSudokuBaseService {
    * @protected
    */
   protected solveNakedPairs(): void {
-
+    for (const area of this._paintDef.areas) {
+      const counts = this.getCandidateCount(area);
+      if (counts[2] != null) {
+        console.log('--------------');
+        for (const list of counts[2]) {
+          console.log(list);
+        }
+      }
+    }
   }
 
   private findField(list: FieldLink[], candidate: number, fld: FieldDef): FieldLink | null {
@@ -266,7 +274,7 @@ export class SolverSudokuService extends SolverSudokuBaseService {
         link.setTag(1);
         const tree: FieldLink[] = [];
         link.collectFields(tree);
-        const count = this.count;
+        // const count = this.count;
         const delTag = this.checkLinkTags(tree, 0, 0);
         if (delTag != 0) {
           keep = true;
