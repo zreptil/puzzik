@@ -5,15 +5,18 @@ import {GameBoardComponent} from './game-board/game-board.component';
 import {ControlsModule} from '../controls/controls.module';
 import {MaterialModule} from '../../material.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { GameStr8tsComponent } from './game-str8ts/game-str8ts.component';
 
 @NgModule({
   declarations: [
     GameSudokuComponent,
-    GameBoardComponent
+    GameBoardComponent,
+    GameStr8tsComponent
   ],
   exports: [
     GameBoardComponent,
-    GameSudokuComponent
+    GameSudokuComponent,
+    GameStr8tsComponent
   ],
   imports: [
     CommonModule,

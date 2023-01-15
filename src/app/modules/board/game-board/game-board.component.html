@@ -1,1 +1,2 @@
-<app-game-sudoku></app-game-sudoku>
+<app-game-sudoku *ngIf="main.cfg.puzzleType==='Sudoku'"></app-game-sudoku>
+<app-game-str8ts *ngIf="main.cfg.puzzleType==='Str8ts'"></app-game-str8ts>
