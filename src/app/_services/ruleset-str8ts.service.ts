@@ -19,7 +19,7 @@ export class RulesetStr8tsService extends RulesetBaseService {
   }
 
   getVariations(): number[] {
-    return [];
+    return [9, 6];
   }
 
   validateFields(setValue: boolean): void {

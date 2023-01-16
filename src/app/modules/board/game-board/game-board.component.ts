@@ -1,6 +1,8 @@
 import {Component, HostListener, OnInit} from '@angular/core';
 import {MainFormService} from '../../../_services/main-form.service';
 import {ButtonData} from '../../controls/button/button.component';
+import {SolverSudokuService} from '../../../_services/solver-sudoku.service';
+import {SolverStr8tsService} from '../../../_services/solver-str8ts.service';
 
 @Component({
   selector: 'app-game-board',
@@ -9,7 +11,9 @@ import {ButtonData} from '../../controls/button/button.component';
 })
 export class GameBoardComponent implements OnInit {
 
-  constructor(public main: MainFormService) {
+  constructor(public main: MainFormService,
+              public sudoku: SolverSudokuService,
+              public str8ts: SolverStr8tsService) {
   }
 
   @HostListener('window:keyup', ['$event'])
@@ -22,16 +26,31 @@ export class GameBoardComponent implements OnInit {
   keyClick(key: string): void {
     this.main.paintDef.currentCtrl = {
       id: 'number',
-      click(btn: ButtonData): void {
+      solver: this.main.solver,
+      click(_btn: ButtonData): void {
       }, hidden(): boolean {
         return false;
-      }, icon: '', marked(btn: ButtonData): boolean {
+      }, icon: '', marked(_btn: ButtonData): boolean {
         return false;
-      }, text: '', tip: '', value: key === '0' ? '-1' : key
+      }, text: '', tip: '', value: key === '0' ? '-1' : key,
     };
   }
 
   ngOnInit(): void {
   }
 
+  btnTypeClick() {
+    const types = [
+      {id: 'Sudoku', solver: this.sudoku},
+      {id: 'Str8ts', solver: this.str8ts}
+    ];
+    let idx = types.findIndex(item => item.id === this.main.cfg.puzzleType) ?? -1;
+    idx++;
+    if (idx >= types.length) {
+      idx = 0;
+    }
+    this.main.cfg.puzzleType = types[idx].id;
+    this.main.reload(types[idx].solver);
+    this.main.cfg.writeSettings();
+  }
 }

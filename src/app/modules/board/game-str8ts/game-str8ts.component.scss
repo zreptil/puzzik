@@ -1,0 +1,65 @@
+$thin: 1px;
+$thick: 3px;
+
+:host {
+}
+
+.controls {
+  display: flex;
+  flex-flow: row;
+  justify-content: center;
+  margin-top: 0.2em;
+  margin-bottom: 0.2em;
+}
+
+.info-tr {
+  border: 0 !important;
+}
+
+.info-td {
+  width: 0;
+  border: 0 !important;
+}
+
+.info {
+  margin-top: 1em;
+  word-wrap: break-word;
+  font-size: 50%;
+  text-align: center;
+}
+
+.ruler {
+  text-align: center;
+  border: 0 !important;
+  font-size: 75%;
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.5);
+  padding: 0 0.5em !important;
+}
+
+table {
+  border-collapse: collapse;
+
+  tr {
+    td {
+      border: $thin solid black;
+      padding: 0;
+    }
+
+    td.top {
+      border-top-width: $thick;
+    }
+
+    td.bottom {
+      border-bottom-width: $thick;
+    }
+
+    td.left {
+      border-left-width: $thick;
+    }
+
+    td.right {
+      border-right-width: $thick;
+    }
+  }
+}

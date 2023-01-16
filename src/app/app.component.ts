@@ -11,7 +11,7 @@ export class AppComponent {
   title = 'puzzik';
 
   constructor(main: MainFormService,
-              sudoku: SolverSudokuService) {
-    main.reload(sudoku);
+              solver: SolverSudokuService) {
+    main.reload(solver);
   }
 }

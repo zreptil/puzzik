@@ -1,0 +1,56 @@
+$size: 2em;
+.container {
+  width: $size;
+  height: $size;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  padding: 0;
+  margin: 0;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.None {
+
+}
+
+.fldArea0 {
+  background-color: lime !important;
+}
+
+.fldArea1 {
+  background-color: red !important;
+}
+
+.fldArea2 {
+  background-color: yellow !important;
+}
+
+.fldArea3 {
+  background-color: blue !important;
+}
+
+.content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  height: 100%;
+
+  td {
+    text-align: center;
+    font-size: 0.5em;
+  }
+
+  td.off {
+    opacity: 0.2;
+  }
+}

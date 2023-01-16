@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {eFieldType, FieldDef} from '../_model/field-def';
 import {FieldDefService} from './field-def.service';
 import {PaintDefinitions, SolverBaseService} from './solver-base.service';
-import {ConfigService} from './config.service';
+import {ConfigService, eAppMode, eGameMode} from './config.service';
 import {MatDialog} from '@angular/material/dialog';
 import {
   DialogButton,
@@ -11,6 +11,8 @@ import {
   eDialogButtonType
 } from '../modules/controls/dialog/dialog.component';
 import {Observable} from 'rxjs';
+import {ButtonData} from '../modules/controls/button/button.component';
+import {RulesetBaseService} from './ruleset-base.service';
 
 @Injectable({
   providedIn: 'root'
@@ -127,7 +129,7 @@ export abstract class MainFormService {
     const variations = solver.ruleset.getVariations();
     let found = 0;
     for (let i = 0; i < variations.length; i++) {
-      if (variations[i] == this.cfg.numberCount) {
+      if (variations[i] === this.cfg.numberCount) {
         found = i;
       }
     }
@@ -165,4 +167,174 @@ export abstract class MainFormService {
     window.open(`${url}?bd=${this.boardString}`, 'Oleole');
   }
 
+  btnData(id: string, solver: SolverBaseService, ruleset: RulesetBaseService, param?: any): ButtonData {
+    const ret = new ButtonData(id, solver);
+    ret.click = this.btnClick.bind(this);
+    switch (id) {
+      case 'appMode':
+        ret.icon = `appMode${eAppMode[this.cfg.appMode]}`;
+        switch (this.cfg.appMode) {
+          case eAppMode.Game:
+            ret.tip = $localize`Zum Editiermodus wechseln`;
+            break;
+          case eAppMode.Edit:
+            ret.tip = $localize`Zum Spielmodus wechseln`;
+            break;
+        }
+        break;
+      case 'gameMode':
+        ret.icon = `gameMode${eGameMode[this.cfg.gameMode]}`;
+        switch (this.cfg.gameMode) {
+          case eGameMode.Normal:
+            ret.tip = this.cfg.appMode === eAppMode.Edit ? $localize`Lösungsmodus aktivieren` : $localize`Lösungsmodus aktivieren`;
+            break;
+          case eGameMode.Solver:
+            ret.tip = this.cfg.appMode === eAppMode.Edit ? $localize`Lösungsmodus deaktivieren` : $localize`Lösungsmodus deaktivieren`;
+            break;
+        }
+        break;
+      case 'rulers':
+        ret.icon = id;
+        ret.tip = $localize`Schaltet die Lineale um`;
+        break;
+      case 'clearUser':
+        ret.icon = 'empty-all-on';
+        ret.tip = this.cfg.appMode === eAppMode.Game ? $localize`Entfernt alle Benutzereinträge` : $localize`Entfernt alle Eingaben`;
+        break;
+      case 'number':
+        ret.value = param === 0 ? -1 : param;
+        ret.text = param === 0 ? '' : param;
+        ret.marked = (data: ButtonData) => {
+          return +data?.value === +this.paintDef.currentCtrl?.value;
+        };
+        break;
+      case 'solver-step':
+        ret.icon = id;
+        ret.tip = $localize`Ermittelt ein Lösungsfeld`;
+        ret.hidden = () => this.cfg.appMode === eAppMode.Edit;
+        break;
+      case 'solver-full':
+        ret.icon = id;
+        ret.tip = $localize`Führt die Lösung so weit durch, wie es die Programmlogik zulässt`;
+        ret.hidden = () => this.cfg.appMode === eAppMode.Edit;
+        break;
+      case 'undo':
+        ret.icon = id;
+        ret.tip = $localize`Macht den letzten Schritt rückgängig`;
+        ret.hidden = () => this.cfg.appMode === eAppMode.Edit;
+        break;
+      case 'debug':
+        ret.icon = 'display';
+        ret.tip = $localize`Debugmodus`;
+        break;
+      case 'weblink':
+        ret.icon = id;
+        ret.tip = $localize`Ruft die Webseite zum Lösen des aktuellen Sudokus auf`;
+        break;
+    }
+    return ret;
+  }
+
+  btnClick(btn: ButtonData) {
+    switch (btn.id) {
+      case 'appMode':
+        switch (this.cfg.appMode) {
+          case eAppMode.Game:
+            this.cfg.appMode = eAppMode.Edit;
+            btn.solver?.solveExisting();
+            break;
+          case eAppMode.Edit:
+            this.cfg.appMode = eAppMode.Game;
+            break;
+        }
+        break;
+      case 'gameMode':
+        switch (this.cfg.gameMode) {
+          case eGameMode.Normal:
+            this.cfg.gameMode = eGameMode.Solver;
+            break;
+          case eGameMode.Solver:
+            this.cfg.gameMode = eGameMode.Normal;
+            break;
+        }
+        btn.solver?.ruleset.validateFields(false);
+        break;
+      case 'rulers':
+        this.cfg.showRulers = !this.cfg.showRulers;
+        break;
+      case 'clearUser':
+        this.confirm(this.cfg.appMode === eAppMode.Game
+          ? $localize`Hiermit werden alle Eingaben des Benutzers gelöscht. Soll das wirklich ausgeführt werden?`
+          : $localize`Hiermit werden alle Felder gelöscht. Soll das wirklich ausgeführt werden?`).subscribe(
+          (dlgBtn: DialogButton) => {
+            switch (dlgBtn?.type) {
+              case eDialogButtonType.Yes:
+                btn.solver?.ruleset.clearFields(this.cfg.appMode === eAppMode.Game ? eFieldType.User : undefined);
+                btn.solver?.solveExisting();
+                this.cfg.currentBoard(true).content = btn.solver?.ruleset.getBoardString(false);
+                this.cfg.writeSettings();
+                break;
+            }
+          });
+        break;
+      case 'number':
+        this.paintDef.currentCtrl = btn;
+        break;
+      case 'solver-step':
+        if (btn.solver?.animations?.length || 0 > 0) {
+          btn.solver?.executeAnimationActions();
+          btn.solver?.initAnimation();
+          this.cfg.currentBoard(true).content = btn.solver?.ruleset.getBoardString(false);
+          this.cfg.writeSettings();
+        } else {
+          btn.solver?.solveStep();
+        }
+        break;
+      case 'solver-full':
+        let done = false;
+        while (!done) {
+          btn.solver?.solveStep();
+          done = (btn.solver?.animations?.length || 0) === 0;
+          if (!done) {
+            btn.solver?.executeAnimationActions();
+          }
+        }
+        break;
+      case 'undo':
+        this.undoLastStep();
+        break;
+      case 'debug':
+        this.cfg.isDebug = !this.cfg.isDebug;
+        break;
+      case 'weblink':
+        this.callWebPage('https://www.sudokuwiki.org/sudoku.htm');
+        break;
+    }
+    this.cfg.writeSettings();
+  }
+
+  get isNumbersVisible(): boolean {
+    switch (this.cfg.appMode) {
+      case eAppMode.Edit:
+        return this.cfg.gameMode === eGameMode.Normal;
+      case eAppMode.Game:
+        return this.cfg.gameMode === eGameMode.Normal;
+    }
+    return false;
+  }
+
+  classFor(x: number, y: number): string[] {
+    const ret: string[] = [];
+    if (x === 0) {
+      ret.push('left');
+    } else if (x === this.cfg.numberCount - 1) {
+      ret.push('right');
+    }
+    if (y === 0) {
+      ret.push('top');
+    } else if (y === this.cfg.numberCount - 1) {
+      ret.push('bottom');
+    }
+    return ret;
+  }
 }

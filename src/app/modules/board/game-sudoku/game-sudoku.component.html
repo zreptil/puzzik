@@ -1,13 +1,13 @@
 <div class="controls">
-  <app-button [data]="btnData('appMode')"></app-button>
-  <app-button [data]="btnData('gameMode')"></app-button>
-  <app-button [data]="btnData('rulers')"></app-button>
-  <app-button [data]="btnData('solver-step')"></app-button>
-  <app-button [data]="btnData('solver-full')"></app-button>
-  <app-button [data]="btnData('undo')"></app-button>
-  <app-button [data]="btnData('clearUser')"></app-button>
-  <app-button [data]="btnData('weblink')"></app-button>
-  <app-button *ngIf="cfg.devSupport" [data]="btnData('debug')"></app-button>
+  <app-button [data]="main.btnData('appMode', solver, ruleset)"></app-button>
+  <app-button [data]="main.btnData('gameMode', solver, ruleset)"></app-button>
+  <app-button [data]="main.btnData('rulers', solver, ruleset)"></app-button>
+  <app-button [data]="main.btnData('solver-step', solver, ruleset)"></app-button>
+  <app-button [data]="main.btnData('solver-full', solver, ruleset)"></app-button>
+  <app-button [data]="main.btnData('undo', solver, ruleset)"></app-button>
+  <app-button [data]="main.btnData('clearUser', solver, ruleset)"></app-button>
+  <app-button [data]="main.btnData('weblink', solver, ruleset)"></app-button>
+  <app-button *ngIf="cfg.devSupport" [data]="main.btnData('debug', solver, ruleset)"></app-button>
 </div>
 <table>
   <tr *ngIf="cfg.showRulers">
@@ -43,6 +43,6 @@
     <td *ngIf="cfg.showRulers" class="info-td">&nbsp;</td>
   </tr>
 </table>
-<div *ngIf="isNumbersVisible" class="controls">
-  <app-button *ngFor="let num of cfg.counter(cfg.numberCount + 1)" [data]="btnData('number', num)"></app-button>
+<div *ngIf="main.isNumbersVisible" class="controls">
+  <app-button *ngFor="let num of cfg.counter(cfg.numberCount + 1)" [data]="main.btnData('number', solver, ruleset, num)"></app-button>
 </div>

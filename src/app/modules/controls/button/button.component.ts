@@ -1,4 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
+import {SolverBaseService} from '../../../_services/solver-base.service';
+import {RulesetBaseService} from '../../../_services/ruleset-base.service';
 
 export class ButtonData {
   icon?: string;
@@ -8,7 +10,8 @@ export class ButtonData {
   click?: (btn: ButtonData) => void;
   marked?: (btn: ButtonData) => boolean;
 
-  constructor(public id: string) {
+  constructor(public id: string,
+              public solver?: SolverBaseService) {
   }
 
   hidden: () => boolean = () => false;
@@ -23,7 +26,8 @@ export class ButtonComponent implements OnInit {
   @Input()
   data?: ButtonData;
 
-  constructor() {
+  constructor(public solver: SolverBaseService,
+              public ruleset: RulesetBaseService) {
   }
 
   get btnClass(): string[] {

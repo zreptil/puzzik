@@ -1,2 +1,11 @@
 :host {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+}
+.puzzleType {
+  background: transparent;
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 1em;
+  line-height: 1.5em;
 }
