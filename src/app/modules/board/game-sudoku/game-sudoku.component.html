@@ -32,7 +32,3 @@
     <td *ngIf="cfg.showRulers" class="info-td">&nbsp;</td>
   </tr>
 </table>
-<div *ngIf="main.isNumbersVisible" class="controls">
-  <app-button *ngFor="let num of cfg.counter(cfg.numberCount + 1)"
-              [data]="main.btnData('number', solver, num)"></app-button>
-</div>

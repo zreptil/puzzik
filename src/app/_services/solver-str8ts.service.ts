@@ -6,6 +6,7 @@ import {SolveFn} from './solver-base.service';
 import {eFieldType, FieldDef} from '../_model/field-def';
 import {Area} from '../_model/area';
 import {SolverSudokuBaseService} from './solver-sudoku-base.service';
+import {ButtonData} from '../modules/controls/button/button.component';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,12 @@ export class SolverStr8tsService extends SolverSudokuBaseService {
               _main: MainFormService,
               ruleset: RulesetStr8tsService) {
     super(cfg, _main, ruleset);
+  }
+
+  override get controls(): ButtonData[] {
+    const ret = super.controls;
+    ret.push(this.main.btnData('block', this, this.cfg.numberCount + 1));
+    return ret;
   }
 
   solveStep(): void {

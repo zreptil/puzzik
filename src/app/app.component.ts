@@ -1,4 +1,5 @@
-import {Component} from '@angular/core';
+import {Component, HostListener} from '@angular/core';
+import {MainFormService} from './_services/main-form.service';
 
 @Component({
   selector: 'app-root',
@@ -8,11 +9,16 @@ import {Component} from '@angular/core';
 export class AppComponent {
   title = 'puzzik';
 
-  constructor() {
+  constructor(public main: MainFormService) {
   }
 
-  // constructor(main: MainFormService,
-  //             solver: SolverSudokuService) {
-  //   main.reload(solver);
-  // }
+  @HostListener('wheel', ['$event'])
+  public onScroll(event: WheelEvent) {
+    const diff = Math.sign(event.deltaY);
+    const v = +this.main.paintDef.currentCtrl?.value + diff;
+    const ctrl = this.main.solver?.controls.find(ctrl => ctrl.value === v);
+    if (ctrl != null) {
+      this.main.paintDef.currentCtrl = ctrl;
+    }
+  }
 }

@@ -7,6 +7,7 @@ import {ConfigService, eAppMode, eGameMode} from './config.service';
 import {AnimDef} from '../_model/anim-def';
 import {LinkedCandidates} from '../_model/linked-candidates';
 import {PaintDefinitions} from '../_model/paint-definitions';
+import {ButtonData} from '../modules/controls/button/button.component';
 
 export type SolveFn = () => void;
 
@@ -70,6 +71,8 @@ export abstract class SolverBaseService {
   public set difficulty(value: number) {
     this._difficulty.set(value, (this._difficulty.get(value) || 0) + 1);
   }
+
+  abstract get controls(): ButtonData[];
 
   private _hint: string | null = null;
 

@@ -218,6 +218,7 @@ export abstract class MainFormService {
         ret.marked = (data: ButtonData) => {
           return +data?.value === +this.paintDef.currentCtrl?.value;
         };
+        ret.hidden = () => this.cfg.appMode !== eAppMode.Edit;
         break;
       case 'number':
         ret.value = param === 0 ? -1 : param;
@@ -248,6 +249,7 @@ export abstract class MainFormService {
       case 'weblink':
         ret.icon = id;
         ret.tip = $localize`Ruft die Webseite zum Lösen des aktuellen Sudokus auf`;
+        ret.hidden = () => this.cfg.puzzleType !== 'Sudoku';
         break;
     }
     return ret;

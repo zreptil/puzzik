@@ -7,6 +7,7 @@ import {Area} from '../_model/area';
 import {CandidateBox} from '../_model/candidate-box';
 import {eAnimBack, eFieldType, FieldDef} from '../_model/field-def';
 import {CandidateFields} from '../_model/candidate-fields';
+import {ButtonData} from '../modules/controls/button/button.component';
 
 export type CandidateBoxes = { [key: string]: CandidateBox };
 export type CandidateFieldCounts = { [key: number]: CandidateFields[] };
@@ -20,6 +21,14 @@ export abstract class SolverSudokuBaseService extends SolverBaseService {
               main: MainFormService,
               ruleset: RulesetSudokuService) {
     super(cfg, main, ruleset);
+  }
+
+  get controls(): ButtonData[] {
+    const ret = [];
+    for (const num of this.cfg.counter(this.cfg.numberCount + 1)) {
+      ret.push(this.main.btnData('number', this, num));
+    }
+    return ret;
   }
 
   /**
