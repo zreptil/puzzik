@@ -21,6 +21,16 @@ export class FieldSudokuComponent {
               public main: MainFormService) {
   }
 
+  get areaNumber(): string {
+    let ret = [];
+    for (let idx = 0; idx < this.main.paintDef.areas.length; idx++) {
+      if (this.main.paintDef.areas[idx].fields.find(fld => fld.x === this.field?.x && fld.y === this.field?.y) != null) {
+        ret.push(`${idx}`);
+      }
+    }
+    return ret.join('/');
+  }
+
   get mode(): number {
     let ret = this.cfg.gameMode === eGameMode.Solver /* && this.cfg.appMode === eAppMode.Game */ ? 0 : 1;
     if ((this.field?.value || 0) > 0) {

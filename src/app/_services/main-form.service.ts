@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {eFieldType, FieldDef} from '../_model/field-def';
 import {FieldDefService} from './field-def.service';
-import {PaintDefinitions, SolverBaseService} from './solver-base.service';
+import {SolverBaseService} from './solver-base.service';
 import {ConfigService, eAppMode, eGameMode} from './config.service';
 import {MatDialog} from '@angular/material/dialog';
 import {
@@ -12,7 +12,7 @@ import {
 } from '../modules/controls/dialog/dialog.component';
 import {Observable} from 'rxjs';
 import {ButtonData} from '../modules/controls/button/button.component';
-import {RulesetBaseService} from './ruleset-base.service';
+import {PaintDefinitions} from '../_model/paint-definitions';
 
 @Injectable({
   providedIn: 'root'
@@ -51,6 +51,16 @@ export abstract class MainFormService {
       }
     }
     return ret;
+  }
+
+  get isNumbersVisible(): boolean {
+    switch (this.cfg.appMode) {
+      case eAppMode.Edit:
+        return this.cfg.gameMode === eGameMode.Normal;
+      case eAppMode.Game:
+        return this.cfg.gameMode === eGameMode.Normal;
+    }
+    return false;
   }
 
   public confirm(text: string): Observable<DialogButton> {
@@ -137,6 +147,7 @@ export abstract class MainFormService {
     solver.ruleset.fillBoard(solver.ruleset.currentBoard, false);
     solver.ruleset.validateFields(false);
     this.solver = solver;
+    this.solver.ruleset.createAreas();
 
     /*
     PaintDef.SmallLine = (int)Math.Sqrt(SettingsSX.NumberCount);
@@ -167,7 +178,7 @@ export abstract class MainFormService {
     window.open(`${url}?bd=${this.boardString}`, 'Oleole');
   }
 
-  btnData(id: string, solver: SolverBaseService, ruleset: RulesetBaseService, param?: any): ButtonData {
+  btnData(id: string, solver: SolverBaseService, param?: any): ButtonData {
     const ret = new ButtonData(id, solver);
     ret.click = this.btnClick.bind(this);
     switch (id) {
@@ -201,6 +212,13 @@ export abstract class MainFormService {
         ret.icon = 'empty-all-on';
         ret.tip = this.cfg.appMode === eAppMode.Game ? $localize`Entfernt alle Benutzereinträge` : $localize`Entfernt alle Eingaben`;
         break;
+      case 'block':
+        ret.value = param === 0 ? -1 : param;
+        ret.text = '';
+        ret.marked = (data: ButtonData) => {
+          return +data?.value === +this.paintDef.currentCtrl?.value;
+        };
+        break;
       case 'number':
         ret.value = param === 0 ? -1 : param;
         ret.text = param === 0 ? '' : param;
@@ -211,12 +229,12 @@ export abstract class MainFormService {
       case 'solver-step':
         ret.icon = id;
         ret.tip = $localize`Ermittelt ein Lösungsfeld`;
-        ret.hidden = () => this.cfg.appMode === eAppMode.Edit;
+        ret.hidden = () => this.cfg.appMode === eAppMode.Edit || this.cfg.gameMode !== eGameMode.Solver;
         break;
       case 'solver-full':
         ret.icon = id;
         ret.tip = $localize`Führt die Lösung so weit durch, wie es die Programmlogik zulässt`;
-        ret.hidden = () => this.cfg.appMode === eAppMode.Edit;
+        ret.hidden = () => this.cfg.appMode === eAppMode.Edit || this.cfg.gameMode !== eGameMode.Solver;
         break;
       case 'undo':
         ret.icon = id;
@@ -278,6 +296,7 @@ export abstract class MainFormService {
           });
         break;
       case 'number':
+      case 'block':
         this.paintDef.currentCtrl = btn;
         break;
       case 'solver-step':
@@ -311,16 +330,6 @@ export abstract class MainFormService {
         break;
     }
     this.cfg.writeSettings();
-  }
-
-  get isNumbersVisible(): boolean {
-    switch (this.cfg.appMode) {
-      case eAppMode.Edit:
-        return this.cfg.gameMode === eGameMode.Normal;
-      case eAppMode.Game:
-        return this.cfg.gameMode === eGameMode.Normal;
-    }
-    return false;
   }
 
   classFor(x: number, y: number): string[] {

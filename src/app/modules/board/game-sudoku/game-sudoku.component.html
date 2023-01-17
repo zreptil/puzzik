@@ -1,37 +1,26 @@
-<div class="controls">
-  <app-button [data]="main.btnData('appMode', solver, ruleset)"></app-button>
-  <app-button [data]="main.btnData('gameMode', solver, ruleset)"></app-button>
-  <app-button [data]="main.btnData('rulers', solver, ruleset)"></app-button>
-  <app-button [data]="main.btnData('solver-step', solver, ruleset)"></app-button>
-  <app-button [data]="main.btnData('solver-full', solver, ruleset)"></app-button>
-  <app-button [data]="main.btnData('undo', solver, ruleset)"></app-button>
-  <app-button [data]="main.btnData('clearUser', solver, ruleset)"></app-button>
-  <app-button [data]="main.btnData('weblink', solver, ruleset)"></app-button>
-  <app-button *ngIf="cfg.devSupport" [data]="main.btnData('debug', solver, ruleset)"></app-button>
-</div>
 <table>
   <tr *ngIf="cfg.showRulers">
     <td class="ruler">&nbsp;</td>
     <td *ngFor="let x of cfg.counter(cfg.numberCount)" class="ruler">
-      {{ruleset.colName(x)}}
+      {{solver.ruleset.colName(x)}}
     </td>
     <td class="ruler">&nbsp;</td>
   </tr>
   <tr *ngFor="let y1 of cfg.counter(cfg.numberCount); let y = index">
     <td *ngIf="cfg.showRulers" class="ruler">
-      {{ruleset.rowName(y)}}
+      {{solver.ruleset.rowName(y)}}
     </td>
     <td *ngFor="let x1 of cfg.counter(cfg.numberCount); let x = index" [class]="classFor(x,y)">
       <app-field-sudoku [field]="main.paintDef?.field(x, y)"></app-field-sudoku>
     </td>
     <td *ngIf="cfg.showRulers" class="ruler">
-      {{ruleset.rowName(y)}}
+      {{solver.ruleset.rowName(y)}}
     </td>
   </tr>
   <tr *ngIf="cfg.showRulers">
     <td class="ruler">&nbsp;</td>
     <td *ngFor="let x of cfg.counter(cfg.numberCount)" class="ruler">
-      {{ruleset.colName(x)}}
+      {{solver.ruleset.colName(x)}}
     </td>
     <td class="ruler">&nbsp;</td>
   </tr>
@@ -44,5 +33,6 @@
   </tr>
 </table>
 <div *ngIf="main.isNumbersVisible" class="controls">
-  <app-button *ngFor="let num of cfg.counter(cfg.numberCount + 1)" [data]="main.btnData('number', solver, ruleset, num)"></app-button>
+  <app-button *ngFor="let num of cfg.counter(cfg.numberCount + 1)"
+              [data]="main.btnData('number', solver, num)"></app-button>
 </div>

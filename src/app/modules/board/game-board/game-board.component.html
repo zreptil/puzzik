@@ -1,3 +1,14 @@
-<button mat-flat-button class="puzzleType" (click)="btnTypeClick()">{{main.cfg.puzzleType}}</button>
+<button (click)="btnTypeClick()" class="puzzleType" mat-flat-button>{{main.cfg.puzzleType}}</button>
+<div *ngIf="main.solver != null" class="controls">
+  <app-button [data]="main.btnData('appMode', main.solver)"></app-button>
+  <app-button [data]="main.btnData('rulers', main.solver)"></app-button>
+  <app-button [data]="main.btnData('gameMode', main.solver)"></app-button>
+  <app-button [data]="main.btnData('solver-step', main.solver)"></app-button>
+  <app-button [data]="main.btnData('solver-full', main.solver)"></app-button>
+  <app-button [data]="main.btnData('undo', main.solver)"></app-button>
+  <app-button [data]="main.btnData('clearUser', main.solver)"></app-button>
+  <app-button [data]="main.btnData('weblink', main.solver)"></app-button>
+  <app-button *ngIf="main.cfg.devSupport" [data]="main.btnData('debug', main.solver)"></app-button>
+</div>
 <app-game-sudoku *ngIf="main.cfg.puzzleType==='Sudoku'"></app-game-sudoku>
 <app-game-str8ts *ngIf="main.cfg.puzzleType==='Str8ts'"></app-game-str8ts>

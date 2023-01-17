@@ -35,6 +35,9 @@ export class ButtonComponent implements OnInit {
     if (this.data?.marked?.(this.data)) {
       ret.push('marked');
     }
+    if (this.data?.id === 'block') {
+      ret.push('block');
+    }
     return ret;
   }
 

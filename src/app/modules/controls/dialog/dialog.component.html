@@ -1,4 +1,8 @@
-<h1 mat-dialog-title>{{data.title}}</h1>
+<h1 cdkDrag
+    cdkDragBoundary="body"
+    cdkDragHandle
+    cdkDragRootElement=".cdk-overlay-pane"
+    mat-dialog-title>{{data.title}}</h1>
 <div mat-dialog-content>{{data.text}}</div>
 <div mat-dialog-actions>
   <button (click)="btnClick(btn)" *ngFor="let btn of data.buttons" mat-button>{{btn.label}}</button>

@@ -30,6 +30,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatTreeModule} from '@angular/material/tree';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatExpansionModule} from '@angular/material/expansion';
+import {DragDropModule} from '@angular/cdk/drag-drop';
 
 
 @NgModule({
@@ -38,7 +39,7 @@ import {MatExpansionModule} from '@angular/material/expansion';
     // CdkStepperModule,
     // CdkTableModule,
     // CdkTreeModule,
-    // DragDropModule,
+    DragDropModule,
     // MatAutocompleteModule,
     // MatBadgeModule,
     MatBottomSheetModule,

@@ -1,14 +1,16 @@
 <div *ngIf="!cfg.isDebug" [class]="containerClass" [ngStyle]="containerStyle" [ngSwitch]="mode">
-  <div *ngSwitchCase="0" class="content">
-    <table>
-      <tr *ngFor="let y of cfg.counter(3)">
-        <td (click)="clickCandidate(y * 3 + x + 1)" *ngFor="let x of cfg.counter(3)"
-            [class]="candidateClass(y * 3 + x + 1)">
-          {{y * 3 + x + 1}}
-        </td>
-      </tr>
-    </table>
-  </div>
+  <ng-container *ngSwitchCase="0">
+    <div class="content">
+      <table *ngIf="field?.type !== 1">
+        <tr *ngFor="let y of cfg.counter(3)">
+          <td (click)="clickCandidate(y * 3 + x + 1)" *ngFor="let x of cfg.counter(3)"
+              [class]="candidateClass(y * 3 + x + 1)">
+            {{y * 3 + x + 1}}
+          </td>
+        </tr>
+      </table>
+    </div>
+  </ng-container>
   <div (click)="clickField()" *ngSwitchCase="1" class="content">
     {{value}}
   </div>
@@ -16,5 +18,8 @@
 <div *ngIf="cfg.isDebug">
   <ng-container *ngFor="let anim of main.solver?.animations">
     <div *ngIf="isField(anim)">{{anim.backType}}</div>
+  </ng-container>
+  <ng-container *ngIf="main.solver?.animations?.length === 0">
+    {{areaNumber}}
   </ng-container>
 </div>

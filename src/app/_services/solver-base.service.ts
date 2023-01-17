@@ -2,56 +2,13 @@ import {Injectable} from '@angular/core';
 import {eAnimBack, eAnimFore, eAnimMark, eFieldType, FieldDef} from '../_model/field-def';
 import {Area} from '../_model/area';
 import {RulesetBaseService} from './ruleset-base.service';
-import {FieldDefService} from './field-def.service';
 import {MainFormService} from './main-form.service';
 import {ConfigService, eAppMode, eGameMode} from './config.service';
-import {ButtonData} from '../modules/controls/button/button.component';
 import {AnimDef} from '../_model/anim-def';
 import {LinkedCandidates} from '../_model/linked-candidates';
+import {PaintDefinitions} from '../_model/paint-definitions';
 
 export type SolveFn = () => void;
-
-export class PaintDefinitions {
-  public fields: FieldDef[] = [];
-  public areas: Area[] = [];
-  public currentCtrl?: ButtonData;
-
-  constructor(public fds: FieldDefService) {
-  }
-
-  private _boardCols = 0;
-
-  public get boardCols(): number {
-    return this._boardCols > 0 ? this._boardCols : 8;
-  }
-
-  public set boardCols(value: number) {
-    this._boardCols = value;
-  }
-
-  private _boardRows = 0;
-
-  public get boardRows(): number {
-    return this._boardRows > 0 ? this._boardRows : 8;
-  }
-
-  public set boardRows(value: number) {
-    this._boardRows = value;
-  }
-
-  public setField(x: number, y: number, src: FieldDef): void {
-    this.field(x, y).copyFrom(src);
-  }
-
-  public field(x: number, y: number): FieldDef {
-    let ret = this.fields.find(f => +f.x === +x && +f.y === +y);
-    if (ret == null) {
-      ret = this.fds.create(`${x}|${y}`);
-      this.fields.push(ret);
-    }
-    return ret;
-  }
-}
 
 @Injectable({
   providedIn: 'root'
@@ -63,14 +20,14 @@ export abstract class SolverBaseService {
   protected _paintDef: PaintDefinitions;
   protected _solver: SolverBaseService | null = null;
   private _factor = 1.0;
-  private _xPos = 0;
-  private _yPos = 0;
   private _active = false;
   private _preHint = '@308030ffffff@';
-  private _colMarkArea = 0x80ff80ff; // Color.FromArgb(255, 100, 255, 100);
-  private _colMarkCandidate = 0xffff8080; // Color.FromArgb(255, 100, 100, 255);
-  private _colFontCandidate = 0xffffffff; // Color.FromArgb(255, 255, 255, 255);
-  private _colFontCandidateDel = 0xffffffff; //Color.FromArgb(255, 255, 255, 255);
+  // private _xPos = 0;
+  // private _yPos = 0;
+  // private _colMarkArea = 0x80ff80ff; // Color.FromArgb(255, 100, 255, 100);
+  // private _colMarkCandidate = 0xffff8080; // Color.FromArgb(255, 100, 100, 255);
+  // private _colFontCandidate = 0xffffffff; // Color.FromArgb(255, 255, 255, 255);
+  // private _colFontCandidateDel = 0xffffffff; //Color.FromArgb(255, 255, 255, 255);
 
   /**
    * Initialisiert eine neue Instanz von SolverBase.

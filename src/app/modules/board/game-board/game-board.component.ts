@@ -37,20 +37,26 @@ export class GameBoardComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.main.cfg.readSettings();
+    this.reload(this.main.cfg.puzzleType);
   }
 
-  btnTypeClick() {
+  reload(id: string, diff = 0): void {
     const types = [
       {id: 'Sudoku', solver: this.sudoku},
       {id: 'Str8ts', solver: this.str8ts}
     ];
-    let idx = types.findIndex(item => item.id === this.main.cfg.puzzleType) ?? -1;
-    idx++;
+    let idx = types.findIndex(item => item.id === id) ?? -diff;
+    idx += diff;
     if (idx >= types.length) {
       idx = 0;
     }
     this.main.cfg.puzzleType = types[idx].id;
     this.main.reload(types[idx].solver);
     this.main.cfg.writeSettings();
+  }
+
+  btnTypeClick() {
+    this.reload(this.main.cfg.puzzleType, 1);
   }
 }

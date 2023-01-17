@@ -17,4 +17,7 @@
   <ng-container *ngFor="let anim of main.solver?.animations">
     <div *ngIf="isField(anim)">{{anim.backType}}</div>
   </ng-container>
+  <ng-container *ngIf="main.solver?.animations?.length === 0">
+    {{areaNumber}}
+  </ng-container>
 </div>
