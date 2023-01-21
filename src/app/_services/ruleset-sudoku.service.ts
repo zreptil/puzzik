@@ -6,6 +6,7 @@ import {FieldDefService} from './field-def.service';
 import {MainFormService} from './main-form.service';
 import {ConfigService, eGameMode} from './config.service';
 
+// noinspection JSSuspiciousNameCombination
 @Injectable({
   providedIn: 'root'
 })
@@ -29,7 +30,8 @@ export class RulesetSudokuService extends RulesetBaseService {
    * @param setValue Wenn true, dann wird ein Kandidat als Feldwert gesetzt,
    *                 wenn es der einzige ist.
    */
-  validateFields(setValue: boolean): void {
+  validateFields(setValue: boolean): boolean {
+    let ret = false;
     let nums: { [key: number]: any } = {};
     for (const fld of this._main.paintDef.fields) {
       fld.isValid = true;
@@ -44,8 +46,9 @@ export class RulesetSudokuService extends RulesetBaseService {
           }
         }
 
-        if (count == 1 && setValue) {
+        if (count == 1 && setValue && fld.value !== val) {
           fld.value = val;
+          ret = true;
         }
       }
       if (fld.value <= 0) {
@@ -85,6 +88,7 @@ export class RulesetSudokuService extends RulesetBaseService {
         }
       }
     }
+    return ret;
   }
 
   /**

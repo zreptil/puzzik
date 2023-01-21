@@ -175,7 +175,9 @@ export abstract class MainFormService {
    * @param url Webadresse
    */
   public callWebPage(url: string): void {
-    window.open(`${url}?bd=${this.boardString}`, 'Oleole');
+    url = url.replace(/@bs@/g, this.boardString);
+    console.log('auf gehts', url);
+    window.open(url, 'puzzik');
   }
 
   btnData(id: string, solver: SolverBaseService, param?: any): ButtonData {
@@ -246,10 +248,15 @@ export abstract class MainFormService {
         ret.icon = 'display';
         ret.tip = $localize`Debugmodus`;
         break;
+      case 'solverlink':
+        ret.icon = 'weblink';
+        ret.tip = $localize`Ruft die Webseite zum Lösen des aktuellen Sudokus auf`;
+        ret.hidden = () => this.cfg.currentBoard.solverLink == null;
+        break;
       case 'weblink':
         ret.icon = id;
-        ret.tip = $localize`Ruft die Webseite zum Lösen des aktuellen Sudokus auf`;
-        ret.hidden = () => this.cfg.puzzleType !== 'Sudoku';
+        ret.tip = $localize`Ruft die Webseite für ${this.cfg.puzzleType} auf`;
+        ret.hidden = () => this.cfg.currentBoard.webLink == null;
         break;
     }
     return ret;
@@ -291,7 +298,7 @@ export abstract class MainFormService {
               case eDialogButtonType.Yes:
                 btn.solver?.ruleset.clearFields(this.cfg.appMode === eAppMode.Game ? eFieldType.User : undefined);
                 btn.solver?.solveExisting();
-                this.cfg.currentBoard(true).content = btn.solver?.ruleset.getBoardString(false);
+                this.cfg.currentBoard.content = btn.solver?.ruleset.getBoardString(false);
                 this.cfg.writeSettings();
                 break;
             }
@@ -305,7 +312,7 @@ export abstract class MainFormService {
         if (btn.solver?.animations?.length || 0 > 0) {
           btn.solver?.executeAnimationActions();
           btn.solver?.initAnimation();
-          this.cfg.currentBoard(true).content = btn.solver?.ruleset.getBoardString(false);
+          this.cfg.currentBoard.content = btn.solver?.ruleset.getBoardString(false);
           this.cfg.writeSettings();
         } else {
           btn.solver?.solveStep();
@@ -328,7 +335,10 @@ export abstract class MainFormService {
         this.cfg.isDebug = !this.cfg.isDebug;
         break;
       case 'weblink':
-        this.callWebPage('https://www.sudokuwiki.org/sudoku.htm');
+        this.callWebPage(this.cfg.currentBoard.webLink ?? '');
+        break;
+      case 'solverlink':
+        this.callWebPage(this.cfg.currentBoard.solverLink ?? '');
         break;
     }
     this.cfg.writeSettings();

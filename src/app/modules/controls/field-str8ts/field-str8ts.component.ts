@@ -206,8 +206,9 @@ export class FieldStr8tsComponent {
       }
     }
     this.main.solver?.solveExisting();
-    this.main.solver?.ruleset.validateFields(false);
-    this.cfg.currentBoard(true).content = this.main.solver?.ruleset.getBoardString(true);
+    while (this.main.solver?.ruleset.validateFields(true)) {
+    }
+    this.cfg.currentBoard.content = this.main.solver?.ruleset.getBoardString(true);
     this.cfg.writeSettings();
   }
 

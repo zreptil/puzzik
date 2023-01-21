@@ -21,7 +21,8 @@ export class RulesetStr8tsService extends RulesetBaseService {
     return [9, 6];
   }
 
-  validateFields(setValue: boolean): void {
+  validateFields(setValue: boolean): boolean {
+    let ret = false;
     let nums: { [key: number]: any } = {};
 
     for (const fld of this._main.paintDef.fields) {
@@ -36,8 +37,9 @@ export class RulesetStr8tsService extends RulesetBaseService {
         }
       }
 
-      if (count === 1 && setValue) {
+      if (count === 1 && setValue && fld.value !== val) {
         fld.value = val;
+        ret = true;
       }
 
       if (fld.value <= 0) {
@@ -84,6 +86,7 @@ export class RulesetStr8tsService extends RulesetBaseService {
         }
       }
     }
+    return ret;
   }
 
   /**

@@ -39,23 +39,23 @@ export class ConfigService {
   }
 
   public get onlineLink(): string | null {
-    return this.currentBoard()?.webLink || null;
+    return this.currentBoard.webLink ?? null;
   }
 
   public get currentBoardDifficulty(): number {
-    return this.currentBoard()?.difficulty || -1;
+    return this.currentBoard.difficulty ?? -1;
   }
 
   public set currentBoardDifficulty(value: number) {
-    this.currentBoard(true).difficulty = value;
+    this.currentBoard.difficulty = value;
   }
 
   public get currentBoardName(): string {
-    return this.currentBoard(false)?.name || 'Leer';
+    return this.currentBoard.name ?? 'Leer';
   }
 
   public set currentBoardName(value: string) {
-    this.currentBoard(true).name = value;
+    this.currentBoard.name = value;
   }
 
   public get puzzleFilename(): string {
@@ -71,7 +71,7 @@ export class ConfigService {
     return this.appMode === eAppMode.Animate || this.appMode === eAppMode.AnimateAll;
   }
 
-  public currentBoard(createIfMissing = false): SavedBoard {
+  public get currentBoard(): SavedBoard {
     let brd = this.currentBoards.find(i => i.type === this.puzzleId);
     if (brd == null) {
       brd = new SavedBoard(this);

@@ -6,25 +6,9 @@ export class SavedBoard {
   public name?: string;
   public content?: string;
   public style?: number;
-  public webLink?: string;
 
   constructor(cfg: ConfigService, src?: any) {
     switch (cfg.puzzleId) {
-      case 'Str8ts6':
-        this.webLink = 'http://www.str8ts.com/daily_mini_str8ts.asp';
-        break;
-      case 'Str8ts9':
-        this.webLink = 'http://www.str8ts.com/daily_str8ts.asp|http://www.derwesten.de/spiele/derwesten-spiele';
-        break;
-      case 'Sudoku9':
-        this.webLink = 'http://www.str8ts.com/daily_sudoku.asp';
-        break;
-      case '1to257':
-        this.webLink = 'http://www.1to25.com/1_to_25_Daily.html';
-        break;
-      case 'Kakuro9':
-        this.webLink = 'http://www.kakuro-world.com/kakuroonline.html';
-        break;
     }
 
     if (src != null) {
@@ -37,5 +21,29 @@ export class SavedBoard {
       this.content = src.content;
       this.style = src.style;
     }
+  }
+
+  public get webLink(): string | null {
+    switch (this.type) {
+      case 'Str8ts6':
+        return 'https://www.str8ts.com/daily_mini_str8ts.aspx';
+      case 'Str8ts9':
+        return 'https://www.str8ts.com/Daily_str8ts';
+      case 'Sudoku9':
+        return 'http://www.str8ts.com/daily_sudoku.asp';
+      case '1to257':
+        return 'http://www.1to25.com/1_to_25_Daily.html';
+      case 'Kakuro9':
+        return 'http://www.kakuro-world.com/kakuroonline.html';
+    }
+    return null;
+  }
+
+  public get solverLink(): string | null {
+    switch (this.type) {
+      case 'Sudoku9':
+        return 'https://www.sudokuwiki.org/sudoku.htm?bd=@bs@';
+    }
+    return null;
   }
 }

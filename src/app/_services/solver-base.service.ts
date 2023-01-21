@@ -382,7 +382,7 @@ export abstract class SolverBaseService {
         fld.value = fld.solution;
         fld.clearHidden();
         this.ruleset.validateFields(false);
-        this.cfg.currentBoard(true).content = this.ruleset.getBoardString(false);
+        this.cfg.currentBoard.content = this.ruleset.getBoardString(false);
         this.cfg.writeSettings();
         return;
       case eAppMode.Game:

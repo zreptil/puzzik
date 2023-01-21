@@ -35,7 +35,7 @@ export abstract class RulesetBaseService {
    * Ermittelt das aktuelle Spielfeld.
    */
   public get currentBoard(): string {
-    const brd = this.cfg.currentBoard(true);
+    const brd = this.cfg.currentBoard;
     let ret = '';
     this._currentStyle = 0;
     const len = this._main.paintDef.boardCols * this._main.paintDef.boardRows;
@@ -59,7 +59,7 @@ export abstract class RulesetBaseService {
    * @param value Spielfeld als String;
    */
   public set currentBoard(value: string) {
-    this.cfg.currentBoard(true).content = value;
+    this.cfg.currentBoard.content = value;
   }
 
   colName(x: number): string {
@@ -79,8 +79,9 @@ export abstract class RulesetBaseService {
    * Überprüft die Felder auf Korrektheit.
    * @param setValue Wenn true, dann wird ein Kandidat als Feldwert gesetzt,
    *                 wenn es der einzige ist.
+   * @returns true, wenn ein Kandidat als Feldwert gesetzt wurde
    */
-  public abstract validateFields(setValue: boolean): void
+  public abstract validateFields(setValue: boolean): boolean
 
   /**
    * Erstellt die benötigten Bereiche
@@ -89,6 +90,7 @@ export abstract class RulesetBaseService {
 
   public clearFields(type?: eFieldType): void {
     for (const fld of this._main.paintDef.fields) {
+      fld.isValid = true;
       if (type == null || fld.type === type) {
         fld.value = -1;
         if (type == null) {
