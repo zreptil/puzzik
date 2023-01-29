@@ -1,10 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {FieldDef} from '../../../_model/field-def';
-import {ConfigService} from '../../../_services/config.service';
-import {TooltipPosition} from '@angular/material/tooltip';
-import {FormControl} from '@angular/forms';
-import {MainFormService} from '../../../_services/main-form.service';
-import {SolverSudokuService} from '../../../_services/solver-sudoku.service';
+import {FieldDef} from '@/_model/field-def';
+import {ConfigService} from '@/_services/config.service';
+import {LegacyTooltipPosition as TooltipPosition} from '@angular/material/legacy-tooltip';
+import {UntypedFormControl} from '@angular/forms';
+import {MainFormService} from '@/_services/main-form.service';
+import {SolverSudokuService} from '@/_services/solver-sudoku.service';
 
 @Component({
   selector: 'app-game-sudoku',
@@ -16,7 +16,7 @@ export class GameSudokuComponent implements OnInit {
   rows: FieldDef[] = [];
 
   positionOptions: TooltipPosition[] = ['below', 'above', 'left', 'right'];
-  position = new FormControl(this.positionOptions[0]);
+  position = new UntypedFormControl(this.positionOptions[0]);
 
   constructor(public cfg: ConfigService,
               public solver: SolverSudokuService,

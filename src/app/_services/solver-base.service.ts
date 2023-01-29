@@ -1,13 +1,13 @@
 import {Injectable} from '@angular/core';
-import {eAnimBack, eAnimFore, eAnimMark, eFieldType, FieldDef} from '../_model/field-def';
-import {Area} from '../_model/area';
+import {eAnimBack, eAnimFore, eAnimMark, eFieldType, FieldDef} from '@/_model/field-def';
+import {Area} from '@/_model/area';
 import {RulesetBaseService} from './ruleset-base.service';
 import {MainFormService} from './main-form.service';
 import {ConfigService, eAppMode, eGameMode} from './config.service';
-import {AnimDef} from '../_model/anim-def';
-import {LinkedCandidates} from '../_model/linked-candidates';
-import {PaintDefinitions} from '../_model/paint-definitions';
-import {ButtonData} from '../modules/controls/button/button.component';
+import {AnimDef} from '@/_model/anim-def';
+import {LinkedCandidates} from '@/_model/linked-candidates';
+import {PaintDefinitions} from '@/_model/paint-definitions';
+import {ButtonData} from '@/modules/controls/button/button.component';
 
 export type SolveFn = () => void;
 
@@ -363,12 +363,15 @@ export abstract class SolverBaseService {
         if (this.main.paintDef.currentCtrl.value === 0) {
           fld.solution = -1;
           fld.type = eFieldType.User;
+          fld.playerNr = 0;
         } else if (this.main.paintDef.currentCtrl.value === this.cfg.numberCount + 1) {
           fld.solution = -1;
+          fld.playerNr = 0;
           fld.type = (fld.type === eFieldType.Block ? eFieldType.User : eFieldType.Block);
         } else {
           if (fld.solution === this.main.paintDef.currentCtrl.value) {
             fld.solution = -1;
+            fld.playerNr = 0;
           } else {
             fld.solution = this.main.paintDef.currentCtrl.value;
           }
@@ -388,12 +391,15 @@ export abstract class SolverBaseService {
       case eAppMode.Game:
         if (fld.type === eFieldType.User) {
           if (this.main.paintDef.currentCtrl != null) {
-            fld.value = this.main.paintDef.currentCtrl.value > 0 && this.main.paintDef.currentCtrl.value <= this.cfg.numberCount
+            fld.value = this.main.paintDef.currentCtrl.value > 0
+            && this.main.paintDef.currentCtrl.value <= this.cfg.numberCount
               ? (this.main.paintDef.currentCtrl.value === fld.value ? -1
                 : this.main.paintDef.currentCtrl.value) : -1;
+            fld.playerNr = fld.value === -1 ? 0 : this.cfg.currentPlayer.nr;
           } else if (this.cfg.gameMode === eGameMode.Solver) {
             if (fld.value > 0) {
               fld.value = -1;
+              fld.playerNr = 0;
             }
           }
 

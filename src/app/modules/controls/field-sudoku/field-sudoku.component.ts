@@ -1,8 +1,8 @@
 import {Component, Input} from '@angular/core';
-import {eAnimBack, eAnimFore, eAnimMark, eFieldType, FieldDef} from '../../../_model/field-def';
-import {ConfigService, eAppMode, eGameMode} from '../../../_services/config.service';
-import {MainFormService} from '../../../_services/main-form.service';
-import {AnimDef} from '../../../_model/anim-def';
+import {eAnimBack, eAnimFore, eAnimMark, eFieldType, FieldDef} from '@/_model/field-def';
+import {ConfigService, eAppMode, eGameMode} from '@/_services/config.service';
+import {MainFormService} from '@/_services/main-form.service';
+import {AnimDef} from '@/_model/anim-def';
 
 @Component({
   selector: 'app-field-sudoku',
@@ -224,6 +224,7 @@ export class FieldSudokuComponent {
           case eGameMode.Solver:
             this.field.type = eFieldType.User;
             this.field.value = -1;
+            this.field.playerNr = 0;
             this.adjustCandidates(true);
             break;
         }

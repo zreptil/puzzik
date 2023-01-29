@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {SolverBaseService} from '../../../_services/solver-base.service';
-import {RulesetBaseService} from '../../../_services/ruleset-base.service';
+import {SolverBaseService} from '@/_services/solver-base.service';
+import {RulesetBaseService} from '@/_services/ruleset-base.service';
+import {ConfigService} from '@/_services/config.service';
 
 export class ButtonData {
   icon?: string;
@@ -26,7 +27,8 @@ export class ButtonComponent implements OnInit {
   @Input()
   data?: ButtonData;
 
-  constructor(public solver: SolverBaseService,
+  constructor(public cfg: ConfigService,
+              public solver: SolverBaseService,
               public ruleset: RulesetBaseService) {
   }
 
@@ -37,6 +39,9 @@ export class ButtonComponent implements OnInit {
     }
     if (this.data?.id === 'block') {
       ret.push('block');
+    }
+    if (this.data?.id === 'user') {
+      ret.push('user');
     }
     return ret;
   }

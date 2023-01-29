@@ -11,7 +11,7 @@
       </table>
     </div>
   </ng-container>
-  <div (click)="clickField()" *ngSwitchCase="1" class="content">
+  <div (click)="clickField()" *ngSwitchCase="1" [class]="cfg.fieldClass(field)">
     {{value}}
   </div>
 </div>

@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
-import {eFieldType, FieldDef} from '../_model/field-def';
+import {eFieldType, FieldDef} from '@/_model/field-def';
 import {FieldDefService} from './field-def.service';
 import {MainFormService} from './main-form.service';
 import {ConfigService, eGameMode} from './config.service';
-import {eDialogButtonType} from '../modules/controls/dialog/dialog.component';
+import {eDialogButtonType} from '@/modules/controls/dialog/dialog.component';
 
 @Injectable({
   providedIn: 'root'
@@ -261,7 +261,7 @@ export abstract class RulesetBaseService {
    */
   protected getFieldString(fld: FieldDef, withHidden: boolean): string {
     const v = '@'.charCodeAt(0) + (+fld.value <= 0 ? 0 : +fld.value);
-    let ret = `${fld.type}${fld.playerIdx ?? 0}${String.fromCharCode(v)}`;
+    let ret = `${fld.type}${fld.playerNr ?? 0}${String.fromCharCode(v)}`;
     if (withHidden) {
       ret += fld.hiddenString;
     }
@@ -280,7 +280,7 @@ export abstract class RulesetBaseService {
     const ret: FieldDef = this.fds.create();
     if (+def[0] >= 0 && +def[0] < eFieldType.MAX) {
       ret.type = +def[0];
-      ret.playerIdx = +def[1];
+      ret.playerNr = +def[1];
       ret.solution = def.charCodeAt(2) - '@'.charCodeAt(0);
       if (def[2] === '@') {
         ret.value = -1;

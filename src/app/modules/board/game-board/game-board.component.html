@@ -14,8 +14,8 @@
 <app-game-sudoku *ngIf="main.cfg.puzzleType==='Sudoku'"></app-game-sudoku>
 <app-game-str8ts *ngIf="main.cfg.puzzleType==='Str8ts'"></app-game-str8ts>
 <ng-container *ngIf="main.solver != null">
-
   <div *ngIf="main.isNumbersVisible" class="controls">
+    <app-button [data]="main.btnData('user', main.solver, main.cfg.currentPlayer)"></app-button>
     <app-button *ngFor="let data of main.solver.controls" [data]="data"></app-button>
   </div>
 </ng-container>

@@ -29,9 +29,25 @@ html {
   }
 
   .typeUser {
-    color: blue;
+    color: black;
     background-color: white;
     font-weight: normal !important;
+    font-style: italic;
+  }
+
+  .typeUser .player1,
+  .typeUser.player1 {
+    color: blue;
+  }
+
+  .typeUser .player2,
+  .typeUser.player2 {
+    color: green;
+  }
+
+  .typeUser .player3,
+  .typeUser.player3 {
+    color: maroon;
   }
 
   .typeControl {

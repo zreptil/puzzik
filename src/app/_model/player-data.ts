@@ -1,14 +1,14 @@
-export class PlayerData {
-  _name: string = null;
+import {Utils} from '@/classes/utils';
 
-  constructor(public idx: number) {
+export class PlayerData {
+  constructor(public nr: number, private _name?: string) {
 
   }
 
-  // get name(): string {
-  //   if (Utils.isEmpty(this._name)) {
-  //     return `Spieler ${this.idx + 1}`;
-  //   }
-  //   return this._name;
-  // }
+  get name(): string {
+    if (Utils.isEmpty(this._name)) {
+      return `Spieler ${this.nr}`;
+    }
+    return this._name;
+  }
 }

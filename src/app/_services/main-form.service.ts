@@ -1,18 +1,13 @@
 import {Injectable} from '@angular/core';
-import {eFieldType, FieldDef} from '../_model/field-def';
+import {eFieldType, FieldDef} from '@/_model/field-def';
 import {FieldDefService} from './field-def.service';
 import {SolverBaseService} from './solver-base.service';
 import {ConfigService, eAppMode, eGameMode} from './config.service';
-import {MatDialog} from '@angular/material/dialog';
-import {
-  DialogButton,
-  DialogComponent,
-  DialogData,
-  eDialogButtonType
-} from '../modules/controls/dialog/dialog.component';
+import {MatLegacyDialog as MatDialog} from '@angular/material/legacy-dialog';
+import {DialogButton, DialogComponent, DialogData, eDialogButtonType} from '@/modules/controls/dialog/dialog.component';
 import {Observable} from 'rxjs';
-import {ButtonData} from '../modules/controls/button/button.component';
-import {PaintDefinitions} from '../_model/paint-definitions';
+import {ButtonData} from '@/modules/controls/button/button.component';
+import {PaintDefinitions} from '@/_model/paint-definitions';
 
 @Injectable({
   providedIn: 'root'
@@ -258,6 +253,9 @@ export abstract class MainFormService {
         ret.tip = $localize`Ruft die Webseite für ${this.cfg.puzzleType} auf`;
         ret.hidden = () => this.cfg.currentBoard.webLink == null;
         break;
+      case 'user':
+        ret.text = param.name;
+        ret.hidden = () => this.cfg.appMode === eAppMode.Edit;
     }
     return ret;
   }
@@ -339,6 +337,13 @@ export abstract class MainFormService {
         break;
       case 'solverlink':
         this.callWebPage(this.cfg.currentBoard.solverLink ?? '');
+        break;
+      case 'user':
+        if (this.cfg.currPlayerIdx >= this.cfg.players.length - 1) {
+          this.cfg.currPlayerIdx = 0;
+        } else {
+          this.cfg.currPlayerIdx++;
+        }
         break;
     }
     this.cfg.writeSettings();

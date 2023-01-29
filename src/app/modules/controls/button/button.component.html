@@ -6,5 +6,6 @@
      matTooltipClass="tooltip"
      matTooltipPosition="below">
   <div *ngIf="data?.icon != null" [class]="['btn', data?.icon]"></div>
-  <div *ngIf="data?.text != null" class="btn text typeUser">{{data?.text}}</div>
+  <div *ngIf="data?.text != null"
+       [class]="['btn', 'text', 'typeUser', cfg.playerClass(cfg.currentPlayer.nr)]">{{data?.text}}</div>
 </div>

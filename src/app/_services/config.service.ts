@@ -1,5 +1,7 @@
 import {Injectable} from '@angular/core';
-import {SavedBoard} from '../_model/saved-board';
+import {SavedBoard} from '@/_model/saved-board';
+import {PlayerData} from '@/_model/player-data';
+import {FieldDef} from '@/_model/field-def';
 
 export enum eAppMode {
   Game,
@@ -27,11 +29,46 @@ export class ConfigService {
   public appMode = eAppMode.Game;
   public showRulers = true;
   public isDebug = false;
-
   public currentBoards: SavedBoard[] = [];
 
   constructor() {
     this.readSettings();
+    this.addPlayer('Andi');
+    this.addPlayer('Mutti');
+    this.addPlayer('Papi');
+    this.currPlayerIdx = 0;
+  }
+
+  private _currPlayerIdx: number = 0;
+
+  public get currPlayerIdx(): number {
+    if (this._currPlayerIdx < 0) {
+      this._currPlayerIdx = 0;
+    }
+    if (this._currPlayerIdx >= this._players.length) {
+      this._currPlayerIdx = this._players.length - 1;
+    }
+    return this._currPlayerIdx;
+  }
+
+  public set currPlayerIdx(value: number) {
+    if (value < 0) {
+      value = 0;
+    }
+    if (value >= this._players.length) {
+      value = this._players.length - 1;
+    }
+    this._currPlayerIdx = value;
+  }
+
+  public get currentPlayer(): PlayerData {
+    return this.players[this.currPlayerIdx];
+  }
+
+  private _players: PlayerData[] = [];
+
+  public get players(): PlayerData[] {
+    return [...this._players];
   }
 
   public get puzzleId(): string {
@@ -83,6 +120,28 @@ export class ConfigService {
     return brd;
   }
 
+  playerClass(nr: number): string {
+    let ret: string;
+    if (nr >= 1) {
+      ret = this.appMode === eAppMode.Game ? `player${nr}` : 'player1';
+    }
+    return ret;
+  }
+
+  fieldClass(field: FieldDef): string[] {
+    let ret = ['content'];
+    if (field?.playerNr >= 1) {
+      ret.push(this.playerClass(field?.playerNr));
+    }
+    return ret;
+  }
+
+  public addPlayer(name: string): void {
+    if (this._players.length < 3) {
+      this._players.push(new PlayerData(this._players.length + 1, name));
+    }
+  }
+
   public readSettings(): void {
     const json = JSON.parse(localStorage.getItem('data')
       || `{"numberCount":${this.numberCount},
@@ -118,5 +177,24 @@ export class ConfigService {
       ret.push(i);
     }
     return ret;
+  }
+
+  changePlayerIdx(diff: number) {
+    switch (diff) {
+      case -1:
+        if (this.currPlayerIdx === 0) {
+          this.currPlayerIdx = this._players.length - 1;
+        } else {
+          this.currPlayerIdx--;
+        }
+        break;
+      case 1:
+        if (this.currPlayerIdx >= this._players.length - 1) {
+          this.currPlayerIdx = 0;
+        } else {
+          this.currPlayerIdx++;
+        }
+        break;
+    }
   }
 }

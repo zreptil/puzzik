@@ -53,7 +53,7 @@ export class FieldDef {
   public x: number = 0;
   public y: number = 0;
   public isValid = true;
-  public playerIdx: number = 0;
+  public playerNr: number = 0;
   public candidates: CandidateDef[] = [];
   public areas: Area[] = [];
 
@@ -68,7 +68,7 @@ export class FieldDef {
     ret.sumLeft = this.sumLeft;
     ret.sumUp = this.sumUp;
     ret.type = this.type;
-    ret.playerIdx = this.playerIdx;
+    ret.playerNr = this.playerNr;
     ret.x = this.x;
     ret.y = this.y;
     ret.isValid = this.isValid;
@@ -152,7 +152,7 @@ export class FieldDef {
   public copyFrom(fld: FieldDef) {
     this.value = fld.value;
     this.type = fld.type;
-    this.playerIdx = fld.playerIdx;
+    this.playerNr = fld.playerNr;
     this.candidates = [];
     for (const candidate of fld.candidates) {
       this.candidates.push(new CandidateDef(candidate));
@@ -161,6 +161,7 @@ export class FieldDef {
 
   public clearHidden(): void {
     for (const candidate of this.candidates) {
+      // noinspection RedundantIfStatementJS
       if (candidate.value === this.value || this.value <= 0) {
         candidate.hidden = false;
       } else {
