@@ -401,6 +401,8 @@ export abstract class SolverBaseService {
           this.solveExisting();
           this.ruleset.checkSolved(true);
         }
+        this.cfg.currentBoard.content = this.ruleset.getBoardString(false);
+        this.cfg.writeSettings();
         return;
     }
   }

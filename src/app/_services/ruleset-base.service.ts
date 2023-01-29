@@ -39,7 +39,8 @@ export abstract class RulesetBaseService {
     let ret = '';
     this._currentStyle = 0;
     const len = this._main.paintDef.boardCols * this._main.paintDef.boardRows;
-    if (brd == null || brd.content == null || (brd.content.length != len * 6 && brd.content.length != len * 2)) {
+    if (brd == null || brd.content == null || (brd.content.length != len * this.fieldLength(true)
+      && brd.content.length != len * this.fieldLength(false))) {
       for (let i = 0; i < this._main.paintDef.boardCols * this._main.paintDef.boardRows; i++) {
         ret += this.getFieldString(this.fds.create(), true);
       }
@@ -224,11 +225,10 @@ export abstract class RulesetBaseService {
    * @param clearUser true, wenn die Userfelder geleert werden sollen.
    */
   public fillBoard(def: string, clearUser: boolean): void {
-    if (def.length != this._main.paintDef.boardRows * this._main.paintDef.boardCols * 6
-      && def.length != this._main.paintDef.boardCols * this._main.paintDef.boardRows * 2) {
-
+    if (def.length != this._main.paintDef.boardRows * this._main.paintDef.boardCols * this.fieldLength(true)
+      && def.length != this._main.paintDef.boardCols * this._main.paintDef.boardRows * this.fieldLength(false)) {
       def = '';
-      for (let i = 0; i < this._main.paintDef.boardRows * this._main.paintDef.boardCols * 6; i++) {
+      for (let i = 0; i < this._main.paintDef.boardRows * this._main.paintDef.boardCols * this.fieldLength(true); i++) {
         def += '0';
       }
     }
@@ -261,7 +261,7 @@ export abstract class RulesetBaseService {
    */
   protected getFieldString(fld: FieldDef, withHidden: boolean): string {
     const v = '@'.charCodeAt(0) + (+fld.value <= 0 ? 0 : +fld.value);
-    let ret = `${fld.type}${String.fromCharCode(v)}`;
+    let ret = `${fld.type}${fld.playerIdx ?? 0}${String.fromCharCode(v)}`;
     if (withHidden) {
       ret += fld.hiddenString;
     }
@@ -280,13 +280,14 @@ export abstract class RulesetBaseService {
     const ret: FieldDef = this.fds.create();
     if (+def[0] >= 0 && +def[0] < eFieldType.MAX) {
       ret.type = +def[0];
-      ret.solution = def.charCodeAt(1) - '@'.charCodeAt(0);
-      if (def[1] === '@') {
+      ret.playerIdx = +def[1];
+      ret.solution = def.charCodeAt(2) - '@'.charCodeAt(0);
+      if (def[2] === '@') {
         ret.value = -1;
       } else {
         ret.value = ret.solution;
       }
-      def = def.substring(2);
+      def = def.substring(3);
       if (def === '') {
         def = '0000';
       }
@@ -319,5 +320,9 @@ export abstract class RulesetBaseService {
       }
     }
     return ret;
+  }
+
+  private fieldLength(withHidden: boolean): number {
+    return this.getFieldString(FieldDef.create(), withHidden).length;
   }
 }

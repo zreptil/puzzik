@@ -13,6 +13,9 @@
 </div>
 <app-game-sudoku *ngIf="main.cfg.puzzleType==='Sudoku'"></app-game-sudoku>
 <app-game-str8ts *ngIf="main.cfg.puzzleType==='Str8ts'"></app-game-str8ts>
-<div *ngIf="main.isNumbersVisible && main.solver != null" class="controls">
-  <app-button *ngFor="let data of main.solver.controls" [data]="data"></app-button>
-</div>
+<ng-container *ngIf="main.solver != null">
+
+  <div *ngIf="main.isNumbersVisible" class="controls">
+    <app-button *ngFor="let data of main.solver.controls" [data]="data"></app-button>
+  </div>
+</ng-container>
