@@ -1,8 +1,8 @@
 import {Component, Input} from '@angular/core';
-import {eAnimBack, eAnimFore, eAnimMark, eFieldType, FieldDef} from '../../../_model/field-def';
-import {ConfigService, eAppMode, eGameMode} from '../../../_services/config.service';
-import {MainFormService} from '../../../_services/main-form.service';
-import {AnimDef} from '../../../_model/anim-def';
+import {eAnimBack, eAnimFore, eAnimMark, eFieldType, FieldDef} from '@/_model/field-def';
+import {ConfigService, eAppMode, eGameMode} from '@/_services/config.service';
+import {MainFormService} from '@/_services/main-form.service';
+import {AnimDef} from '@/_model/anim-def';
 
 @Component({
   selector: 'app-field-str8ts',
@@ -112,7 +112,7 @@ export class FieldStr8tsComponent {
         }
         break;
       case eAppMode.Edit:
-        if ((this.field?.value || 0) <= 0) {
+        if ((this.field?.value || 0) <= 0 || this.field?.type === eFieldType.User) {
           ret = '';
         }
         break;

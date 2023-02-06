@@ -112,7 +112,7 @@ export class FieldSudokuComponent {
         }
         break;
       case eAppMode.Edit:
-        if ((this.field?.value || 0) <= 0) {
+        if ((this.field?.value || 0) <= 0 || this.field?.type === eFieldType.User) {
           ret = '';
         }
         break;
