@@ -3,7 +3,7 @@ import {eFieldType, FieldDef} from '@/_model/field-def';
 import {FieldDefService} from './field-def.service';
 import {SolverBaseService} from './solver-base.service';
 import {ConfigService, eAppMode, eGameMode} from './config.service';
-import {MatLegacyDialog as MatDialog} from '@angular/material/legacy-dialog';
+import {MatDialog} from '@angular/material/dialog';
 import {DialogButton, DialogComponent, DialogData, eDialogButtonType} from '@/modules/controls/dialog/dialog.component';
 import {Observable} from 'rxjs';
 import {ButtonData} from '@/modules/controls/button/button.component';
@@ -23,6 +23,14 @@ export abstract class MainFormService {
               fds: FieldDefService,
               public dialog: MatDialog) {
     this.paintDef = new PaintDefinitions(fds);
+  }
+
+  get gridStyle(): string {
+    let count = this.paintDef.boardCols;
+    if (this.cfg.showRulers) {
+      count += 2;
+    }
+    return `grid-template-columns:repeat(${count},1fr)`;
   }
 
   private _hint: string = '';
@@ -56,6 +64,21 @@ export abstract class MainFormService {
         return this.cfg.gameMode === eGameMode.Normal;
     }
     return false;
+  }
+
+  calcSquare() {
+    let count = this.paintDef.boardCols;
+    if (this.cfg.showRulers) {
+      count += 2;
+    }
+    const grid = document.getElementById('grid');
+    const hig = grid.clientHeight;
+
+    for (let idx = 0; idx < grid.children.length; idx++) {
+      const child = grid.children.item(idx);
+      child.setAttribute('style', `width:${hig / count}px`);
+    }
+    grid.setAttribute('style', `width:${hig}px;${this.gridStyle}`);
   }
 
   public confirm(text: string): Observable<DialogButton> {
@@ -253,9 +276,9 @@ export abstract class MainFormService {
         ret.tip = $localize`Ruft die Webseite für ${this.cfg.puzzleType} auf`;
         ret.hidden = () => this.cfg.currentBoard.webLink == null;
         break;
-      case 'user':
-        ret.text = param.name;
-        ret.hidden = () => this.cfg.appMode === eAppMode.Edit;
+      case 'player':
+        ret.player = param;
+        break;
     }
     return ret;
   }
@@ -286,6 +309,7 @@ export abstract class MainFormService {
         break;
       case 'rulers':
         this.cfg.showRulers = !this.cfg.showRulers;
+        setTimeout(() => this.calcSquare(), 100);
         break;
       case 'clearUser':
         this.confirm(this.cfg.appMode === eAppMode.Game
@@ -338,18 +362,14 @@ export abstract class MainFormService {
       case 'solverlink':
         this.callWebPage(this.cfg.currentBoard.solverLink ?? '');
         break;
-      case 'user':
-        if (this.cfg.currPlayerIdx >= this.cfg.players.length - 1) {
-          this.cfg.currPlayerIdx = 0;
-        } else {
-          this.cfg.currPlayerIdx++;
-        }
+      case 'player':
+        this.cfg.currPlayerIdx = this.cfg.players.findIndex(p => p.nr === btn.player.nr);
         break;
     }
     this.cfg.writeSettings();
   }
 
-  classFor(x: number, y: number): string[] {
+  classFor(x: number, y: number, cls?: string): string[] {
     const ret: string[] = [];
     if (x === 0) {
       ret.push('left');
@@ -360,6 +380,9 @@ export abstract class MainFormService {
       ret.push('top');
     } else if (y === this.cfg.numberCount - 1) {
       ret.push('bottom');
+    }
+    if (cls != null) {
+      ret.push(cls);
     }
     return ret;
   }

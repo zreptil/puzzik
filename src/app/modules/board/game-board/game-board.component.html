@@ -1,4 +1,4 @@
-<button (click)="btnTypeClick()" class="puzzleType" mat-flat-button>{{main.cfg.puzzleType}}</button>
+<button (click)="btnTypeClick()" class="puzzleType" mat-button>{{main.cfg.puzzleType}}</button>
 <div *ngIf="main.solver != null" class="controls">
   <app-button [data]="main.btnData('appMode', main.solver)"></app-button>
   <app-button [data]="main.btnData('rulers', main.solver)"></app-button>
@@ -14,8 +14,23 @@
 <app-game-sudoku *ngIf="main.cfg.puzzleType==='Sudoku'"></app-game-sudoku>
 <app-game-str8ts *ngIf="main.cfg.puzzleType==='Str8ts'"></app-game-str8ts>
 <ng-container *ngIf="main.solver != null">
+  <div class="controls">
+    <ng-container *ngIf="main.cfg.appMode === 0">
+      <app-button *ngFor="let player of main.cfg.players"
+                  [class]="main.cfg.playerClass(player.nr)"
+                  [data]="main.btnData('player', main.solver, player)"></app-button>
+    </ng-container>
+    <div *ngIf="main.cfg.appMode === 1" class="row">
+      <div *ngFor="let player of main.cfg.players">
+        <button [class]="['editplayer', 'text', 'typeUser', main.cfg.playerEditClass(player.nr)]"
+                mat-button>{{player.name}}</button>
+        <button class="icon" mat-icon-button>
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
   <div *ngIf="main.isNumbersVisible" class="controls">
-    <app-button [data]="main.btnData('user', main.solver, main.cfg.currentPlayer)"></app-button>
     <app-button *ngFor="let data of main.solver.controls" [data]="data"></app-button>
   </div>
 </ng-container>

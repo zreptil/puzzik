@@ -1,18 +1,17 @@
 <div *ngIf="!cfg.isDebug" [class]="containerClass" [ngStyle]="containerStyle" [ngSwitch]="mode">
-  <ng-container *ngSwitchCase="0">
-    <div class="content">
-      <table *ngIf="field?.type !== 1">
-        <tr *ngFor="let y of cfg.counter(3)">
-          <td (click)="clickCandidate(y * 3 + x + 1)" *ngFor="let x of cfg.counter(3)"
-              [class]="candidateClass(y * 3 + x + 1)">
-            {{y * 3 + x + 1}}
-          </td>
-        </tr>
-      </table>
-    </div>
-  </ng-container>
+  <div *ngSwitchCase="0" class="grid">
+    <ng-container *ngIf="field?.type !== 1">
+      <ng-container *ngFor="let y of cfg.counter(3)">
+        <div (click)="clickCandidate(y * 3 + x + 1)"
+             *ngFor="let x of cfg.counter(3)"
+             [class]="candidateClass(y * 3 + x + 1)">
+          {{y * 3 + x + 1}}
+        </div>
+      </ng-container>
+    </ng-container>
+  </div>
   <div (click)="clickField()" *ngSwitchCase="1" [class]="cfg.fieldClass(field)">
-    {{value}}
+    {{value ?? '&nbsp;'}}
   </div>
 </div>
 <div *ngIf="cfg.isDebug">

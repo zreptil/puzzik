@@ -1,34 +1,34 @@
-<table>
-  <tr *ngIf="cfg.showRulers">
-    <td class="ruler">&nbsp;</td>
-    <td *ngFor="let x of cfg.counter(cfg.numberCount)" class="ruler">
-      {{solver.ruleset.colName(x)}}
-    </td>
-    <td class="ruler">&nbsp;</td>
-  </tr>
-  <tr *ngFor="let y1 of cfg.counter(cfg.numberCount); let y = index">
-    <td *ngIf="cfg.showRulers" class="ruler">
-      {{solver.ruleset.rowName(y)}}
-    </td>
-    <td *ngFor="let x1 of cfg.counter(cfg.numberCount); let x = index" [class]="main.classFor(x,y)">
-      <app-field-str8ts [field]="main.paintDef?.field(x, y)"></app-field-str8ts>
-    </td>
-    <td *ngIf="cfg.showRulers" class="ruler">
-      {{solver.ruleset.rowName(y)}}
-    </td>
-  </tr>
-  <tr *ngIf="cfg.showRulers">
-    <td class="ruler">&nbsp;</td>
-    <td *ngFor="let x of cfg.counter(cfg.numberCount)" class="ruler">
-      {{solver.ruleset.colName(x)}}
-    </td>
-    <td class="ruler">&nbsp;</td>
-  </tr>
-  <tr class="info-tr">
-    <td *ngIf="cfg.showRulers" class="info-td">&nbsp;</td>
-    <td *ngIf="cfg.appMode === 0" [colSpan]="cfg.numberCount" class="info-td">
-      <div [innerHTML]="main.solver?.hint" class="info"></div>
-    </td>
-    <td *ngIf="cfg.showRulers" class="info-td">&nbsp;</td>
-  </tr>
-</table>
+<div class="board">
+  <div [style]="main.gridStyle" class="grid" id="grid">
+    <ng-container *ngIf="cfg.showRulers">
+      <div class="ruler">&nbsp;</div>
+      <div *ngFor="let x of cfg.counter(cfg.numberCount)" class="ruler">
+        {{solver.ruleset.colName(x)}}
+      </div>
+      <div class="ruler">
+        <button (click)="main.calcSquare()" mat-button>
+          <mat-icon>apps</mat-icon>
+        </button>
+      </div>
+    </ng-container>
+    <ng-container *ngFor="let y1 of cfg.counter(cfg.numberCount); let y = index">
+      <div *ngIf="cfg.showRulers" class="ruler">
+        {{solver.ruleset.rowName(y)}}
+      </div>
+      <div *ngFor="let x1 of cfg.counter(cfg.numberCount); let x = index" [class]="main.classFor(x,y,'cell')">
+        <app-field-str8ts [field]="main.paintDef?.field(x, y)"></app-field-str8ts>
+      </div>
+      <div *ngIf="cfg.showRulers" class="ruler">
+        {{solver.ruleset.rowName(y)}}
+      </div>
+    </ng-container>
+    <ng-container *ngIf="cfg.showRulers">
+      <div class="ruler">&nbsp;</div>
+      <div *ngFor="let x of cfg.counter(cfg.numberCount)" class="ruler">
+        {{solver.ruleset.colName(x)}}
+      </div>
+      <div class="ruler">&nbsp;</div>
+    </ng-container>
+  </div>
+</div>
+

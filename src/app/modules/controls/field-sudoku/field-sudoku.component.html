@@ -1,13 +1,12 @@
 <div *ngIf="!cfg.isDebug" [class]="containerClass" [ngStyle]="containerStyle" [ngSwitch]="mode">
-  <div *ngSwitchCase="0" class="content">
-    <table>
-      <tr *ngFor="let y of cfg.counter(3)">
-        <td (click)="clickCandidate(y * 3 + x + 1)" *ngFor="let x of cfg.counter(3)"
-            [class]="candidateClass(y * 3 + x + 1)">
-          {{y * 3 + x + 1}}
-        </td>
-      </tr>
-    </table>
+  <div *ngSwitchCase="0" class="grid">
+    <ng-container *ngFor="let y of cfg.counter(3)">
+      <div (click)="clickCandidate(y * 3 + x + 1)"
+           *ngFor="let x of cfg.counter(3)"
+           [class]="candidateClass(y * 3 + x + 1)">
+        {{y * 3 + x + 1}}
+      </div>
+    </ng-container>
   </div>
   <div (click)="clickField()" *ngSwitchCase="1" [class]="cfg.fieldClass(field)">
     {{value}}

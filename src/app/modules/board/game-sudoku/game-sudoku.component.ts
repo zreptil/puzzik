@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {FieldDef} from '@/_model/field-def';
 import {ConfigService} from '@/_services/config.service';
 import {LegacyTooltipPosition as TooltipPosition} from '@angular/material/legacy-tooltip';
@@ -11,7 +11,7 @@ import {SolverSudokuService} from '@/_services/solver-sudoku.service';
   templateUrl: './game-sudoku.component.html',
   styleUrls: ['./game-sudoku.component.scss']
 })
-export class GameSudokuComponent implements OnInit {
+export class GameSudokuComponent implements OnInit, AfterViewInit {
 
   rows: FieldDef[] = [];
 
@@ -24,13 +24,13 @@ export class GameSudokuComponent implements OnInit {
   }
 
   classFor(x: number, y: number): string[] {
-    const ret: string[] = [];
+    const ret: string[] = ['cell'];
     if (x === 0) {
       ret.push('left');
     } else if ((x % 3) === 2) {
       ret.push('right');
     }
-    if (y === 0) {
+    if (y === 0 || ((y % 3) === 0)) {
       ret.push('top');
     } else if ((y % 3) === 2) {
       ret.push('bottom');
@@ -39,5 +39,9 @@ export class GameSudokuComponent implements OnInit {
   }
 
   ngOnInit(): void {
+  }
+
+  ngAfterViewInit(): void {
+    setTimeout(() => this.main.calcSquare(), 100);
   }
 }

@@ -2,6 +2,9 @@ $thin: 1px;
 $thick: 3px;
 
 :host {
+  display: flex;
+  flex-flow: column;
+  flex: 1;
 }
 
 .info-tr {
@@ -21,37 +24,49 @@ $thick: 3px;
 }
 
 .ruler {
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: 0 !important;
   font-size: 75%;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.5);
-  padding: 0 0.5em !important;
 }
 
-table {
-  border-collapse: collapse;
+.board {
+  display: flex;
+  justify-content: center;
+  width: 100vw;
+  flex: 1;
 
-  tr {
-    td {
+  .grid {
+    display: grid;
+    width: 100%;
+    gap: 0;
+
+    .cell {
       border: $thin solid black;
-      padding: 0;
+      height: 100%;
     }
 
-    td.top {
+    .cell.top {
       border-top-width: $thick;
     }
 
-    td.bottom {
+    .cell.bottom {
       border-bottom-width: $thick;
     }
 
-    td.left {
+    .cell.left {
       border-left-width: $thick;
     }
 
-    td.right {
+    .cell.right {
       border-right-width: $thick;
+    }
+
+    .row {
+
     }
   }
 }

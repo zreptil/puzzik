@@ -1,11 +1,15 @@
-<div (click)="btnClick()"
-     *ngIf="!data?.hidden()"
-     [class]="btnClass"
-     [matTooltip]="data?.tip || ''"
-     matRipple
-     matTooltipClass="tooltip"
-     matTooltipPosition="below">
-  <div *ngIf="data?.icon != null" [class]="['btn', data?.icon]"></div>
-  <div *ngIf="data?.text != null"
-       [class]="['btn', 'text', 'typeUser', cfg.playerClass(cfg.currentPlayer.nr)]">{{data?.text}}</div>
-</div>
+<ng-container *ngIf="!data?.hidden()">
+  <div (click)="btnClick()"
+       [class]="btnClass"
+       [matTooltip]="data?.tip || ''"
+       matRipple
+       matTooltipClass="tooltip"
+       matTooltipPosition="below">
+    <div *ngIf="data?.icon != null" [class]="['btn', data?.icon]"></div>
+    <div *ngIf="data?.text != null"
+         [class]="['btn', 'text', 'typeUser', cfg.playerClass(cfg.currentPlayer.nr)]">{{data.text}}</div>
+    <ng-container *ngIf="data?.player != null">
+      <div [class]="['btn', 'text', 'typeUser', cfg.playerClass(data.player.nr, true)]">{{data.player.name}}</div>
+    </ng-container>
+  </div>
+</ng-container>

@@ -1,6 +1,5 @@
 import {Component, HostListener} from '@angular/core';
 import {MainFormService} from './_services/main-form.service';
-import {eAppMode} from '@/_services/config.service';
 
 @Component({
   selector: 'app-root',
@@ -21,15 +20,15 @@ export class AppComponent {
       v = 1;
     }
 
-    if (this.main.cfg.appMode === eAppMode.Game) {
-      if (v < 1) {
-        this.main.cfg.changePlayerIdx(-1);
-        v = this.main.solver?.controls.length - 1;
-      } else if (v >= this.main.solver?.controls.length - 1) {
-        this.main.cfg.changePlayerIdx(1);
-        v = 1;
-      }
-    }
+    // if (this.main.cfg.appMode === eAppMode.Game) {
+    //   if (v < 1) {
+    //     this.main.cfg.changePlayerIdx(-1);
+    //     v = this.main.solver?.controls.length - 1;
+    //   } else if (v >= this.main.solver?.controls.length - 1) {
+    //     this.main.cfg.changePlayerIdx(1);
+    //     v = 1;
+    //   }
+    // }
     const ctrl = this.main.solver?.controls.find(ctrl => ctrl.value === v && !ctrl.hidden());
     if (ctrl != null) {
       this.main.paintDef.currentCtrl = ctrl;

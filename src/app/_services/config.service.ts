@@ -120,10 +120,18 @@ export class ConfigService {
     return brd;
   }
 
-  playerClass(nr: number): string {
+  playerEditClass(nr: number): string {
+    return `player${nr}`;
+  }
+
+  playerClass(nr: number, checkCurrent = false): string {
     let ret: string;
     if (nr >= 1) {
-      ret = this.appMode === eAppMode.Game ? `player${nr}` : 'player1';
+      if (checkCurrent && nr === this.currentPlayer.nr) {
+        ret = this.appMode === eAppMode.Game ? `curr${nr}` : `player${nr}`;
+      } else {
+        ret = this.appMode === eAppMode.Game ? `player${nr}` : 'player0';
+      }
     }
     return ret;
   }

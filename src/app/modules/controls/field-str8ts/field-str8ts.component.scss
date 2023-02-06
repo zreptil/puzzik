@@ -1,4 +1,4 @@
-$size: 2em;
+$size: 100%;
 .container {
   width: $size;
   height: $size;
@@ -40,17 +40,23 @@ $size: 2em;
   justify-content: center;
 }
 
-table {
-  border-collapse: collapse;
+.grid {
+  display: grid;
   width: 100%;
   height: 100%;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  grid-gap: 0;
 
-  td {
-    text-align: center;
-    font-size: 0.5em;
+  div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.4em;
+    overflow: hidden;
   }
 
-  td.off {
+  div.off {
     opacity: 0.2;
   }
 }

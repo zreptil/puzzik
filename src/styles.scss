@@ -35,6 +35,12 @@ html {
     font-style: italic;
   }
 
+  .player0 {
+    color: black;
+    font-weight: bold !important;
+    font-style: normal !important;
+  }
+
   .typeUser .player1,
   .typeUser.player1 {
     color: blue;
@@ -48,6 +54,21 @@ html {
   .typeUser .player3,
   .typeUser.player3 {
     color: maroon;
+  }
+
+  .curr1 {
+    background-color: blue !important;
+    color: white;
+  }
+
+  .curr2 {
+    background-color: green !important;
+    color: white;
+  }
+
+  .curr3 {
+    background-color: maroon !important;
+    color: white;
   }
 
   .typeControl {
@@ -140,12 +161,19 @@ $markCandidate: #afa;
   margin-bottom: 0.2em;
 }
 
-.mat-dialog-container {
+.mat-mdc-button.mat-unthemed {
+  --mdc-text-button-label-text-color: white;
+}
+
+.mat-mdc-dialog-container {
+  --mdc-dialog-container-shape: 1em;
+  --mdc-dialog-container-color: #442300;
+  --mdc-dialog-with-divider-divider-color: rgba(0, 0, 0, 0.12);
+  --mdc-dialog-subhead-color: rgba(255, 255, 255, 0.8);
+  --mdc-dialog-supporting-text-color: rgba(255, 255, 255, 0.6);
   display: flex !important;
   padding: 0 !important;
-  background: #442300;
   color: white;
-  border-radius: 1em !important;
 
   .mat-dialog-title {
     display: flex;
@@ -171,4 +199,9 @@ $markCandidate: #afa;
       background: rgba(255, 255, 255, 0.2);
     }
   }
+}
+
+button mat-icon {
+  margin: 0 !important;
+  padding: 0 !important;
 }

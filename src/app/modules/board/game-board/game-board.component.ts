@@ -1,8 +1,8 @@
 import {Component, HostListener, OnInit} from '@angular/core';
-import {MainFormService} from '../../../_services/main-form.service';
-import {ButtonData} from '../../controls/button/button.component';
-import {SolverSudokuService} from '../../../_services/solver-sudoku.service';
-import {SolverStr8tsService} from '../../../_services/solver-str8ts.service';
+import {MainFormService} from '@/_services/main-form.service';
+import {ButtonData} from '@/modules/controls/button/button.component';
+import {SolverSudokuService} from '@/_services/solver-sudoku.service';
+import {SolverStr8tsService} from '@/_services/solver-str8ts.service';
 
 @Component({
   selector: 'app-game-board',

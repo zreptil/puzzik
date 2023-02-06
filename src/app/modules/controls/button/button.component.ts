@@ -2,12 +2,14 @@ import {Component, Input, OnInit} from '@angular/core';
 import {SolverBaseService} from '@/_services/solver-base.service';
 import {RulesetBaseService} from '@/_services/ruleset-base.service';
 import {ConfigService} from '@/_services/config.service';
+import {PlayerData} from '@/_model/player-data';
 
 export class ButtonData {
   icon?: string;
   text?: string;
   value?: any;
   tip?: string;
+  player?: PlayerData;
   click?: (btn: ButtonData) => void;
   marked?: (btn: ButtonData) => boolean;
 
@@ -40,8 +42,8 @@ export class ButtonComponent implements OnInit {
     if (this.data?.id === 'block') {
       ret.push('block');
     }
-    if (this.data?.id === 'user') {
-      ret.push('user');
+    if (this.data?.id === 'player') {
+      ret.push('player');
     }
     return ret;
   }
