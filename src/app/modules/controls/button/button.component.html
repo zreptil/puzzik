@@ -9,7 +9,12 @@
     <div *ngIf="data?.text != null"
          [class]="['btn', 'text', 'typeUser', cfg.playerClass(cfg.currentPlayer.nr)]">{{data.text}}</div>
     <ng-container *ngIf="data?.player != null">
-      <div [class]="['btn', 'text', 'typeUser', cfg.playerClass(data.player.nr, true)]">{{data.player.name}}</div>
+      <div [class]="['btn', 'text', 'typeUser', cfg.playerClass(data.player.nr, true)]">
+        <ng-container *ngIf="!data.player.name.startsWith('@')">{{data.player.name}}</ng-container>
+        <ng-container *ngIf="data.player.name.startsWith('@')">
+          <mat-icon>{{data.player.name.substring(1)}}</mat-icon>
+        </ng-container>
+      </div>
     </ng-container>
   </div>
 </ng-container>

@@ -1,6 +1,15 @@
 @import '@angular/material/prebuilt-themes/deeppurple-amber.css';
 
 html {
+  --c1: blue;
+  --c2: green;
+  --c3: maroon;
+  --c4: #aaa;
+  --t1: white;
+  --t2: white;
+  --t3: white;
+  --t4: white;
+
   body {
     display: flex;
     width: 100vw;
@@ -43,32 +52,42 @@ html {
 
   .typeUser .player1,
   .typeUser.player1 {
-    color: blue;
+    color: var(--c1);
   }
 
   .typeUser .player2,
   .typeUser.player2 {
-    color: green;
+    color: var(--c2);
   }
 
   .typeUser .player3,
   .typeUser.player3 {
-    color: maroon;
+    color: var(--c3);
+  }
+
+  .typeUser .player4,
+  .typeUser.player4 {
+    color: var(--c4);
   }
 
   .curr1 {
-    background-color: blue !important;
-    color: white;
+    background-color: var(--c1) !important;
+    color: var(--t1);
   }
 
   .curr2 {
-    background-color: green !important;
-    color: white;
+    background-color: var(--c2) !important;
+    color: var(--t2);
   }
 
   .curr3 {
-    background-color: maroon !important;
-    color: white;
+    background-color: var(--c3) !important;
+    color: var(--t3);
+  }
+
+  .curr4 {
+    background-color: var(--c4) !important;
+    color: var(--t4);
   }
 
   .typeControl {

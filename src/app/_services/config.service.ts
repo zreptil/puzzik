@@ -36,6 +36,7 @@ export class ConfigService {
     this.addPlayer('Andi');
     this.addPlayer('Mutti');
     this.addPlayer('Papi');
+    this.addPlayer('@preview');
     this.currPlayerIdx = 0;
   }
 
@@ -145,7 +146,7 @@ export class ConfigService {
   }
 
   public addPlayer(name: string): void {
-    if (this._players.length < 3) {
+    if (this._players.length < 4) {
       this._players.push(new PlayerData(this._players.length + 1, name));
     }
   }

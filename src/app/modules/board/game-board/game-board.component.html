@@ -23,7 +23,12 @@
     <div *ngIf="main.cfg.appMode === 1" class="row">
       <div *ngFor="let player of main.cfg.players">
         <button [class]="['editplayer', 'text', 'typeUser', main.cfg.playerEditClass(player.nr)]"
-                mat-button>{{player.name}}</button>
+                mat-button>
+          <ng-container *ngIf="!player.name.startsWith('@')">{{player.name}}</ng-container>
+          <ng-container *ngIf="player.name.startsWith('@')">
+            <mat-icon>{{player.name.substring(1)}}</mat-icon>
+          </ng-container>
+        </button>
         <button class="icon" mat-icon-button>
           <mat-icon>delete</mat-icon>
         </button>

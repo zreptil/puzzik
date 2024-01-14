@@ -15,6 +15,16 @@ export class AppComponent {
   @HostListener('wheel', ['$event'])
   public onScroll(event: WheelEvent) {
     const diff = Math.sign(event.deltaY);
+    if (event.ctrlKey) {
+      let v = this.main.cfg.currPlayerIdx + diff;
+      if (v >= this.main.cfg.players.length)
+        v = 0;
+      if (v < 0)
+        v = this.main.cfg.players.length-1;
+      this.main.cfg.currPlayerIdx = v;
+      event.preventDefault();
+      return;
+    }
     let v = +this.main.paintDef.currentCtrl?.value + diff;
     if (isNaN(v)) {
       v = 1;
