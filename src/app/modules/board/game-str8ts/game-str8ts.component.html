@@ -3,7 +3,7 @@
     <ng-container *ngIf="cfg.showRulers">
       <div class="ruler">&nbsp;</div>
       <div *ngFor="let x of cfg.counter(cfg.numberCount)" class="ruler">
-        {{solver.ruleset.colName(x)}}
+        {{ solver.ruleset.colName(x) }}
       </div>
       <div class="ruler">
         <button (click)="main.calcSquare()" mat-button>
@@ -13,19 +13,20 @@
     </ng-container>
     <ng-container *ngFor="let y1 of cfg.counter(cfg.numberCount); let y = index">
       <div *ngIf="cfg.showRulers" class="ruler">
-        {{solver.ruleset.rowName(y)}}
+        {{ solver.ruleset.rowName(y) }}
       </div>
-      <div *ngFor="let x1 of cfg.counter(cfg.numberCount); let x = index" [class]="main.classFor(x,y,'cell')">
+      <div *ngFor="let x1 of cfg.counter(cfg.numberCount); let x = index"
+           [class]="main.classFor(x,y,'cell')">
         <app-field-str8ts [field]="main.paintDef?.field(x, y)"></app-field-str8ts>
       </div>
       <div *ngIf="cfg.showRulers" class="ruler">
-        {{solver.ruleset.rowName(y)}}
+        {{ solver.ruleset.rowName(y) }}
       </div>
     </ng-container>
     <ng-container *ngIf="cfg.showRulers">
       <div class="ruler">&nbsp;</div>
       <div *ngFor="let x of cfg.counter(cfg.numberCount)" class="ruler">
-        {{solver.ruleset.colName(x)}}
+        {{ solver.ruleset.colName(x) }}
       </div>
       <div class="ruler">&nbsp;</div>
     </ng-container>

@@ -1,5 +1,6 @@
 import {Component, HostListener} from '@angular/core';
 import {MainFormService} from './_services/main-form.service';
+import {eAppMode} from '@/_services/config.service';
 
 @Component({
   selector: 'app-root',
@@ -17,10 +18,12 @@ export class AppComponent {
     const diff = Math.sign(event.deltaY);
     if (event.ctrlKey) {
       let v = this.main.cfg.currPlayerIdx + diff;
-      if (v >= this.main.cfg.players.length)
+      if (v >= this.main.cfg.players.length) {
         v = 0;
-      if (v < 0)
-        v = this.main.cfg.players.length-1;
+      }
+      if (v < 0) {
+        v = this.main.cfg.players.length - 1;
+      }
       this.main.cfg.currPlayerIdx = v;
       event.preventDefault();
       return;
@@ -30,15 +33,15 @@ export class AppComponent {
       v = 1;
     }
 
-    // if (this.main.cfg.appMode === eAppMode.Game) {
-    //   if (v < 1) {
-    //     this.main.cfg.changePlayerIdx(-1);
-    //     v = this.main.solver?.controls.length - 1;
-    //   } else if (v >= this.main.solver?.controls.length - 1) {
-    //     this.main.cfg.changePlayerIdx(1);
-    //     v = 1;
-    //   }
-    // }
+    if (this.main.cfg.appMode === eAppMode.Game) {
+      if (v < 1) {
+        this.main.cfg.changePlayerIdx(-1, false);
+        v = this.main.solver?.controls.length - 1;
+      } else if (v >= this.main.solver?.controls.length - 1) {
+        this.main.cfg.changePlayerIdx(1, false);
+        v = 1;
+      }
+    }
     const ctrl = this.main.solver?.controls.find(ctrl => ctrl.value === v && !ctrl.hidden());
     if (ctrl != null) {
       this.main.paintDef.currentCtrl = ctrl;

@@ -5,20 +5,22 @@
         <div (click)="clickCandidate(y * 3 + x + 1)"
              *ngFor="let x of cfg.counter(3)"
              [class]="candidateClass(y * 3 + x + 1)">
-          {{y * 3 + x + 1}}
+          {{ y * 3 + x + 1 }}
         </div>
       </ng-container>
     </ng-container>
   </div>
-  <div (click)="clickField()" *ngSwitchCase="1" [class]="cfg.fieldClass(field)">
-    {{value ?? '&nbsp;'}}
+  <div (click)="clickField()" *ngSwitchCase="1"
+       [style]="cfg.fieldStyle(field)"
+       class="content">
+    {{ value ?? '&nbsp;' }}
   </div>
 </div>
 <div *ngIf="cfg.isDebug">
   <ng-container *ngFor="let anim of main.solver?.animations">
-    <div *ngIf="isField(anim)">{{anim.backType}}</div>
+    <div *ngIf="isField(anim)">{{ anim.backType }}</div>
   </ng-container>
   <ng-container *ngIf="main.solver?.animations?.length === 0">
-    {{areaNumber}}
+    {{ areaNumber }}
   </ng-container>
 </div>

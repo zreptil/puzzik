@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {SavedBoard} from '@/_model/saved-board';
 import {PlayerData} from '@/_model/player-data';
-import {FieldDef} from '@/_model/field-def';
+import {eFieldType, FieldDef} from '@/_model/field-def';
 
 export enum eAppMode {
   Game,
@@ -33,10 +33,11 @@ export class ConfigService {
 
   constructor() {
     this.readSettings();
-    this.addPlayer('Andi');
-    this.addPlayer('Mutti');
-    this.addPlayer('Papi');
-    this.addPlayer('@preview');
+    this.addPlayer('Andi', 'blue', 'white');
+    this.addPlayer('Mutti', 'green', 'white');
+    this.addPlayer('Papi', 'maroon', 'white');
+    this.addPlayer('Moni', '#cc6700', 'white');
+    this.addPlayer('@preview', 'white', '#bbb');
     this.currPlayerIdx = 0;
   }
 
@@ -121,33 +122,42 @@ export class ConfigService {
     return brd;
   }
 
-  playerEditClass(nr: number): string {
-    return `player${nr}`;
+  playerEditStyle(player: PlayerData): any {
+    return player.style;
   }
 
-  playerClass(nr: number, checkCurrent = false): string {
-    let ret: string;
-    if (nr >= 1) {
-      if (checkCurrent && nr === this.currentPlayer.nr) {
-        ret = this.appMode === eAppMode.Game ? `curr${nr}` : `player${nr}`;
+  playerStyle(player: PlayerData, checkCurrent = false, selector = false): any {
+    let ret: any = {};
+    if (player?.nr >= 1) {
+      if (checkCurrent && player.nr === this.currentPlayer.nr) {
+        ret = this.appMode === eAppMode.Game ? player.currStyle : player.style;
       } else {
-        ret = this.appMode === eAppMode.Game ? `player${nr}` : 'player0';
+        ret = this.appMode === eAppMode.Game ? player.style : PlayerData.defStyle;
+      }
+    }
+    if (this.appMode === eAppMode.Game && selector) {
+      const temp = this.playerEditStyle(this.currentPlayer);
+      ret = {color: temp.backgroundColor, backgroundColor: temp.color};
+    }
+    return ret;
+  }
+
+  fieldStyle(field: FieldDef): any {
+    const ret: any = {};
+    if (field.type === eFieldType.User && field?.playerNr >= 1) {
+      const temp = this.playerStyle(this.players[field.playerNr - 1]);
+      ret.backgroundColor = temp.color;
+      ret.color = temp.backgroundColor;
+      if (temp.mark != null) {
+        ret.backgroundColor = temp.mark;
       }
     }
     return ret;
   }
 
-  fieldClass(field: FieldDef): string[] {
-    let ret = ['content'];
-    if (field?.playerNr >= 1) {
-      ret.push(this.playerClass(field?.playerNr));
-    }
-    return ret;
-  }
-
-  public addPlayer(name: string): void {
-    if (this._players.length < 4) {
-      this._players.push(new PlayerData(this._players.length + 1, name));
+  public addPlayer(name: string, colorBack: string, colorFore: string): void {
+    if (this._players.length < 5) {
+      this._players.push(new PlayerData(this._players.length + 1, name, colorBack, colorFore));
     }
   }
 
@@ -188,18 +198,22 @@ export class ConfigService {
     return ret;
   }
 
-  changePlayerIdx(diff: number) {
+  changePlayerIdx(diff: number, loop = true) {
     switch (diff) {
       case -1:
         if (this.currPlayerIdx === 0) {
-          this.currPlayerIdx = this._players.length - 1;
+          if (loop) {
+            this.currPlayerIdx = this._players.length - 1;
+          }
         } else {
           this.currPlayerIdx--;
         }
         break;
       case 1:
         if (this.currPlayerIdx >= this._players.length - 1) {
-          this.currPlayerIdx = 0;
+          if (loop) {
+            this.currPlayerIdx = 0;
+          }
         } else {
           this.currPlayerIdx++;
         }

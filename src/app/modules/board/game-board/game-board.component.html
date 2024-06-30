@@ -1,4 +1,4 @@
-<button (click)="btnTypeClick()" class="puzzleType" mat-button>{{main.cfg.puzzleType}}</button>
+<button (click)="btnTypeClick()" class="puzzleType" mat-button>{{ main.cfg.puzzleType }}</button>
 <div *ngIf="main.solver != null" class="controls">
   <app-button [data]="main.btnData('appMode', main.solver)"></app-button>
   <app-button [data]="main.btnData('rulers', main.solver)"></app-button>
@@ -17,14 +17,15 @@
   <div class="controls">
     <ng-container *ngIf="main.cfg.appMode === 0">
       <app-button *ngFor="let player of main.cfg.players"
-                  [class]="main.cfg.playerClass(player.nr)"
                   [data]="main.btnData('player', main.solver, player)"></app-button>
     </ng-container>
     <div *ngIf="main.cfg.appMode === 1" class="row">
       <div *ngFor="let player of main.cfg.players">
         <ng-container *ngIf="!player.name.startsWith('@')">
-          <button [class]="['editplayer', 'text', 'typeUser', main.cfg.playerEditClass(player.nr)]"
-                  mat-button>{{player.name}}</button>
+          <button [class]="['editplayer', 'text', 'typeUser']"
+                  [style]="main.cfg.playerEditStyle(player)"
+                  mat-button>{{ player.name }}
+          </button>
           <button class="icon" mat-icon-button>
             <mat-icon>delete</mat-icon>
           </button>

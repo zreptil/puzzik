@@ -39,6 +39,9 @@ export class ButtonComponent implements OnInit {
     if (this.data?.marked?.(this.data)) {
       ret.push('marked');
     }
+    if (this.data?.player?.nr === this.cfg.currPlayerIdx + 1) {
+      ret.push('marked');
+    }
     if (this.data?.id === 'block') {
       ret.push('block');
     }

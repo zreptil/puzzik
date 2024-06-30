@@ -339,7 +339,7 @@ export abstract class SolverBaseService {
   }
 
   /**
-   * Wird aufgerufen, wenn der linke Mousebutton im Editmode
+   * Wird aufgerufen, wenn der linke Mousebutton im Feld
    * gedrückt wird.
    * @param fld Feld auf dem der Button gedrückt wurde.
    */
@@ -391,10 +391,18 @@ export abstract class SolverBaseService {
       case eAppMode.Game:
         if (fld.type === eFieldType.User) {
           if (this.main.paintDef.currentCtrl != null) {
-            fld.value = this.main.paintDef.currentCtrl.value > 0
-            && this.main.paintDef.currentCtrl.value <= this.cfg.numberCount
-              ? (this.main.paintDef.currentCtrl.value === fld.value ? -1
-                : this.main.paintDef.currentCtrl.value) : -1;
+            if (fld.playerNr === this.cfg.players.length && this.cfg.currentPlayer.nr !== fld.playerNr) {
+              const ctrl = this.main.solver.controls.find(btn => btn.value === fld.value);
+              if (ctrl != null) {
+                this.main.paintDef.currentCtrl = ctrl;
+              }
+              fld.value = this.main.paintDef.currentCtrl.value;
+            } else {
+              fld.value = this.main.paintDef.currentCtrl.value > 0
+              && this.main.paintDef.currentCtrl.value <= this.cfg.numberCount
+                ? (this.main.paintDef.currentCtrl.value === fld.value ? -1
+                  : this.main.paintDef.currentCtrl.value) : -1;
+            }
             fld.playerNr = fld.value === -1 ? 0 : this.cfg.currentPlayer.nr;
           } else if (this.cfg.gameMode === eGameMode.Solver) {
             if (fld.value > 0) {

@@ -59,18 +59,18 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "puzzik:build"
+            "buildTarget": "puzzik:build"
           }
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "development": {
-              "browserTarget": "puzzik:build:development",
-              "port": 4209
+              "port": 4209,
+              "buildTarget": "puzzik:build:development"
             },
             "production": {
-              "browserTarget": "puzzik:build:production"
+              "buildTarget": "puzzik:build:production"
             }
           },
           "defaultConfiguration": "development"

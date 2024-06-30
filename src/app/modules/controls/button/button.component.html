@@ -1,18 +1,20 @@
 <ng-container *ngIf="!data?.hidden()">
   <div (click)="btnClick()"
-       [class]="btnClass"
-       [matTooltip]="data?.tip || ''"
+       [class]="btnClass" [matTooltip]="data?.tip || ''"
        matRipple
        matTooltipClass="tooltip"
        matTooltipPosition="below">
     <div *ngIf="data?.icon != null" [class]="['btn', data?.icon]"></div>
     <div *ngIf="data?.text != null"
-         [class]="['btn', 'text', 'typeUser', cfg.playerClass(cfg.currentPlayer.nr)]">{{data.text}}</div>
+         [class]="['btn', 'text', 'typeUser']"
+         [style]="cfg.playerStyle(data?.player, false, true)">{{ data.text }}
+    </div>
     <ng-container *ngIf="data?.player != null">
-      <div [class]="['btn', 'text', 'typeUser', cfg.playerClass(data.player.nr, true)]">
-        <ng-container *ngIf="!data.player.name.startsWith('@')">{{data.player.name}}</ng-container>
+      <div [class]="['btn', 'text', 'typeUser']"
+           [style]="cfg.playerStyle(data.player, true)">
+        <ng-container *ngIf="!data.player.name.startsWith('@')">{{ data.player.name }}</ng-container>
         <ng-container *ngIf="data.player.name.startsWith('@')">
-          <mat-icon>{{data.player.name.substring(1)}}</mat-icon>
+          <mat-icon>{{ data.player.name.substring(1) }}</mat-icon>
         </ng-container>
       </div>
     </ng-container>
