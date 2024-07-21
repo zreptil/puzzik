@@ -36,8 +36,8 @@ export class AppComponent {
     if (this.main.cfg.appMode === eAppMode.Game) {
       if (v < 1) {
         this.main.cfg.changePlayerIdx(-1, false);
-        v = this.main.solver?.controls.length - 1;
-      } else if (v >= this.main.solver?.controls.length - 1) {
+        v = this.main.solver?.controlCount - 2;
+      } else if (v >= this.main.solver?.controlCount - 1) {
         this.main.cfg.changePlayerIdx(1, false);
         v = 1;
       }

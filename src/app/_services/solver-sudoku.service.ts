@@ -1,14 +1,14 @@
 import {Injectable} from '@angular/core';
 import {SolveFn} from './solver-base.service';
-import {eAnimBack, eAnimMark, eFieldType, FieldDef} from '../_model/field-def';
+import {eAnimBack, eAnimMark, eFieldType, FieldDef} from '@/_model/field-def';
 import {ConfigService} from './config.service';
 import {MainFormService} from './main-form.service';
 import {CandidateFieldCounts, SolverSudokuBaseService} from './solver-sudoku-base.service';
 import {RulesetSudokuService} from './ruleset-sudoku.service';
-import {FieldLink} from '../_model/field-link';
-import {Area} from '../_model/area';
-import {CandidateFields} from '../_model/candidate-fields';
-import {LinkedCandidates} from '../_model/linked-candidates';
+import {FieldLink} from '@/_model/field-link';
+import {Area} from '@/_model/area';
+import {CandidateFields} from '@/_model/candidate-fields';
+import {LinkedCandidates} from '@/_model/linked-candidates';
 
 @Injectable({
   providedIn: 'root'

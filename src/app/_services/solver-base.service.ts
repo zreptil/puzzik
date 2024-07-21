@@ -23,12 +23,6 @@ export abstract class SolverBaseService {
   private _factor = 1.0;
   private _active = false;
   private _preHint = '@308030ffffff@';
-  // private _xPos = 0;
-  // private _yPos = 0;
-  // private _colMarkArea = 0x80ff80ff; // Color.FromArgb(255, 100, 255, 100);
-  // private _colMarkCandidate = 0xffff8080; // Color.FromArgb(255, 100, 100, 255);
-  // private _colFontCandidate = 0xffffffff; // Color.FromArgb(255, 255, 255, 255);
-  // private _colFontCandidateDel = 0xffffffff; //Color.FromArgb(255, 255, 255, 255);
 
   /**
    * Initialisiert eine neue Instanz von SolverBase.
@@ -42,6 +36,15 @@ export abstract class SolverBaseService {
     this._paintDef = main.paintDef;
     this.clearAnimations();
   }
+
+  // private _xPos = 0;
+  // private _yPos = 0;
+  // private _colMarkArea = 0x80ff80ff; // Color.FromArgb(255, 100, 255, 100);
+  // private _colMarkCandidate = 0xffff8080; // Color.FromArgb(255, 100, 100, 255);
+  // private _colFontCandidate = 0xffffffff; // Color.FromArgb(255, 255, 255, 255);
+  // private _colFontCandidateDel = 0xffffffff; //Color.FromArgb(255, 255, 255, 255);
+
+  abstract get controlCount(): number;
 
   private _speed = 0.1;
 

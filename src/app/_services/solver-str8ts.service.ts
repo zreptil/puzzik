@@ -1,12 +1,12 @@
 import {Injectable} from '@angular/core';
-import {ConfigService} from './config.service';
+import {ConfigService, eAppMode} from './config.service';
 import {MainFormService} from './main-form.service';
 import {RulesetStr8tsService} from './ruleset-str8ts.service';
 import {SolveFn} from './solver-base.service';
-import {eFieldType, FieldDef} from '../_model/field-def';
-import {Area} from '../_model/area';
+import {eFieldType, FieldDef} from '@/_model/field-def';
+import {Area} from '@/_model/area';
 import {SolverSudokuBaseService} from './solver-sudoku-base.service';
-import {ButtonData} from '../modules/controls/button/button.component';
+import {ButtonData} from '@/modules/controls/button/button.component';
 
 @Injectable({
   providedIn: 'root'
@@ -19,8 +19,19 @@ export class SolverStr8tsService extends SolverSudokuBaseService {
     super(cfg, _main, ruleset);
   }
 
+  override get controlCount(): number {
+    switch (this.cfg.appMode) {
+      case eAppMode.Game:
+        return 11;
+    }
+    return 10;
+  }
+
   override get controls(): ButtonData[] {
-    const ret = super.controls;
+    const ret: ButtonData[] = [];
+    for (const num of this.cfg.counter(this.cfg.numberCount + 1)) {
+      ret.push(this.main.btnData('number', this, num));
+    }
     ret.push(this.main.btnData('block', this, this.cfg.numberCount + 1));
     return ret;
   }
