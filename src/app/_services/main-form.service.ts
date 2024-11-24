@@ -147,6 +147,26 @@ export abstract class MainFormService {
     this.historyBoard = null;
   }
 
+  fieldStyle(field: FieldDef): any {
+    const ret: any = {};
+    if (field?.type === eFieldType.User && field?.playerNr >= 1) {
+      const temp = this.cfg.playerStyle(this.cfg.players[field.playerNr - 1]);
+      ret.backgroundColor = temp.color;
+      ret.color = temp.backgroundColor;
+      if (temp.mark != null) {
+        ret.backgroundColor = temp.mark;
+      }
+      if (!field.isValid) {
+        ret.color = 'red';
+      }
+      if (field?.playerNr === this.cfg.players.length && this.solver.isLowestPreviewIdx(field)) {
+        ret.color = 'yellow';
+        ret.fontWeight = 'bold';
+      }
+    }
+    return ret;
+  }
+
   /**
    * Lädt die Anwendung.
    * @param solver Solver, der verwendet werden soll
@@ -163,9 +183,9 @@ export abstract class MainFormService {
     }
     solver.ruleset.setNumberCount(variations[found]);
     solver.ruleset.fillBoard(solver.ruleset.currentBoard, false);
-    solver.ruleset.validateFields(false);
     this.solver = solver;
     this.solver.ruleset.createAreas();
+    solver.ruleset.validateFields(false);
 
     /*
     PaintDef.SmallLine = (int)Math.Sqrt(SettingsSX.NumberCount);

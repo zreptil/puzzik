@@ -186,3 +186,16 @@ button mat-icon {
   margin: 0 !important;
   padding: 0 !important;
 }
+
+
+.preview-count {
+  font-size: 0.3em;
+  opacity: 0.8;
+  position: absolute;
+  right: 0.2em;
+  bottom: 0.2em;
+}
+
+.preview-count.lowest {
+  color: black;
+}

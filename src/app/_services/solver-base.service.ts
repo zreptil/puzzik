@@ -125,6 +125,26 @@ export abstract class SolverBaseService {
     return ret;
   }
 
+  get nextPreviewIdx(): number {
+    let ret = 0;
+    for (const fld of this.main.paintDef.fields) {
+      if (fld.playerNr === this.cfg.players.length) {
+        ret = Math.max(ret, fld.previewIdx);
+      }
+    }
+    return ret + 1;
+  }
+
+  isLowestPreviewIdx(fld: FieldDef): boolean {
+    let ret = 10000;
+    for (const fld of this.main.paintDef.fields) {
+      if (fld.playerNr === this.cfg.players.length) {
+        ret = Math.min(ret, fld.previewIdx);
+      }
+    }
+    return fld.previewIdx === ret;
+  }
+
   /**
    * Löscht die Animationsliste.
    */
@@ -394,6 +414,7 @@ export abstract class SolverBaseService {
       case eAppMode.Game:
         if (fld.type === eFieldType.User) {
           if (this.main.paintDef.currentCtrl != null) {
+            console.log(this.main.paintDef.currentCtrl);
             if (fld.playerNr === this.cfg.players.length && this.cfg.currentPlayer.nr !== fld.playerNr) {
               const ctrl = this.main.solver.controls.find(btn => btn.value === fld.value);
               if (ctrl != null) {
@@ -407,6 +428,11 @@ export abstract class SolverBaseService {
                   : this.main.paintDef.currentCtrl.value) : -1;
             }
             fld.playerNr = fld.value === -1 ? 0 : this.cfg.currentPlayer.nr;
+            if (fld.value != 0 && fld.playerNr === this.cfg.players.length) {
+              fld.previewIdx = this.nextPreviewIdx;
+            } else {
+              fld.previewIdx = 0;
+            }
           } else if (this.cfg.gameMode === eGameMode.Solver) {
             if (fld.value > 0) {
               fld.value = -1;
@@ -417,6 +443,8 @@ export abstract class SolverBaseService {
           fld.clearHidden();
           this.solveExisting();
           this.ruleset.checkSolved(true);
+        } else {
+          console.log('OH SCHEISSE!!!', fld.type);
         }
         this.cfg.currentBoard.content = this.ruleset.getBoardString(false);
         this.cfg.writeSettings();

@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {SavedBoard} from '@/_model/saved-board';
 import {PlayerData} from '@/_model/player-data';
-import {eFieldType, FieldDef} from '@/_model/field-def';
 
 export enum eAppMode {
   Game,
@@ -138,19 +137,6 @@ export class ConfigService {
     if (this.appMode === eAppMode.Game && selector) {
       const temp = this.playerEditStyle(this.currentPlayer);
       ret = {color: temp.backgroundColor, backgroundColor: temp.color};
-    }
-    return ret;
-  }
-
-  fieldStyle(field: FieldDef): any {
-    const ret: any = {};
-    if (field.type === eFieldType.User && field?.playerNr >= 1) {
-      const temp = this.playerStyle(this.players[field.playerNr - 1]);
-      ret.backgroundColor = temp.color;
-      ret.color = temp.backgroundColor;
-      if (temp.mark != null) {
-        ret.backgroundColor = temp.mark;
-      }
     }
     return ret;
   }

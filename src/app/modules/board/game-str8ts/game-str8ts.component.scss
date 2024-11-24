@@ -47,6 +47,7 @@ $thick: 3px;
     .cell {
       border: $thin solid black;
       height: 100%;
+      position: relative;
     }
 
     .cell.top {

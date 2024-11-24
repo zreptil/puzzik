@@ -3,6 +3,7 @@ import {eAnimBack, eAnimFore, eAnimMark, eFieldType, FieldDef} from '@/_model/fi
 import {ConfigService, eAppMode, eGameMode} from '@/_services/config.service';
 import {MainFormService} from '@/_services/main-form.service';
 import {AnimDef} from '@/_model/anim-def';
+import {Utils} from '@/classes/utils';
 
 @Component({
   selector: 'app-field-sudoku',
@@ -117,7 +118,10 @@ export class FieldSudokuComponent {
         }
         break;
     }
-    return ret;
+    if (this.field.playerNr === this.cfg.players.length) {
+      ret += `<div class="preview-count">${this.field.previewIdx}</div>`;
+    }
+    return Utils.isEmpty(ret) ? null : ret;
   }
 
   checkAnim(fld: FieldDef): AnimDef | null {

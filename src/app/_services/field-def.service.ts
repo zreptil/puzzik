@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
-import {FieldDef} from '../_model/field-def';
-import {CandidateDef} from '../_model/candidate-def';
+import {FieldDef} from '@/_model/field-def';
+import {CandidateDef} from '@/_model/candidate-def';
 import {ConfigService} from './config.service';
 
 @Injectable({
@@ -18,6 +18,7 @@ export class FieldDefService {
     ret.sumDown = 0;
     ret.sumUp = 0;
     ret.candidates = [];
+    ret.previewIdx = 0;
     for (let i = 1; i <= this.cfg.numberCount; i++) {
       ret.candidates.push(new CandidateDef(i));
     }

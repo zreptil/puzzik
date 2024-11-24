@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {RulesetBaseService} from './ruleset-base.service';
-import {Area} from '../_model/area';
-import {eAnimBack} from '../_model/field-def';
+import {Area} from '@/_model/area';
+import {eAnimBack} from '@/_model/field-def';
 import {FieldDefService} from './field-def.service';
 import {MainFormService} from './main-form.service';
 import {ConfigService, eGameMode} from './config.service';
@@ -38,7 +38,7 @@ export class RulesetSudokuService extends RulesetBaseService {
       let count = 0;
       let val = 0;
 
-      if (fld.value <= 0 && this.cfg.gameMode == eGameMode.Solver) {
+      if (fld.value <= 0 && this.cfg.gameMode === eGameMode.Solver) {
         for (const candidate of fld.candidates) {
           if (!candidate.hidden) {
             count++;

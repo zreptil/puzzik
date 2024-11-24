@@ -56,6 +56,7 @@ export class FieldDef {
   public playerNr: number = 0;
   public candidates: CandidateDef[] = [];
   public areas: Area[] = [];
+  public previewIdx = 1;
 
   protected constructor() {
   }
@@ -72,6 +73,7 @@ export class FieldDef {
     ret.x = this.x;
     ret.y = this.y;
     ret.isValid = this.isValid;
+    ret.previewIdx = this.previewIdx;
 
     ret.copyFrom(this);
     return ret;
@@ -153,6 +155,7 @@ export class FieldDef {
     this.value = fld.value;
     this.type = fld.type;
     this.playerNr = fld.playerNr;
+    this.previewIdx = fld.previewIdx;
     this.candidates = [];
     for (const candidate of fld.candidates) {
       this.candidates.push(new CandidateDef(candidate));

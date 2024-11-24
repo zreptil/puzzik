@@ -11,9 +11,8 @@
     </ng-container>
   </div>
   <div (click)="clickField()" *ngSwitchCase="1"
-       [style]="cfg.fieldStyle(field)"
-       class="content">
-    {{ value ?? '&nbsp;' }}
+       [innerHtml]="value ?? '&nbsp;'"
+       [style]="main.fieldStyle(field)" class="content">
   </div>
 </div>
 <div *ngIf="cfg.isDebug">

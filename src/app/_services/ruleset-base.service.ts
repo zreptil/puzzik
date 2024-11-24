@@ -260,8 +260,9 @@ export abstract class RulesetBaseService {
    * @returns Der String, der das Feld definiert.
    */
   protected getFieldString(fld: FieldDef, withHidden: boolean): string {
-    const v = '@'.charCodeAt(0) + (+fld.value <= 0 ? 0 : +fld.value);
-    let ret = `${fld.type}${fld.playerNr ?? 0}${String.fromCharCode(v)}`;
+    const v1 = '@'.charCodeAt(0) + (+fld.value <= 0 ? 0 : +fld.value);
+    const v2 = '@'.charCodeAt(0) + (+(fld.previewIdx ?? 0) <= 0 ? 0 : +fld.previewIdx);
+    let ret = `${fld.type}${fld.playerNr ?? 0}${String.fromCharCode(v1)}${String.fromCharCode(v2)}`;
     if (withHidden) {
       ret += fld.hiddenString;
     }
@@ -287,7 +288,11 @@ export abstract class RulesetBaseService {
       } else {
         ret.value = ret.solution;
       }
-      def = def.substring(3);
+      ret.previewIdx = def.charCodeAt(3) - '@'.charCodeAt(0);
+      if (def[2] === '@') {
+        ret.previewIdx = 0;
+      }
+      def = def.substring(4);
       if (def === '') {
         def = '0000';
       }
